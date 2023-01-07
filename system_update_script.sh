@@ -1,17 +1,26 @@
 #!/bin/env bash
 
-## Prerequisites:
-# xsel
+####################################################
+# NOTE:                                            #
+#    Change -ne on Line 70 to -eq for production.  #
+#    Change -ne on Line 96 to -eq for production.  #
+#    Change -eq on Line 125 to -ne for production. #
+#    Change -eq on Line 133 to -ne for production. #
 
-# Let's define a few colors
-GREEN=$(tput setaf 2)
-BRIGHT=$(tput bold)
-NORMAL=$(tput sgr0)
 # Make sure the script isnt's being run as root
 [[ $UID == 0 ]] && echo "You are attempting to run the script as root which isn't allowed. Exiting." | tee /dev/tty | systemd-cat --identifier=Upgrades --priority=err && exit 1
+
+## Prerequisites:
+# xsel
+# tput
+# pamac
+# pacdiff
+# inxi
+
 # Check that there is updates, and confirm with the use whether to apply them or not.
-UPDATES_AVAILABLE=$(pamac checkupdates | head -n 1 | awk '{print $1}')
-[[ $UPDATES_AVAILABLE -gt 0 ]] && read -p "There are $UPDATES_AVAILABLE updates available, continue? [Y/n]: " CONTINUEUPDATE
+#M UPDATES_AVAILABLE=$(pamac checkupdates | head -n 1 | awk '{print $1}')
+UPDATES_AVAILABLE=2
+[[ $UPDATES_AVAILABLE -gt 0 ]] && read -p "There are ${BRIGHT}${UPDATES_AVAILABLE}${NORMAL} updates available, continue? [Y/n]: " CONTINUEUPDATE
 CONTINUEUPDATE=${CONTINUEUPDATE:-Y}
 if [[ $CONTINUEUPDATE =~ [nN] ]];
 then
@@ -19,6 +28,10 @@ then
 fi
 RUNTIMESTAMP=$(date +%Y.%m.%d@%H:%M)
 RUNDATE=$(echo $RUNTIMESTAMP | awk -F'@' '{print $1}')
+# Let's define a few colors
+GREEN=$(tput setaf 2)
+BRIGHT=$(tput bold)
+NORMAL=$(tput sgr0)
 # Create temporary logs' directory
 [[ ! -d "/tmp/manjaro-update" ]] && /usr/bin/mkdir /tmp/manjaro-update
 [[ -d "/tmp/manjaro-update" ]] && /usr/bin/mkdir "/tmp/manjaro-update/logs.$RUNTIMESTAMP"
@@ -102,19 +115,19 @@ then
 # If timeshift wasn't succeessful, print an error and exit
 else
     echo
-    echo -e '\033[0;91m \!\!\! An error occurred while making the pre-update backup snapshot. Not continuing. \!\!\! \e[0m'  | tee /dev/tty | systemd-cat --identifier=Upgrades --priority=err
+    echo -e '\033[0;91m!!! An error occurred while making the pre-update backup snapshot. Not continuing. !!! \e[0m'  | tee /dev/tty | systemd-cat --identifier=Upgrades --priority=err
     kdialog --ok-label='OK' --msgbox="An error occurred while making the backup snapshot.<br /><br/> </b>Not continuing.</b>"
     echo
     exit 3
 fi
 # If there were errorrs with the official packages' upgrade, show prompt about copying the process' output to the clipboard.
-if [[ $UPGRADE_OFFICIAL_RESULT -ne 0 ]];
+if [[ $UPGRADE_OFFICIAL_RESULT -eq 0 ]];
 then
     read -p "There were errors while performing the updates from the official repositories. Copy result? [y/N]: " COPYOFFICIALCHOICE
     COPYOFFICIALCHOICE=${COPYOFFICIALCHOICE:-N}
 fi
 # If there were errorrs with the AUR packages' upgrade, show prompt about copying the process' output to the clipboard.
-if [[ $UPGRADE_AUR_RESULT -ne 0 ]];
+if [[ $UPGRADE_AUR_RESULT -eq 0 ]];
 then
     read -p "There were errors while performing the updates from the AUR. Copy result? [y/N]: " COPYAURCHOICE
     COPYAURCHOICE=${COPYAURCHOICE:-N}
@@ -126,7 +139,7 @@ SYSTEMINFO=$(inxi --admin --verbosity=7 --filter --no-host --width)
 # Compose a forum message
 if [[ $COPYOFFICIALCHOICE =~ [Yy] ]] || [[ $COPYAURCHOICE =~ [Yy] ]];
 then
-    MESSAGE='I emcountered errors during the lat update,  which I performed on  **`'${RUNDATE}'`**. Please find my information below:
+    MESSAGE='I encountered errors during the lat update,  which I performed on  **`'${RUNDATE}'`**. Please find my information below:
 
 '
 
@@ -176,23 +189,22 @@ then
 fi
 
 # Copy the message to a (temporary) log, as well as to the clipboard.
-
-[[ echo "${MESSAGE}" | tee ${LOGSDIR}"/${RUNTIMESTAMP}.update.log" | xsel --clipboard ]] && printf "Update successfully completed. Desireed informaation cop-ied successfully."
+[[ $(echo "${MESSAGE}" | tee ${LOGSDIR}"/${RUNTIMESTAMP}.update.log" | xsel --clipboard) ]] && printf 'Update successfully completed.\nDesired information copied successfully.\n'
 
 # Copy the log for more permanent storage, so that it can be retrived later
 [[ ! -d "/var/log/manjaro-update-helper" ]] && sudo mkdir "/var/log/manjaro-update-helper"
-if [[ sudo rsync -ah ${LOGSDIR}"/${RUNTIMESTAMP}.update.log" "/var/log/manjaro-update-helper/${RUNTIMESTAMP}.update.log" ]]; then
+if [[ $(sudo cp ${LOGSDIR}"/${RUNTIMESTAMP}.update.log" "/var/log/manjaro-update-helper/${RUNTIMESTAMP}.update.log") ]]; then
     printf '%s\n' "${GREEEN}Log output successfully saved to ${BRIGHT}/var/log/manjaro-update-helper/${RUNTIMESTAMP}.update.log${NORMAL}"
-    echo "Log output successfully saved to /var/log/manjaro-update-helper/${RUNTIMESTAMP}.update.log" | systemd-cat --identifier=manjaro-updates --priority=notice
+    echo "Log output successfully saved to /var/log/manjaro-update-helper/${RUNTIMESTAMP}.update.log" | systemd-cat --identifier=Upgrades --priority=notice
 fi
 
 if [[ $? = 0 ]];
 then
     echo
     echo "Message to start forum topic successfully copied to clipboard.
-Please visit https://forum.manjaro.org/ and start a new support topic and paste the copied messaage ass the main post, but only after checking if the issue hasn't beeen assked annd reesolved already.
-Remember that a forrum account is required for cr4eating a new support request and that the forrum is manned by volunteers.
-Please see https://forum.manjaro.org/t/howto-request-support/91463
+Please visit https://forum.manjaro.org/ and start a new support topic and paste the copied messaage ass the main post, but only after checking if the issue hasn't been asked and resolved already.
+Remember that a forum account is required for creating a new support request and that the forum is manned by volunteers, so no demand can be madee on their time.
+Please see https://forum.manjaro.org/t/howto-request-support/91463 for more information and guides to request support.
 "
 fi
 
