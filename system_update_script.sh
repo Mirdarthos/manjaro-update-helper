@@ -52,6 +52,7 @@ then
     echo
     pamac upgrade --force-refresh --enable-downgrade | /usr/bin/tee --append $SYSUPDLOGFILE
     UPGRADE_OFFICIAL_RESULT=$?
+    # Check if the official update from the repositories is successful and if so, continue with the AUR upgrade.
     if [[ $UPGRADE_OFFICIAL_RESULT -eq 0 ]];
     then
         kdialog --title="System upgrade" --passivepopup="<b>Official package</b> upgrade successful, using <code>pamac upgrade</code> successfully finished." 5
@@ -66,6 +67,7 @@ then
         #let's update AUR packages now.
         pamac upgrade --enable-downgrade --aur --devel | /usr/bin/tee --append $AURUPDLOGFILE
         UPGRADE_AUR_RESULT=$?
+        # Check if AUR packages' upgrade was successful, and if so, continue with merging .pacnew files.
         if [[ $UPGRADE_AUR_RESULT -eq 0 ]];
         then
             kdialog --title="System upgrade" --passivepopup="<b>AUR package</b> upgrade successful, using <code>pamac upgrade</code> successfully finished." 5
@@ -73,6 +75,7 @@ then
             # An now, we have to merge any .pacnew files.
             sudo DIFFPROG=meld pacdiff
             NEWMERGE_RESULT=$?
+            # Check if merging .pacnew files were successful and if so, show success notification.
             if [[ $NEWMERGE_RESULT -eq 0 ]];
             then
                 kdialog --title="System upgrade" --passivepopup="<b><code>.pacnew</code></b> files successfully, merged." 5
@@ -81,11 +84,13 @@ then
                 echo -e '\033[0;91mAn error occurred during merging of the .pacnew files.\e[0m' | tee /dev/tty | systemd-cat --identifier=Upgrades --priority=err
                 exit 6
             fi
+        # Shopw noptification that the AUR packages' update was unsuccessful.
         else
             kdialog --ok-label='OK' --msgbox="<b>AUR package</b>(s) upgrade failed using <b><code>pamac upgrade</code></b>.<br /><b><i>Human intervention required.</b></i><br/></b>Not continuing.</b>"
             echo -e '\033[0;91mAUR package using pamac upgrade failed.\e[0m' | tee /dev/tty | systemd-cat --identifier=Upgrades --priority=err
             exit 5
         fi
+    # Show notification that official packackaages' updates was unsuccessful.
     else
         kdialog --ok-label='OK' --msgbox="There was an error during the upgrade procedure using <b><code>pamac upgrade</code></b>.<br /><b><i>Human intervention required.</b></i>"
         exit 4
@@ -98,29 +103,32 @@ else
     echo
     exit 3
 fi
-
+# If there were errorrs with the official packages' upgrade, show prompt about copying the process' output to the clipboard.
 if [[ $UPGRADE_OFFICIAL_RESULT -ne 0 ]];
 then
     read -p "There were errors while performing the updates from the official repositories. Copy result? [y/N]: " COPYOFFICIALCHOICE
     COPYOFFICIALCHOICE=${COPYOFFICIALCHOICE:-N}
 fi
-
+# If there were errorrs with the AUR packages' upgrade, show prompt about copying the process' output to the clipboard.
 if [[ $UPGRADE_AUR_RESULT -ne 0 ]];
 then
     read -p "There were errors while performing the updates from the AUR. Copy result? [y/N]: " COPYAURCHOICE
     COPYAURCHOICE=${COPYAURCHOICE:-N}
 fi
 
+# Get the information required for a standard forum post/
 SYSTEMINFO=$(inxi --admin --verbosity=7 --filter --no-host --width)
 
+# Compose a forum message
 if [[ $COPYOFFICIALCHOICE =~ [Yy] ]] || [[ $COPYAURCHOICE =~ [Yy] ]];
 then
-    MESSAGE='I emcountered errors during the lat update,  which I perforrmed on  **`'${RUNDATE}'`**. Please find my information below:
+    MESSAGE='I emcountered errors during the lat update,  which I performed on  **`'${RUNDATE}'`**. Please find my information below:
 
 '
 
 fi
 
+# If chosen, add official update output.
 if [[ $COPYOFFICIALCHOICE =~ [Yy] ]];
 then
     MESSAGE+="##### \`pamac upgrade --force-refresh --enable-downgrade\`:
@@ -134,6 +142,7 @@ $(cat $SYSUPDLOGFILE)
 "
 fi
 
+# If  chosen, add AUR packages' output.
 if [[ $COPYAURCHOICE =~ [Yy] ]];
 then
     MESSAGE+="##### \`pamac upgrade --enable-downgrade --aur --devel\`:
@@ -147,6 +156,7 @@ $(cat $AURUPDLOGFILE)
 "
 fi
 
+# Add system information gathered above, whether any of the outputs are copied
 if [[ $COPYOFFICIALCHOICE =~ [Yy] ]] || [[ $COPYAURCHOICE =~ [Yy] ]];
 then
     MESSAGE+="##### My **\`inxi --admin --verbosity=7 --filter --no-host --width\`**:
@@ -161,6 +171,7 @@ then
 "
 fi
 
+# Copy the message to a (temporary) log, as well as to the clipboard
 echo "${MESSAGE}" | tee ${LOGSDIR}"/${RUNTIMESTAMP}.update.log" | xsel --clipboard
 
 if [[ $? = 0 ]];
