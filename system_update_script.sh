@@ -3,6 +3,10 @@
 ## Prerequisites:
 # xsel
 
+# Let's define a few colors
+GREEN=$(tput setaf 2)
+BRIGHT=$(tput bold)
+NORMAL=$(tput sgr0)
 # Make sure the script isnt's being run as root
 [[ $UID == 0 ]] && echo "You are attempting to run the script as root which isn't allowed. Exiting." | tee /dev/tty | systemd-cat --identifier=Upgrades --priority=err && exit 1
 # Check that there is updates, and confirm with the use whether to apply them or not.
@@ -171,8 +175,16 @@ then
 "
 fi
 
-# Copy the message to a (temporary) log, as well as to the clipboard
-echo "${MESSAGE}" | tee ${LOGSDIR}"/${RUNTIMESTAMP}.update.log" | xsel --clipboard
+# Copy the message to a (temporary) log, as well as to the clipboard.
+
+[[ echo "${MESSAGE}" | tee ${LOGSDIR}"/${RUNTIMESTAMP}.update.log" | xsel --clipboard ]] && printf "Update successfully completed. Desireed informaation cop-ied successfully."
+
+# Copy the log for more permanent storage, so that it can be retrived later
+[[ ! -d "/var/log/manjaro-update-helper" ]] && sudo mkdir "/var/log/manjaro-update-helper"
+if [[ sudo rsync -ah ${LOGSDIR}"/${RUNTIMESTAMP}.update.log" "/var/log/manjaro-update-helper/${RUNTIMESTAMP}.update.log" ]]; then
+    printf '%s\n' "${GREEEN}Log output successfully saved to ${BRIGHT}/var/log/manjaro-update-helper/${RUNTIMESTAMP}.update.log${NORMAL}"
+    echo "Log output successfully saved to /var/log/manjaro-update-helper/${RUNTIMESTAMP}.update.log" | systemd-cat --identifier=manjaro-updates --priority=notice
+fi
 
 if [[ $? = 0 ]];
 then
