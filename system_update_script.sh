@@ -1,21 +1,22 @@
 #!/bin/env bash
 
+# Prerequisites:
+#  xsel
+#  tput
+#  pamac
+#  pacdiff
+#  inxi
+
 ####################################################
 # NOTE:                                            #
 #    Change -ne on Line 70 to -eq for production.  #
 #    Change -ne on Line 96 to -eq for production.  #
 #    Change -eq on Line 125 to -ne for production. #
 #    Change -eq on Line 133 to -ne for production. #
+####################################################
 
 # Make sure the script isnt's being run as root
 [[ $UID == 0 ]] && echo "You are attempting to run the script as root which isn't allowed. Exiting." | tee /dev/tty | systemd-cat --identifier=Upgrades --priority=err && exit 1
-
-## Prerequisites:
-# xsel
-# tput
-# pamac
-# pacdiff
-# inxi
 
 # Check that there is updates, and confirm with the use whether to apply them or not.
 #M UPDATES_AVAILABLE=$(pamac checkupdates | head -n 1 | awk '{print $1}')
@@ -208,5 +209,8 @@ Please see https://forum.manjaro.org/t/howto-request-support/91463 for more info
 "
 fi
 
-# None of the logs are deleted until your PC restarts and can be found in /tmp/manjaro-update
-# So housecleaning isn't really neccesary.
+# Some of the logs are only stored in RAM, so will be cleared on shutdown or restart.
+## Housekeeping follows.
+    # Clean out any logs except the 5 latest.
+
+    # Unset all variables
