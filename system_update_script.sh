@@ -15,8 +15,25 @@
 #    Change -eq on Line 133 to -ne for production. #
 ####################################################
 
+# A few colour variables also need too be set:
+BLACK=$(tput setaf 0)
+RED=$(tput setaf 1)
+GREEN=$(tput setaf 2)
+YELLOW=$(tput setaf 3)
+LIME_YELLOW=$(tput setaf 190)
+POWDER_BLUE=$(tput setaf 153)
+BLUE=$(tput setaf 4)
+MAGENTA=$(tput setaf 5)
+CYAN=$(tput setaf 6)
+WHITE=$(tput setaf 7)
+BRIGHT=$(tput bold)
+NORMAL=$(tput sgr0)
+BLINK=$(tput blink)
+REVERSE=$(tput smso)
+UNDERLINE=$(tput smul)
+
 # Make sure the script isnt's being run as root
-[[ $UID == 0 ]] && echo "You are attempting to run the script as root which isn't allowed. Exiting." | tee /dev/tty | systemd-cat --identifier=Upgrades --priority=err && exit 1
+[[ $UID == 0 ]] && printf '%s\n' "${BRIGHT}You are attempting to run the script as root which isn't allowed. Exiting.${NORMAL}" | tee /dev/tty | systemd-cat --identifier=Upgrades --priority=err && exit 1
 
 # Check that there is updates, and confirm with the use whether to apply them or not.
 #M UPDATES_AVAILABLE=$(pamac checkupdates | head -n 1 | awk '{print $1}')
@@ -212,4 +229,6 @@ fi
 # Some of the logs are only stored in RAM, so will be cleared on shutdown or restart.
 ## Housekeeping follows.
 # Clean out any logs except the 5 latest.
-/usr/bin/ls -tp /var/log/manjaro-update-helper/ | grep -v '/$' | tail -n +5 | tr '\n' '\0' | /usr/bin/sudo xargs -I {} rm -- {}
+ls -tp /var/log/manjaro-update-helper/ | grep -v '/$' | tail -n +5 | tr '\n' '\0' | sudo xargs -I {} rm -- {}
+# Unset any and all variables used.
+unset 
