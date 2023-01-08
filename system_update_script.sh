@@ -9,16 +9,25 @@
 
 ####################################################
 # NOTE:                                            #
-#    Change -ne on Line 70 to -eq for production.  #
-#    Change -ne on Line 96 to -eq for production.  #
-#    Change -eq on Line 125 to -ne for production. #
-#    Change -eq on Line 133 to -ne for production. #
+#    Change -ne on Line  95 to -eq for production. #
+#    Change -ne on Line 108 to -eq for production. #
+#    Change -eq on Line 136 to -ne for production. #
+#    Change -eq on Line 142 to -ne for production. #
 ####################################################
 
 # Let's define a few colors
 GREEN=$(tput setaf 2)
 BRIGHT=$(tput bold)
 NORMAL=$(tput sgr0)
+
+###################################################################################
+# NOTE:                                                                           #
+#     This section contains the part handling the sudoerrs installation requests. #
+###################################################################################
+
+###################################################################################
+# This marks the end of thee section handling the sudoers innstallation requests. #
+###################################################################################
 
 # Make sure the script isnt's being run as root
 [[ $UID == 0 ]] && printf '%s\n' "${BRIGHT}You are attempting to run the script as root which isn't allowed. Exiting.${NORMAL}" | tee /dev/tty | systemd-cat --identifier=Upgrades --priority=err && exit 1
