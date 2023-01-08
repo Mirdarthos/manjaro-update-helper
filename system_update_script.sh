@@ -15,22 +15,10 @@
 #    Change -eq on Line 133 to -ne for production. #
 ####################################################
 
-# A few colour variables also need too be set:
-BLACK=$(tput setaf 0)
-RED=$(tput setaf 1)
+# Let's define a few colors
 GREEN=$(tput setaf 2)
-YELLOW=$(tput setaf 3)
-LIME_YELLOW=$(tput setaf 190)
-POWDER_BLUE=$(tput setaf 153)
-BLUE=$(tput setaf 4)
-MAGENTA=$(tput setaf 5)
-CYAN=$(tput setaf 6)
-WHITE=$(tput setaf 7)
 BRIGHT=$(tput bold)
 NORMAL=$(tput sgr0)
-BLINK=$(tput blink)
-REVERSE=$(tput smso)
-UNDERLINE=$(tput smul)
 
 # Make sure the script isnt's being run as root
 [[ $UID == 0 ]] && printf '%s\n' "${BRIGHT}You are attempting to run the script as root which isn't allowed. Exiting.${NORMAL}" | tee /dev/tty | systemd-cat --identifier=Upgrades --priority=err && exit 1
@@ -46,10 +34,7 @@ then
 fi
 RUNTIMESTAMP=$(date +%Y.%m.%d@%H:%M)
 RUNDATE=$(echo $RUNTIMESTAMP | awk -F'@' '{print $1}')
-# Let's define a few colors
-GREEN=$(tput setaf 2)
-BRIGHT=$(tput bold)
-NORMAL=$(tput sgr0)
+
 # Create temporary logs' directory
 [[ ! -d "/tmp/manjaro-update" ]] && /usr/bin/mkdir /tmp/manjaro-update
 [[ -d "/tmp/manjaro-update" ]] && /usr/bin/mkdir "/tmp/manjaro-update/logs.$RUNTIMESTAMP"
@@ -230,5 +215,21 @@ fi
 ## Housekeeping follows.
 # Clean out any logs except the 5 latest.
 ls -tp /var/log/manjaro-update-helper/ | grep -v '/$' | tail -n +5 | tr '\n' '\0' | sudo xargs -I {} rm -- {}
-# Unset any and all variables used.
-unset 
+# Unset any and all variables, functions and whatever else was used.
+
+unset UPDATES_AVAILABLE
+unset CONTINUEUPDATE
+unset RUNTIMESTAMP
+unset RUNDATE
+unset GREEN
+unset BRIGHT
+unset NORMAL
+unset TIMESHIFT_COMMAND_RESULT
+unset LOGSDIR
+unset SYSUPDLOGFILE
+unset UPGRADE_AUR_RESULT
+unset NEWMERGE_RESULT
+unset COPYOFFICIALCHOICE
+unset COPYAURCHOICE
+unset SYSTEMINFO
+unset MESSAGE
