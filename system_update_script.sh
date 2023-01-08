@@ -49,7 +49,6 @@ then
                     SUDOERSENTRY="${USERNAMETOSUDOERS} ALL=(ALL) NOPASSWD: timeshift *,/usr/bin/timeshift *"
                     if [[ $(echo $SUDOERSENTRY >> /etc/sudoers.d/manjaro-update-helper) ]]; then
                         printf '%s\n' "sudoers entry created successfully in ${BRIGHT}/etc/sudoers.d/manjaro-update-helper${NORMAL}."
-                        exit 0
                 else
                     printf '%s\n' "${RED}Specified username, ${BRIGHT}${USERNAMETOSUDOERS}${NORMAL}${RED} not a valid user. Please specify a valid user and try again.${NORMAL}"
                     exit 9
@@ -60,6 +59,7 @@ then
         unset CURRENTUSERNAME
         unset USERNAMETOSUDOERS
         unset SUDOERSENTRY
+        exit 0
     fi
 fi
 ###################################################################################
