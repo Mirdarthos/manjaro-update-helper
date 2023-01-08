@@ -211,6 +211,5 @@ fi
 
 # Some of the logs are only stored in RAM, so will be cleared on shutdown or restart.
 ## Housekeeping follows.
-    # Clean out any logs except the 5 latest.
-
-    # Unset all variables
+# Clean out any logs except the 5 latest.
+/usr/bin/ls -tp /var/log/manjaro-update-helper/ | grep -v '/$' | tail -n +5 | tr '\n' '\0' | /usr/bin/sudo xargs -I {} rm -- {}
