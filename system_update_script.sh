@@ -9,28 +9,61 @@
 
 ####################################################
 # NOTE:                                            #
-#    Change -ne on Line  95 to -eq for production. #
-#    Change -ne on Line 108 to -eq for production. #
-#    Change -eq on Line 136 to -ne for production. #
-#    Change -eq on Line 142 to -ne for production. #
+#    Change -ne on Line  96 to -eq for production. #
+#    Change -ne on Line 109 to -eq for production. #
+#    Change -eq on Line 137 to -ne for production. #
+#    Change -eq on Line 143 to -ne for production. #
 ####################################################
 
 # Let's define a few colors
+RED=$(tput setaf 1)
 GREEN=$(tput setaf 2)
 BRIGHT=$(tput bold)
 NORMAL=$(tput sgr0)
 
-###################################################################################
-# NOTE:                                                                           #
-#     This section contains the part handling the sudoerrs installation requests. #
-###################################################################################
-
+##################################################################################
+# NOTE:                                                                          #
+#     This section contains the part handling the sudoers installation requests. #
+##################################################################################
+if [[ $# -gt 0 ]];
+then
+    if [[ "$1" == "addsudoers" ]]; then
+      if [[ "$1" == "addsudoers" ]]; then
+        if [[ $(sudo touch /etc/sudoers.d/manjaro-update-helper 2>&1> /dev/null) ]]; then
+            printf '%s\n' "${GREEN}Successfully created file ${BRIGHT}/etc/sudoers.d/manjaro-update-helper${NORMAL}"
+        else
+            printf '%s\n' "${RED}Failed create file ${BRIGHT}/etc/sudoers.d/manjaro-update-helper ${NORMAL}${RED}due to not having the required permissions."
+            exit 8
+        fi
+        # Check if scipt is run with sudo
+        CURRENTUSERNAME=$(whoami)
+        if [[ "${CURRENTUSERNAME}" != "root" ]]; then
+            USERNAMETOSUDOERS=$(whoami)
+        else
+            if [ -z "$2" ];
+            then
+                printf '%s\n' "${RED}No username specified to add sudoers permissions for.${NORMAL}"
+            else
+                USERNAMETOSUDOERS=$2
+                if id "$USERNAMETOSUDOERS" &>/dev/null; then
+                    SUDOERSENTRY="${USERNAMETOSUDOERS} ALL=(ALL) NOPASSWD: timeshift *,/usr/bin/timeshift *"
+                    if [[ $(echo $SUDOERSENTRY >> /etc/sudoers.d/manjaro-update-helper) ]]; then
+                        printf '%s\n' "sudoers entry created successfully in ${BRIGHT}/etc/sudoers.d/manjaro-update-helper${NORMAL}."
+                        exit 0
+                else
+                    printf '%s\n' "${RED}Specified username, ${BRIGHT}${USERNAMETOSUDOERS}${NORMAL}${RED} not a valid user. Please specify a valid user and try again.${NORMAL}"
+                    exit 9
+                fi
+            fi
+        fi
+    fi
+fi
 ###################################################################################
 # This marks the end of thee section handling the sudoers innstallation requests. #
 ###################################################################################
 
 # Make sure the script isnt's being run as root
-[[ $UID == 0 ]] && printf '%s\n' "${BRIGHT}You are attempting to run the script as root which isn't allowed. Exiting.${NORMAL}" | tee /dev/tty | systemd-cat --identifier=Upgrades --priority=err && exit 1
+[[ $UID -eq 0 ]] && printf '%s\n' "${BRIGHT}You are attempting to run the script as root which isn't allowed. Exiting.${NORMAL}" | tee /dev/tty | systemd-cat --identifier=Upgrades --priority=err && exit 1
 
 # Check that there is updates, and confirm with the use whether to apply them or not.
 #M UPDATES_AVAILABLE=$(pamac checkupdates | head -n 1 | awk '{print $1}')
@@ -62,7 +95,7 @@ fi
 # Replace '<username>' with the user name the script is bein run from.
 # This will allow all "timeshift" commands to be run with 'sudo' withoout requiring a password
 # BUT BE CAREFUL WITH sudoers. You can lock yourself out of your system with it. Hence the recommendation to create a new file in /etc/sudoers.d/
-sudo timeshift --create --comments "$(TZ='Harare/Pretoria' date +%Y.%m.%d@%H:%M)' - Pre-update'" --tags
+sudo timeshift --create --comments "$(TZ='Harare/Pretoria' date +%Y.%m.%d@%H:%M)' - Pre-update'" --tags 0
 TIMESHIFT_COMMAND_RESULT=$?
 
 # If timeshift was successful, continue with the upgrade
