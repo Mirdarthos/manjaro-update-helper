@@ -56,6 +56,10 @@ then
                 fi
             fi
         fi
+        # Some housekeeping for this functionality
+        unset CURRENTUSERNAME
+        unset USERNAMETOSUDOERS
+        unset SUDOERSENTRY
     fi
 fi
 ###################################################################################
