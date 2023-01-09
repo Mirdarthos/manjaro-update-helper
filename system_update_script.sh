@@ -35,38 +35,27 @@ if [[ $# -gt 0 ]]; then
             printf '%s\n' "${RED}Failed create file ${BRIGHT}/etc/sudoers.d/manjaro-update-helper ${NORMAL}${RED}due to not having the required permissions."
             exit 8
         fi
-        # Check if scipt is run with sudo
-        CURRENTUSERNAME=$(whoami)
-        if [[ "${CURRENTUSERNAME}" != "root" ]]; then
-            USERNAMETOSUDOERS=$(whoami)
-        else
-            if [ -z "$2" ];
-            then
-                printf '%s\n' "${RED}No username specified to add sudoers permissions for.${NORMAL}"
+        USERNAMETOSUDOERS=$2
+        id "$USERNAMETOSUDOERS" &> /dev/null
+        USEREXISTS=$?
+        if [[ $USEREXISTS -eq 0 ]]; then
+            SUDOERSENTRY="${USERNAMETOSUDOERS} ALL=(ALL) NOPASSWD: /usr/bin/timeshift *,/usr/bin/pamac"
+            echo ${SUDOERSENTRY} >> "/etc/sudoers.d/manjaro-update-helper"
+            SUDOERSENTRYADDED=$?
+            if [[ $SUDOERSENTRYADDED -eq 0 ]]; then
+                    printf '%s\n' "sudoers entry created successfully in ${BRIGHT}/etc/sudoers.d/manjaro-update-helper${NORMAL}."
             else
-                USERNAMETOSUDOERS=$2
-                id "$USERNAMETOSUDOERS" &>/dev/null
-                USEREXISTS=$?
-                if [[ $USEREXISTS -eq 0 ]]; then
-                    SUDOERSENTRY="$USERNAMETOSUDOERS ALL=(ALL) NOPASSWD: /usr/bin/timeshift *,/usr/bin/pamac"
-                    echo ${SUDOERSENTRY} >> "/etc/sudoers.d/manjaro-update-helper"
-                    SUDOERSENTRYADDED=$?
-                    if [[ $SUDOERSENTRYADDED -eq 0 ]]; then
-                            printf '%s\n' "sudoers entry created successfully in ${BRIGHT}/etc/sudoers.d/manjaro-update-helper${NORMAL}."
-                    else
-                        printf '%s\n' "${RED}Specified username, ${BRIGHT}${USERNAMETOSUDOERS}${NORMAL}${RED} not a valid user. Please specify a valid user and try again.${NORMAL}"
-                        exit 9
-                    fi
-                fi
+                printf '%s\n' "${RED}Specified username, ${BRIGHT}${USERNAMETOSUDOERS}${NORMAL}${RED} not a valid user. Please specify a valid user and try again.${NORMAL}"
+                exit 9
             fi
-            # Some housekeeping for this functionality, the adding sudoers functionality.
-            unset CURRENTUSERNAME
-            unset USERNAMETOSUDOERS
-            unset SUDOERSENTRY
-            unset SUDOERSFILECREEATION
-            unset SUDOERSENTRYADDED
-            exit 0
         fi
+        # Some housekeeping for this functionality, the adding sudoers functionality.
+        unset USERNAMETOSUDOERS
+        unset USEREXISTS
+        unset SUDOERSENTRY
+        unset SUDOERSFILECREEATION
+        unset SUDOERSENTRYADDED
+        exit 0
     fi
 fi
 ###################################################################################
