@@ -7,14 +7,6 @@
 #  pacdiff
 #  inxi
 
-####################################################
-# NOTE:                                            #
-#    Change -ne on Line  96 to -eq for production. #
-#    Change -ne on Line 109 to -eq for production. #
-#    Change -eq on Line 137 to -ne for production. #
-#    Change -eq on Line 143 to -ne for production. #
-####################################################
-
 # Let's define a few colors
 RED=$(tput setaf 1)
 GREEN=$(tput setaf 2)
@@ -66,7 +58,7 @@ fi
 [[ $UID -eq 0 ]] && printf '%s\n' "${BRIGHT}You are attempting to run the script as root which isn't allowed. Exiting.${NORMAL}" | tee /dev/tty | systemd-cat --identifier=Upgrades --priority=err && exit 1
 
 # Check that there is updates, and confirm with the use whether to apply them or not.
-#M UPDATES_AVAILABLE=$(pamac checkupdates | head -n 1 | awk '{print $1}')
+UPDATES_AVAILABLE=$(pamac checkupdates | head -n 1 | awk '{print $1}')
 UPDATES_AVAILABLE=2
 [[ $UPDATES_AVAILABLE -gt 0 ]] && read -p "There are ${BRIGHT}${UPDATES_AVAILABLE}${NORMAL} updates available, continue? [Y/n]: " CONTINUEUPDATE
 CONTINUEUPDATE=${CONTINUEUPDATE:-Y}
