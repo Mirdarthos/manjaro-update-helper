@@ -7,6 +7,14 @@
 #  pacdiff
 #  inxi
 
+####################################################
+# NOTE:                                            #
+#    Change -ne on Line  96 to -eq for production. #
+#    Change -ne on Line 109 to -eq for production. #
+#    Change -eq on Line 137 to -ne for production. #
+#    Change -eq on Line 143 to -ne for production. #
+####################################################
+
 # Let's define a few colors
 RED=$(tput setaf 1)
 GREEN=$(tput setaf 2)
