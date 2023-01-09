@@ -25,11 +25,11 @@ NORMAL=$(tput sgr0)
 # NOTE:                                                                          #
 #     This section contains the part handling the sudoers installation requests. #
 ##################################################################################
-if [[ $# -gt 0 ]];
-then
+if [[ $# -gt 0 ]]; then
     if [[ "$1" == "addsudoers" ]]; then
-      if [[ "$1" == "addsudoers" ]]; then
-        if [[ $(sudo touch /etc/sudoers.d/manjaro-update-helper 2>&1> /dev/null) ]]; then
+        sudo touch /etc/sudoers.d/manjaro-update-helper 2>&1> /dev/null
+        SUDOERSFILECREEATION=$?
+        if [[ $SUDOERSFILECREEATION -eq 0 ]]; then
             printf '%s\n' "${GREEN}Successfully created file ${BRIGHT}/etc/sudoers.d/manjaro-update-helper${NORMAL}"
         else
             printf '%s\n' "${RED}Failed create file ${BRIGHT}/etc/sudoers.d/manjaro-update-helper ${NORMAL}${RED}due to not having the required permissions."
@@ -45,21 +45,28 @@ then
                 printf '%s\n' "${RED}No username specified to add sudoers permissions for.${NORMAL}"
             else
                 USERNAMETOSUDOERS=$2
-                if id "$USERNAMETOSUDOERS" &>/dev/null; then
-                    SUDOERSENTRY="${USERNAMETOSUDOERS} ALL=(ALL) NOPASSWD: timeshift *,/usr/bin/timeshift *"
-                    if [[ $(echo $SUDOERSENTRY >> /etc/sudoers.d/manjaro-update-helper) ]]; then
-                        printf '%s\n' "sudoers entry created successfully in ${BRIGHT}/etc/sudoers.d/manjaro-update-helper${NORMAL}."
-                else
-                    printf '%s\n' "${RED}Specified username, ${BRIGHT}${USERNAMETOSUDOERS}${NORMAL}${RED} not a valid user. Please specify a valid user and try again.${NORMAL}"
-                    exit 9
+                id "$USERNAMETOSUDOERS" &>/dev/null
+                USEREXISTS=$?
+                if [[ $USEREXISTS -eq 0 ]]; then
+                    SUDOERSENTRY="$USERNAMETOSUDOERS ALL=(ALL) NOPASSWD: /usr/bin/timeshift *,/usr/bin/pamac"
+                    echo ${SUDOERSENTRY} >> "/etc/sudoers.d/manjaro-update-helper"
+                    SUDOERSENTRYADDED=$?
+                    if [[ $SUDOERSENTRYADDED -eq 0 ]]; then
+                            printf '%s\n' "sudoers entry created successfully in ${BRIGHT}/etc/sudoers.d/manjaro-update-helper${NORMAL}."
+                    else
+                        printf '%s\n' "${RED}Specified username, ${BRIGHT}${USERNAMETOSUDOERS}${NORMAL}${RED} not a valid user. Please specify a valid user and try again.${NORMAL}"
+                        exit 9
+                    fi
                 fi
             fi
+            # Some housekeeping for this functionality, the adding sudoers functionality.
+            unset CURRENTUSERNAME
+            unset USERNAMETOSUDOERS
+            unset SUDOERSENTRY
+            unset SUDOERSFILECREEATION
+            unset SUDOERSENTRYADDED
+            exit 0
         fi
-        # Some housekeeping for this functionality
-        unset CURRENTUSERNAME
-        unset USERNAMETOSUDOERS
-        unset SUDOERSENTRY
-        exit 0
     fi
 fi
 ###################################################################################
