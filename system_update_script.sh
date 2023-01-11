@@ -16,6 +16,7 @@ NORMAL=$(tput sgr0)
 if [[ $# -gt 0 ]];
 then
     usage() {
+        echo
         printf '%s\n' "######################################################################"
         printf '%s\n' "################### Manjaro update helper script.#####################"
         printf '%s\n' "######################################################################"
@@ -34,6 +35,9 @@ then
         printf '%s\n' "#       however, or to be run with sudo.                             #"
         printf '%s\n' "#       Optionally a valid username can be passed to enable the      #"
         printf '%s\n' "#       sudoers entrries to be for the specified user.               #"
+        printf '%s\n' "#       ${BRIGHT}CARE MUST BE TAKED WITH THE ${GREEN}/etc/sudoers${NORMAL} FILE, AS DOING IT   #"
+        printf '%s\n' "#       INNCORRECTLY CAN LEAD TO BEING LOCKED OUT OF THE SYSTEM.     #"
+        printf '%s\n' "#       ${RED}PLEASE BE VERY CAREFUL.${NORMAL}                                      #"
         printf '%s\n' "#     * If no arguments are passed, the script performs its main     #"
         printf '%s\n' "#       function and performs the update.                            #"
         printf '%s\n' "######################################################################"
@@ -91,7 +95,7 @@ then
         esac
     done
 else
-# If no arguments are given, continue with the script
+    # If no arguments are given, continue with the script
     # Make sure the script isnt's being run as root
     [[ $UID -eq 0 ]] && printf '%s\n' "${BRIGHT}You are attempting to run the script as root which isn't allowed. Exiting.${NORMAL}" | tee /dev/tty | systemd-cat --identifier=Upgrades --priority=err && exit 1
 
@@ -260,7 +264,7 @@ $(cat $AURUPDLOGFILE)
 
 ***
 
-# PLEASE ADD YOUR OWN DESCRIPTION HERE, BELOW THE LINE!
+# PLEASE REOVE THIS TEXT AND ADD YOUR OWN DESCRIPTION HERE, BELOW THE LINE!
 
 "
     fi
