@@ -34,8 +34,8 @@ then
         printf '%s\n' "#       however, or to be run with sudo.                             #"
         printf '%s\n' "#       Optionally a valid username can be passed to enable the      #"
         printf '%s\n' "#       sudoers entrries to be for the specified user.               #"
-        printf '%s\n' "#     * If no arguments are passed, th script performs its main      #"
-        printf '%s\n' "#       functionality and performs the update.                       #"
+        printf '%s\n' "#     * If no arguments are passed, the script performs its main     #"
+        printf '%s\n' "#       function and performs the update.                            #"
         printf '%s\n' "######################################################################"
         echo
         exit 0
