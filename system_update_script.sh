@@ -217,7 +217,7 @@ else
     then
         MESSAGE='I encountered errors during the lat update,  which I performed on  **`'${RUNDATE}'`**. Please find my information below:
 
-    '
+'
 
     fi
 
@@ -226,13 +226,13 @@ else
     then
         MESSAGE+="##### \`pamac upgrade --force-refresh --enable-downgrade\`:
 
-    [details=View more]
-    ~~~
-    $(cat $SYSUPDLOGFILE)
-    ~~~
-    [/details]
+[details=View more]
+~~~
+$(cat $SYSUPDLOGFILE)
+~~~
+[/details]
 
-    "
+"
     fi
 
     # If  chosen, add AUR packages' output.
@@ -240,13 +240,13 @@ else
     then
         MESSAGE+="##### \`pamac upgrade --enable-downgrade --aur --devel\`:
 
-    [details=View more]
-    ~~~
-    $(cat $AURUPDLOGFILE)
-    ~~~
-    [/details]
+[details=View more]
+~~~
+$(cat $AURUPDLOGFILE)
+~~~
+[/details]
 
-    "
+"
     fi
 
     # Add system information gathered above, whether any of the outputs are copied
@@ -254,14 +254,15 @@ else
     then
         MESSAGE+="##### My **\`inxi --admin --verbosity=7 --filter --no-host --width\`**:
 
-    ~~~
-    "$SYSTEMINFO"
-    ~~~
+~~~
+"$SYSTEMINFO"
+~~~
 
-    ***
+***
 
-    # PLEASE ADD YOUR OWN DESCRIPTION HERE, BELOW THE LINE!
-    "
+# PLEASE ADD YOUR OWN DESCRIPTION HERE, BELOW THE LINE!
+
+"
     fi
 
     # Copy the message to a (temporary) log, as well as to the clipboard.
@@ -278,9 +279,9 @@ else
     then
         echo
         echo "Message to start forum topic successfully copied to clipboard.
-    Please visit https://forum.manjaro.org/ and start a new support topic and paste the copied messaage ass the main post, but only after checking if the issue hasn't been asked and resolved already.
-    Remember that a forum account is required for creating a new support request and that the forum is manned by volunteers, so no demand can be madee on their time.
-    Please see https://forum.manjaro.org/t/howto-request-support/91463 for more information and guides to request support.
+Please visit https://forum.manjaro.org/ and start a new support topic and paste the copied messaage ass the main post, but only after checking if the issue hasn't been asked and resolved already.
+Remember that a forum account is required for creating a new support request and that the forum is manned by volunteers, so no demand can be madee on their time.
+Please see https://forum.manjaro.org/t/howto-request-support/91463 for more information and guides to request support.
     "
     fi
 
