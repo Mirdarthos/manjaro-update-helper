@@ -101,7 +101,6 @@ else
 
     # Check that there is updates, and confirm with the use whether to apply them or not.
     UPDATES_AVAILABLE=$(pamac checkupdates | head -n 1 | awk '{print $1}')
-    #M UPDATES_AVAILABLE=2
     [[ $UPDATES_AVAILABLE -gt 0 ]] && read -p "There are ${BRIGHT}${UPDATES_AVAILABLE}${NORMAL} updates available, continue? [Y/n]: " CONTINUEUPDATE
     CONTINUEUPDATE=${CONTINUEUPDATE:-Y}
     if [[ $CONTINUEUPDATE =~ [nN] ]];
@@ -128,10 +127,10 @@ else
     #
     # Replace '<username>' with the user name the script is bein run from.
     # This will allow all "timeshift" commands to be run with 'sudo' withoout requiring a password
+    # If choosing to add the current user to sudoers, with the '-a' or '--addsudoers' arguments, this will be done automatically.
     # BUT BE CAREFUL WITH sudoers. You can lock yourself out of your system with it. Hence the recommendation to create a new file in /etc/sudoers.d/
-    #M sudo timeshift --create --comments "$(TZ='Harare/Pretoria' date +%Y.%m.%d@%H:%M)' - Pre-update'" --tags 0
-    #M TIMESHIFT_COMMAND_RESULT=$?
-    TIMESHIFT_COMMAND_RESULT=0
+    sudo timeshift --create --comments "$(TZ='Harare/Pretoria' date +%Y.%m.%d@%H:%M)' - Pre-update'" --tags 0
+    TIMESHIFT_COMMAND_RESULT=$?
 
     # If timeshift was successful, continue with the upgrade
     if [[ $TIMESHIFT_COMMAND_RESULT -eq 0 ]];
@@ -161,7 +160,7 @@ else
                 touch $LOGSDIR"/aur-upgrade.output";
                 AURUPDLOGFILE=$LOGSDIR"/aur-upgrade.output";
             fi
-            #let's update AUR packages now.
+            # Let's update AUR packages now.
             pamac upgrade --enable-downgrade --aur --devel | /usr/bin/tee --append $AURUPDLOGFILE
             UPGRADE_AUR_RESULT=$?
             # Check if AUR packages' upgrade was successful, and if so, continue with merging .pacnew files.
