@@ -51,7 +51,7 @@ then
         else
             USERNAMETOSUDOERS=$2
         fi
-        sudo touch /etc/sudoers.d/manjaro-update-helper 2>&1> /dev/null
+        sudo install --owner=root --group=root --mode=0440 /dev/null /etc/sudoers.d/manjaro-update-helper
         SUDOERSFILECREEATION=$?
         if [[ $SUDOERSFILECREEATION -eq 0 ]]; then
             printf '%s\n' "${GREEN}Successfully created file ${BRIGHT}/etc/sudoers.d/manjaro-update-helper${NORMAL}"
