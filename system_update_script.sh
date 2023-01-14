@@ -73,7 +73,7 @@ then
             printf '%s\n' "${RED}Failed create file ${BRIGHT}/etc/sudoers.d/manjaro-update-helper ${NORMAL}${RED}due to not having the required permissions."
             exit 8
         fi
-        SUDOERSENTRY="${CURRENTUSERNAME} ALL=(ALL) NOPASSWD: /usr/bin/timeshift *,/usr/bin/pamac"
+        SUDOERSENTRY="${USERNAMETOSUDOERS} ALL=(ALL) NOPASSWD: /usr/bin/timeshift *,/usr/bin/pamac"
         echo ${SUDOERSENTRY} | sudo tee /etc/sudoers.d/manjaro-update-helper > /dev/null
         SUDOERSENTRYADDED=$?
         if [[ $SUDOERSENTRYADDED -eq 0 ]]; then
