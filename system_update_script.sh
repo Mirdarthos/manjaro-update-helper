@@ -46,23 +46,25 @@ then
     }
 
     addsudoers () {
-        if [ "$EUID" -ne 0 ]; then
-            USERNAMETOSUDOERS=$(logname)
-        else
-            USERNAMETOSUDOERS=$2
+        # Lets get the username to add to the sudoers list
+        CURRENTUSERNAME=$(logname)
+        # Only continue if it is not root
+        if [ $CURRENTUSERNAME == "root" ]; then
+            printf '%s\n' "${RED}${BRIGHT}SCRIPT SHOULDN'T BE RUN AS ROOT. USE sudo INSTEAD. EXITING.${NORMAL}"
+            exit 10
         fi
         sudo install --owner=root --group=root --mode=0440 /dev/null /etc/sudoers.d/manjaro-update-helper
         SUDOERSFILECREEATION=$?
-        if [[ $SUDOERSFILECREEATION -eq 0 ]]; then
+        if [[ ${SUDOERSFILECREEATION} -eq 0 ]]; then
             printf '%s\n' "${GREEN}Successfully created file ${BRIGHT}/etc/sudoers.d/manjaro-update-helper${NORMAL}"
         else
             printf '%s\n' "${RED}Failed create file ${BRIGHT}/etc/sudoers.d/manjaro-update-helper ${NORMAL}${RED}due to not having the required permissions."
             exit 8
         fi
-        id "${USERNAMETOSUDOERS}" &> /dev/null
+        id "${CURRENTUSERNAME}" &> /dev/null
         USEREXISTS=$?
         if [[ ${USEREXISTS} -eq 0 ]]; then
-            SUDOERSENTRY="${USERNAMETOSUDOERS} ALL=(ALL) NOPASSWD: /usr/bin/timeshift *,/usr/bin/pamac"
+            SUDOERSENTRY="${CURRENTUSERNAME} ALL=(ALL) NOPASSWD: /usr/bin/timeshift *,/usr/bin/pamac"
             echo ${SUDOERSENTRY} | sudo tee /etc/sudoers.d/manjaro-update-helper > /dev/null
             SUDOERSENTRYADDED=$?
             if [[ $SUDOERSENTRYADDED -eq 0 ]]; then
