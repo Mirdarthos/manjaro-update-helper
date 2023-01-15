@@ -99,7 +99,7 @@ then
         esac
     done
 else
-    # If no arguments are given, continue with the script. This ensures the update procerdure will not run unplanned.
+    # If no arguments are given, continue with the script.
     # Make sure the script isnt's being run as root
     [[ $UID -eq 0 ]] && printf '%s\n' "${BRIGHT}You are attempting to run the script as root which isn't allowed. Exiting.${NORMAL}" | tee /dev/tty | systemd-cat --identifier=Upgrades --priority=err && exit 1
 
