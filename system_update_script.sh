@@ -74,7 +74,7 @@ then
             exit 8
         fi
         SUDOERSENTRY="${USERNAMETOSUDOERS} ALL=(ALL) NOPASSWD: /usr/bin/timeshift *,/usr/bin/pamac"
-        echo ${SUDOERSENTRY} | sudo tee /etc/sudoers.d/manjaro-update-helper > /dev/null
+        echo ${SUDOERSENTRY} | sudo tee --append /etc/sudoers.d/manjaro-update-helper > /dev/null
         SUDOERSENTRYADDED=$?
         if [[ $SUDOERSENTRYADDED -eq 0 ]]; then
                 printf '%s\n' "sudoers entry created successfully in ${BRIGHT}/etc/sudoers.d/manjaro-update-helper${NORMAL}."
@@ -267,7 +267,7 @@ $(cat $AURUPDLOGFILE)
 
 ***
 
-# PLEASE REOVE THIS TEXT AND ADD YOUR OWN DESCRIPTION HERE, BELOW THE LINE!
+# PLEASE REMOVE THIS TEXT AND ADD YOUR OWN DESCRIPTION HERE, BELOW THE LINE!
 
 "
     fi
