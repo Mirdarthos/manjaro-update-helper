@@ -1,11 +1,12 @@
 #!/bin/env bash
 
 # Prerequisites:
-#  xsel
-#  tput
-#  pamac
-#  pacdiff
-#  inxi
+# xsel
+# tput
+# pamac
+# pacdiff
+# inxi
+# meld
 
 # Let's define a few colors
 RED=$(tput setaf 1)
