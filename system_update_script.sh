@@ -134,7 +134,7 @@ else
     # This will allow all "timeshift" commands to be run with 'sudo' withoout requiring a password
     # If choosing to add the current user to sudoers, with the '-a' or '--addsudoers' arguments, this will be done automatically.
     # BUT BE CAREFUL WITH sudoers. You can lock yourself out of your system with it. Hence the recommendation to create a new file in /etc/sudoers.d/
-    sudo timeshift --create --comments "$(TZ='Harare/Pretoria' date +%Y.%m.%d@%H:%M)' - Pre-update'" --tags 0
+    sudo timeshift --create --comments "$(date +%Y.%m.%d@%H:%M)' - Pre-update'" --tags 0
     TIMESHIFT_COMMAND_RESULT=$?
 
     # If timeshift was successful, continue with the upgrade
