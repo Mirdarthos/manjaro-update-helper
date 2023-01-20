@@ -95,6 +95,75 @@ then
         unset USERNAMETOSUDOERS USEREXISTS SUDOERSENTRY SUDOERSFILECREEATION SUDOERSENTRYADDED
         exit 0
     }
+    # a Function to check and enszure the dependencies are available
+    checkdeps() {
+        declare -A DEPENDENCIES=(
+            [xsel]=-1
+            [ncurses]=-1
+            [pamac-cli]=-1
+            [pacdiff]=-1
+            [inxi]=-1
+            [meld]=-1
+        )
+        # Let's see if pamac is installed
+        pamac --version 1> /dev/null 2> /dev/null
+        CMDSTATUS=$?
+        if [[ $CMDSTATUS -eq 0 ]]; then # pamac is installed, now let's check the rest
+            for key in "${!DEPENDENCIES[@]}"; do
+                if [ $key != "pacdiff" ]; then
+                    PACKAGEVERSIONLINE=$(pamac info $key | grep Version)
+                    PKGNFOCMD=$?
+                else
+                    PACKAGEVERSIONLINE=$(pamac info pacman | grep Version)
+                    PKGNFOCMD=$?
+                fi
+                
+                if [[ $PKGNFOCMD -eq 0 ]]; then
+                    INSTALLEDVERSION=$(echo $PACKAGEVERSIONLINE | awk -F ': ' '{print $2}')
+                    #M if [[ 1 -eq $(echo ${INSTALLEDVERSION} > 0 | bc) ]]; then
+                    #M     printf '%s\n' "${textFormatting[BRIGHT]}$key${textFormatting[NORMAL]} installed, version ${INSTALLEDVERSION} currently installed."
+                    #M     DEPENDENCIES[$key]=$INSTALLEDVERSION
+                    #M fi
+
+                    #M if [[ echo "$INSTALLEDVERSION > 0" | bc ]]; then
+                    #M     printf '%s\n' "${textFormatting[BRIGHT]}$key${textFormatting[NORMAL]} installed, version ${INSTALLEDVERSION} currently installed."
+                    #M     $DEPENDENCIES[$key]=$INSTALLEDVERSION
+                    #M fi
+                    #M fi
+                fi
+            done
+        fi
+        #M for dep in ${DEPENDENCIES[@]}; do
+        #M     if [ $dep == "xsel" ]; then
+        #M         version=$(xsel --version)
+        #M         CMDSTATUS=$?
+        #M         if [[ $CMDSTATUS -eq 0 ]]; then
+        #M             DEPENDENCIES[xsel]=1 # Mark xsel as installed
+        #M         fi
+        #M     elif [ $dep == "tput" ]; then
+        #M         version=$(tput -V)
+        #M         CMDSTATUS=$?
+        #M         if [[ $CMDSTATUS -eq 0 ]]; then
+        #M
+        #M         fi
+        #M     fi
+        #M done
+    }
+    # Since arguments given, parse them
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --help|-h)
+                usage
+            ;;
+            --addsudoers|-a)
+                addsudoers $2
+                shift
+            ;;
+            --checkdeps|-d)
+                checkdeps
+                shift
+        esac
+    done
     # Since arguments given, parse them
     while [[ $# -gt 0 ]]; do
         case $1 in
