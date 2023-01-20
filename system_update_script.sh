@@ -2,7 +2,7 @@
 
 # Prerequisites:
 # xsel
-# tput
+# ncurses
 # pamac
 # pacdiff
 # inxi
@@ -22,8 +22,6 @@ declare -A textFormatting=(
     [NORMAL]=$(tput sgr0)
 )
 
-## ${textFormatting[HDD]}
-### textFormatting[]
 # If arguments are given, prepare some of tthe functionality
 if [[ $# -gt 0 ]];
 then
@@ -97,8 +95,7 @@ then
         unset USERNAMETOSUDOERS USEREXISTS SUDOERSENTRY SUDOERSFILECREEATION SUDOERSENTRYADDED
         exit 0
     }
-
-    # If arguments given, parse them
+    # Since arguments given, parse them
     while [[ $# -gt 0 ]]; do
         case $1 in
             --help|-h)
