@@ -117,7 +117,7 @@ then
                     PACKAGEVERSIONLINE=$(pamac info pacman | grep Version)
                     PKGNFOCMD=$?
                 fi
-                
+
                 if [[ $PKGNFOCMD -eq 0 ]]; then
                     INSTALLEDVERSION=$(echo $PACKAGEVERSIONLINE | awk -F ': ' '{print $2}')
                     #M if [[ 1 -eq $(echo ${INSTALLEDVERSION} > 0 | bc) ]]; then
