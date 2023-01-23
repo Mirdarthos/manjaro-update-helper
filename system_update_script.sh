@@ -7,13 +7,6 @@
 # pacdiff
 # inxi
 # meld
-
-#M Let's define a few colors
-#M RED=$(tput setaf 1)
-#M GREEN=$(tput setaf 2)
-#M BRIGHT=$(tput bold)
-#M NORMAL=$(tput sgr0)
-
 # Define an array with text formatting options, to get rig of the single value per format thing.
 declare -A textFormatting=(
     [RED]=$(tput setaf 1)
@@ -40,12 +33,14 @@ then
         printf '%s\n' "#                                                                    #"
         printf '%s\n' "# Usage:                                                             #"
         printf '%s\n' "#     * ${textFormatting[BRIGHT]}--addsudoers${textFormatting[NORMAL]}, or ${textFormatting[BRIGHT]}-a${textFormatting[NORMAL]}                                          #"
-        printf '%s\n' "#       will add a file called /etc/sudoers.d/manjaro-update-helper  #"
+        printf '%s\n' "#       Will add a file called /etc/sudoers.d/manjaro-update-helper  #"
         printf '%s\n' "#       with entries to enable running this script as normal user,   #"
         printf '%s\n' "#       without sudo. This functionality requires root access,       #"
         printf '%s\n' "#       however, or to be run with sudo.                             #"
         printf '%s\n' "#       Optionally a valid username can be passed to enable the      #"
-        printf '%s\n' "#       sudoers entrries to be for the specified user.               #"
+        printf '%s\n' "#       sudoers entries to be for the specified user.                #"
+        printf '%s\n' "#     * ${textFormatting[BRIGHT]}--checkdeps${textFormatting[NORMAL]}, or ${textFormatting[BRIGHT]}-d${textFormatting[NORMAL]}                                           #"
+        printf '%s\n' "#       Will check for and install any missing dependencies.         #"
         printf '%s\n' "#       ${textFormatting[BRIGHT]}CARE MUST BE TAKED WITH THE ${textFormatting[GREEN]}/etc/sudoers${textFormatting[NORMAL]} FILE, AS DOING IT   #"
         printf '%s\n' "#       INNCORRECTLY CAN LEAD TO BEING LOCKED OUT OF THE SYSTEM.     #"
         printf '%s\n' "#       ${textFormatting[RED]}PLEASE BE VERY CAREFUL.${textFormatting[NORMAL]}                                      #"
