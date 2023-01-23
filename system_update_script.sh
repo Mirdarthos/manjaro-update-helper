@@ -18,6 +18,7 @@
 declare -A textFormatting=(
     [RED]=$(tput setaf 1)
     [GREEN]=$(tput setaf 2)
+    [YELLOW]=$(tput setaf 3)
     [BRIGHT]=$(tput bold)
     [NORMAL]=$(tput sgr0)
 )
@@ -98,56 +99,42 @@ then
     # a Function to check and enszure the dependencies are available
     checkdeps() {
         declare -A DEPENDENCIES=(
-            [xsel]=-1
-            [ncurses]=-1
-            [pamac-cli]=-1
-            [pacdiff]=-1
-            [inxi]=-1
-            [meld]=-1
+            [xsel]=0
+            [ncurses]=0
+            [pamac-cli]=0
+            [pacman]=0
+            [inxi]=0
+            [meld]=0
         )
+        DEPENDENCIESTOINSTALL=""
         # Let's see if pamac is installed
         pamac --version 1> /dev/null 2> /dev/null
         CMDSTATUS=$?
-        if [[ $CMDSTATUS -eq 0 ]]; then # pamac is installed, now let's check the rest
-            for key in "${!DEPENDENCIES[@]}"; do
-                if [ $key != "pacdiff" ]; then
-                    PACKAGEVERSIONLINE=$(pamac info $key | grep Version)
-                    PKGNFOCMD=$?
-                else
-                    PACKAGEVERSIONLINE=$(pamac info pacman | grep Version)
-                    PKGNFOCMD=$?
-                fi
-
-                if [[ $PKGNFOCMD -eq 0 ]]; then
-                    INSTALLEDVERSION=$(echo $PACKAGEVERSIONLINE | awk -F ': ' '{print $2}')
-                    #M if [[ 1 -eq $(echo ${INSTALLEDVERSION} > 0 | bc) ]]; then
-                    #M     printf '%s\n' "${textFormatting[BRIGHT]}$key${textFormatting[NORMAL]} installed, version ${INSTALLEDVERSION} currently installed."
-                    #M     DEPENDENCIES[$key]=$INSTALLEDVERSION
-                    #M fi
-
-                    #M if [[ echo "$INSTALLEDVERSION > 0" | bc ]]; then
-                    #M     printf '%s\n' "${textFormatting[BRIGHT]}$key${textFormatting[NORMAL]} installed, version ${INSTALLEDVERSION} currently installed."
-                    #M     $DEPENDENCIES[$key]=$INSTALLEDVERSION
-                    #M fi
-                    #M fi
+        if [[ $CMDSTATUS -eq 0 ]]; then  # pamac is installed, now let's check the rest
+            INSTALLEDPKGLIST=$(pamac list --installed)
+            for item in "${!DEPENDENCIES[@]}"; do
+                ISPKGINSTALLEDNFO=$(echo "${INSTALLEDPKGLIST}" | grep "^${item} ")
+                ISPKGINSTALLEDCMDRESULT=$?
+                if [[ ${ISPKGINSTALLEDCMDRESULT} -ne 0 ]]; then
+                    DEPENDENCIESTOINSTALL+="${item} "
                 fi
             done
         fi
-        #M for dep in ${DEPENDENCIES[@]}; do
-        #M     if [ $dep == "xsel" ]; then
-        #M         version=$(xsel --version)
-        #M         CMDSTATUS=$?
-        #M         if [[ $CMDSTATUS -eq 0 ]]; then
-        #M             DEPENDENCIES[xsel]=1 # Mark xsel as installed
-        #M         fi
-        #M     elif [ $dep == "tput" ]; then
-        #M         version=$(tput -V)
-        #M         CMDSTATUS=$?
-        #M         if [[ $CMDSTATUS -eq 0 ]]; then
-        #M
-        #M         fi
-        #M     fi
-        #M done
+        DEPENDENCIESTOINSTALL=$(echo "${DEPENDENCIESTOINSTALL}" | sed -e 's/\ *$//g')
+        if [ ! -z "${DEPENDENCIESTOINSTALL}" ]; then
+            for dependency in ${DEPENDENCIESTOINSTALL}; do
+                PKGNFO=$(pamac info $dependency)
+                PKGFOUNDCHK=$?
+                if [[ ${PKGFOUNDCHK} -eq 0 ]]; then
+                    INSTALLSOURCE=$(echo "${PKGNFO}" | grep Repository | awk -F': ' '{print $2}')
+                    if [ "${INSTALLSOURCE}" == "AUR" ]; then
+                        PKGINSTALLCMD="pamac build ${dependency}"
+                    else
+                        PKGINSTALLCMD="pamac install ${dependency}"
+                    fi
+                fi
+            done
+        fi
     }
     # Since arguments given, parse them
     while [[ $# -gt 0 ]]; do
