@@ -33,7 +33,7 @@ then
         printf '%s\n' "#                                                                    #"
         printf '%s\n' "# Usage:                                                             #"
         printf '%s\n' "#     * ${textFormatting[BRIGHT]}--addsudoers${textFormatting[NORMAL]}, or ${textFormatting[BRIGHT]}-a${textFormatting[NORMAL]}                                          #"
-        printf '%s\n' "#       Will add a file called /etc/sudoers.d/manjaro-update-helper  #"
+        printf '%s\n' "#       Will add a file called ${textFormatting[BRIGHT]}/etc/sudoers.d/manjaro-update-helper${textFormatting[NORMAL]}  #"
         printf '%s\n' "#       with entries to enable running this script as normal user,   #"
         printf '%s\n' "#       without sudo. This functionality requires root access,       #"
         printf '%s\n' "#       however, or to be run with sudo.                             #"
