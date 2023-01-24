@@ -130,6 +130,17 @@ then
                 fi
             done
         fi
+        # Some housekeeping for above functionality
+        unset DEPENDENCIESTOINSTALL
+        unset DEPENDENCIES
+        unset CMDSTATUS
+        unset INSTALLEDPKGLIST
+        unset ISPKGINSTALLEDNFO
+        unset ISPKGINSTALLEDCMDRESULT
+        unset PKGNFO
+        unset PKGFOUNDCHK
+        unset INSTALLSOURCE
+        unset PKGINSTALLCMD
     }
     # Since arguments given, parse them
     while [[ $# -gt 0 ]]; do
@@ -358,6 +369,8 @@ Please see https://forum.manjaro.org/t/howto-request-support/91463 for more info
     ls -tp /var/log/manjaro-update-helper/ | grep -v '/$' | tail -n +5 | tr '\n' '\0' | sudo xargs -I {} rm -- {}
     # Unset any and all variables, functions and whatever else was used.
 
+    unset textFormatting
+    unset 
     unset UPDATES_AVAILABLE
     unset CONTINUEUPDATE
     unset RUNTIMESTAMP
