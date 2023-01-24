@@ -1,12 +1,5 @@
 #!/bin/env bash
 
-# Prerequisites:
-# xsel
-# ncurses
-# pamac
-# pacdiff
-# inxi
-# meld
 # Define an array with text formatting options, to get rig of the single value per format thing.
 declare -A textFormatting=(
     [RED]=$(tput setaf 1)
