@@ -370,7 +370,6 @@ Please see https://forum.manjaro.org/t/howto-request-support/91463 for more info
     # Unset any and all variables, functions and whatever else was used.
 
     unset textFormatting
-    unset 
     unset UPDATES_AVAILABLE
     unset CONTINUEUPDATE
     unset RUNTIMESTAMP
