@@ -150,18 +150,6 @@ then
                 shift
         esac
     done
-    # Since arguments given, parse them
-    while [[ $# -gt 0 ]]; do
-        case $1 in
-            --help|-h)
-                usage
-            ;;
-            --addsudoers|-a)
-                addsudoers $2
-                shift
-            ;;
-        esac
-    done
 else
     # If no arguments are given, continue with the script.
     # Make sure the script isnt's being run as root
