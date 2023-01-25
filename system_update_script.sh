@@ -197,6 +197,8 @@ else
     # This will allow all "timeshift" commands to be run with 'sudo' withoout requiring a password
     # If choosing to add the current user to sudoers, with the '-a' or '--addsudoers' arguments, this will be done automatically.
     # BUT BE CAREFUL WITH sudoers. You can lock yourself out of your system with it. Hence the recommendation to create a new file in /etc/sudoers.d/
+    #
+    # There seems to be some problem when using 'O' for a tag, so I chaned it to B - for Backup
     sudo timeshift --create --comments "$(date +%Y.%m.%d@%H:%M)' - Pre-update'" --tags B
     TIMESHIFT_COMMAND_RESULT=$?
 
