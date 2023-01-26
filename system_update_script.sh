@@ -1,7 +1,7 @@
 #!/bin/env bash
 
 # Define an array with text formatting options, to get rig of the single value per format thing.
-declare -A textFormatting=(
+declare -A TEXTFORMATTING=(
     [RED]=$(tput setaf 1)
     [GREEN]=$(tput setaf 2)
     [YELLOW]=$(tput setaf 3)
@@ -25,18 +25,18 @@ then
         printf '%s\n' "# '/etc/sudoers.d'                                                   #"
         printf '%s\n' "#                                                                    #"
         printf '%s\n' "# Usage:                                                             #"
-        printf '%s\n' "#     * ${textFormatting[BRIGHT]}--addsudoers${textFormatting[NORMAL]}, or ${textFormatting[BRIGHT]}-a${textFormatting[NORMAL]}                                          #"
-        printf '%s\n' "#       Will add a file called ${textFormatting[BRIGHT]}/etc/sudoers.d/manjaro-update-helper${textFormatting[NORMAL]}  #"
+        printf '%s\n' "#     * ${TEXTFORMATTING[BRIGHT]}--addsudoers${TEXTFORMATTING[NORMAL]}, or ${TEXTFORMATTING[BRIGHT]}-a${TEXTFORMATTING[NORMAL]}                                          #"
+        printf '%s\n' "#       Will add a file called ${TEXTFORMATTING[BRIGHT]}/etc/sudoers.d/manjaro-update-helper${TEXTFORMATTING[NORMAL]}  #"
         printf '%s\n' "#       with entries to enable running this script as normal user,   #"
         printf '%s\n' "#       without sudo. This functionality requires root access,       #"
         printf '%s\n' "#       however, or to be run with sudo.                             #"
         printf '%s\n' "#       Optionally a valid username can be passed to enable the      #"
         printf '%s\n' "#       sudoers entries to be for the specified user.                #"
-        printf '%s\n' "#     * ${textFormatting[BRIGHT]}--checkdeps${textFormatting[NORMAL]}, or ${textFormatting[BRIGHT]}-d${textFormatting[NORMAL]}                                           #"
+        printf '%s\n' "#     * ${TEXTFORMATTING[BRIGHT]}--checkdeps${TEXTFORMATTING[NORMAL]}, or ${TEXTFORMATTING[BRIGHT]}-d${TEXTFORMATTING[NORMAL]}                                           #"
         printf '%s\n' "#       Will check for and install any missing dependencies.         #"
-        printf '%s\n' "#       ${textFormatting[BRIGHT]}CARE MUST BE TAKED WITH THE ${textFormatting[GREEN]}/etc/sudoers${textFormatting[NORMAL]} FILE, AS DOING IT   #"
+        printf '%s\n' "#       ${TEXTFORMATTING[BRIGHT]}CARE MUST BE TAKED WITH THE ${TEXTFORMATTING[GREEN]}/etc/sudoers${TEXTFORMATTING[NORMAL]} FILE, AS DOING IT   #"
         printf '%s\n' "#       INNCORRECTLY CAN LEAD TO BEING LOCKED OUT OF THE SYSTEM.     #"
-        printf '%s\n' "#       ${textFormatting[RED]}PLEASE BE VERY CAREFUL.${textFormatting[NORMAL]}                                      #"
+        printf '%s\n' "#       ${TEXTFORMATTING[RED]}PLEASE BE VERY CAREFUL.${TEXTFORMATTING[NORMAL]}                                      #"
         printf '%s\n' "#     * If no arguments are passed, the script performs its main     #"
         printf '%s\n' "#       function and performs the update.                            #"
         printf '%s\n' "######################################################################"
@@ -53,7 +53,7 @@ then
             USEREXISTS=$?
             if [[ USEREXISTS -ne 0 ]]; then
                 echo "Specified username, ${USERNAMETOSUDOERS}, is not valid. Exiting." | systemd-cat --identifier=Upgrades --priority=err
-                printf '%s\n' "${textFormatting[RED]}Specified username, ${textFormatting[BRIGHT]}${USERNAMETOSUDOERS}${textFormatting[NORMAL]}${textFormatting[RED]}, is not valid. Exiting."
+                printf '%s\n' "${TEXTFORMATTING[RED]}Specified username, ${TEXTFORMATTING[BRIGHT]}${USERNAMETOSUDOERS}${TEXTFORMATTING[NORMAL]}${TEXTFORMATTING[RED]}, is not valid. Exiting."
                 exit 11
             fi
         else
@@ -61,24 +61,24 @@ then
         fi
         # Only continue if it is not root
         if [ $USERNAMETOSUDOERS == "root" ]; then
-            printf '%s\n' "${textFormatting[RED]}${textFormatting[BRIGHT]}SCRIPT SHOULDN'T BE RUN AS ROOT. USE sudo INSTEAD. EXITING.${textFormatting[NORMAL]}"
+            printf '%s\n' "${TEXTFORMATTING[RED]}${TEXTFORMATTING[BRIGHT]}SCRIPT SHOULDN'T BE RUN AS ROOT. USE sudo INSTEAD. EXITING.${TEXTFORMATTING[NORMAL]}"
             exit 10
         fi
         sudo install --owner=root --group=root --mode=0440 /dev/null /etc/sudoers.d/manjaro-update-helper
         SUDOERSFILECREEATION=$?
         if [[ ${SUDOERSFILECREEATION} -eq 0 ]]; then
-            printf '%s\n' "${textFormatting[GREEN]}Successfully created file ${textFormatting[BRIGHT]}/etc/sudoers.d/manjaro-update-helper${textFormatting[NORMAL]}"
+            printf '%s\n' "${TEXTFORMATTING[GREEN]}Successfully created file ${TEXTFORMATTING[BRIGHT]}/etc/sudoers.d/manjaro-update-helper${TEXTFORMATTING[NORMAL]}"
         else
-            printf '%s\n' "${textFormatting[RED]}Failed create file ${textFormatting[BRIGHT]}/etc/sudoers.d/manjaro-update-helper ${textFormatting[NORMAL]}${textFormatting[RED]}due to not having the required permissions."
+            printf '%s\n' "${TEXTFORMATTING[RED]}Failed create file ${TEXTFORMATTING[BRIGHT]}/etc/sudoers.d/manjaro-update-helper ${TEXTFORMATTING[NORMAL]}${TEXTFORMATTING[RED]}due to not having the required permissions."
             exit 8
         fi
         SUDOERSENTRY="${USERNAMETOSUDOERS} ALL=(ALL) NOPASSWD: /usr/bin/timeshift *,/usr/bin/pamac"
         echo ${SUDOERSENTRY} | sudo tee --append /etc/sudoers.d/manjaro-update-helper > /dev/null
         SUDOERSENTRYADDED=$?
         if [[ $SUDOERSENTRYADDED -eq 0 ]]; then
-                printf '%s\n' "sudoers entry created successfully in ${textFormatting[BRIGHT]}/etc/sudoers.d/manjaro-update-helper${textFormatting[NORMAL]}."
+                printf '%s\n' "sudoers entry created successfully in ${TEXTFORMATTING[BRIGHT]}/etc/sudoers.d/manjaro-update-helper${TEXTFORMATTING[NORMAL]}."
         else
-                printf '%s\n' "${textFormatting[RED]}Failed to create sudoers entry for user ${textFormatting[BRIGHT]}${USERNAMETOSUDOERS}${textFormatting[NNORMAL]}${textFormatting[RED]} in ${textFormatting[BRIGHT]}/etc/sudoers.d/manjaro-update-helper${textFormatting[NORMAL]}."
+                printf '%s\n' "${TEXTFORMATTING[RED]}Failed to create sudoers entry for user ${TEXTFORMATTING[BRIGHT]}${USERNAMETOSUDOERS}${TEXTFORMATTING[NNORMAL]}${TEXTFORMATTING[RED]} in ${TEXTFORMATTING[BRIGHT]}/etc/sudoers.d/manjaro-update-helper${TEXTFORMATTING[NORMAL]}."
         fi
         # Some housekeeping for this functionality, the adding sudoers functionality.
         unset USERNAMETOSUDOERS USEREXISTS SUDOERSENTRY SUDOERSFILECREEATION SUDOERSENTRYADDED
@@ -153,11 +153,11 @@ then
 else
     # If no arguments are given, continue with the script.
     # Make sure the script isnt's being run as root
-    [[ $UID -eq 0 ]] && printf '%s\n' "${textFormatting[BRIGHT]}You are attempting to run the script as root which isn't allowed. Exiting.${textFormatting[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=Upgrades --priority=err && exit 1
+    [[ $UID -eq 0 ]] && printf '%s\n' "${TEXTFORMATTING[BRIGHT]}You are attempting to run the script as root which isn't allowed. Exiting.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=Upgrades --priority=err && exit 1
 
     # Check that there is updates, and confirm with the use whether to apply them or not.
     UPDATES_AVAILABLE=$(pamac checkupdates | head -n 1 | awk '{print $1}')
-    [[ $UPDATES_AVAILABLE -gt 0 ]] && read -p "There are ${textFormatting[BRIGHT]}${UPDATES_AVAILABLE}${textFormatting[NORMAL]} updates available, continue? [Y/n]: " CONTINUEUPDATE
+    [[ $UPDATES_AVAILABLE -gt 0 ]] && read -p "There are ${TEXTFORMATTING[BRIGHT]}${UPDATES_AVAILABLE}${TEXTFORMATTING[NORMAL]} updates available, continue? [Y/n]: " CONTINUEUPDATE
     CONTINUEUPDATE=${CONTINUEUPDATE:-Y}
     if [[ $CONTINUEUPDATE =~ [nN] ]];
     then
@@ -352,7 +352,7 @@ Please see https://forum.manjaro.org/t/howto-request-support/91463 for more info
     ls -tp /var/log/manjaro-update-helper/ | grep -v '/$' | tail -n +5 | tr '\n' '\0' | sudo xargs -I {} rm -- {}
     # Unset any and all variables, functions and whatever else was used.
 
-    unset textFormatting
+    unset TEXTFORMATTING
     unset UPDATES_AVAILABLE
     unset CONTINUEUPDATE
     unset RUNTIMESTAMP
