@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-# Define an array with text formatting options, to get rig of the single value per format thing.
+# Define an array with text formatting options, to get rid of the single value per format thing.
 declare -A TEXTFORMATTING=(
     [RED]=$(tput setaf 1)
     [GREEN]=$(tput setaf 2)
@@ -9,7 +9,7 @@ declare -A TEXTFORMATTING=(
     [NORMAL]=$(tput sgr0)
 )
 
-# If arguments are given, prepare some of tthe functionality
+# If arguments are given, prepare some of the functionality
 if [[ $# -gt 0 ]];
 then
     usage() {
@@ -124,16 +124,7 @@ then
             done
         fi
         # Some housekeeping for above functionality
-        unset DEPENDENCIESTOINSTALL
-        unset DEPENDENCIES
-        unset CMDSTATUS
-        unset INSTALLEDPKGLIST
-        unset ISPKGINSTALLEDNFO
-        unset ISPKGINSTALLEDCMDRESULT
-        unset PKGNFO
-        unset PKGFOUNDCHK
-        unset INSTALLSOURCE
-        unset PKGINSTALLCMD
+        unset DEPENDENCIESTOINSTALL DEPENDENCIES CMDSTATUS INSTALLEDPKGLIST ISPKGINSTALLEDNFO ISPKGINSTALLEDCMDRESULT PKGNFO PKGFOUNDCHK INSTALLSOURCE PKGINSTALLCMD
     }
     # Since arguments given, parse them
     while [[ $# -gt 0 ]]; do
@@ -155,7 +146,7 @@ else
     # Make sure the script isnt's being run as root
     [[ $UID -eq 0 ]] && printf '%s\n' "${TEXTFORMATTING[BRIGHT]}You are attempting to run the script as root which isn't allowed. Exiting.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=Upgrades --priority=err && exit 1
 
-    # Check that there is updates, and confirm with the use whether to apply them or not.
+    # Check that there are updates, and confirm with the use whether to apply them or not.
     UPDATES_AVAILABLE=$(pamac checkupdates | head -n 1 | awk '{print $1}')
     [[ $UPDATES_AVAILABLE -gt 0 ]] && read -p "There are ${TEXTFORMATTING[BRIGHT]}${UPDATES_AVAILABLE}${TEXTFORMATTING[NORMAL]} updates available, continue? [Y/n]: " CONTINUEUPDATE
     CONTINUEUPDATE=${CONTINUEUPDATE:-Y}
@@ -166,7 +157,7 @@ else
     RUNTIMESTAMP=$(date +%Y.%m.%d@%H:%M)
     RUNDATE=$(echo $RUNTIMESTAMP | awk -F'@' '{print $1}')
 
-    # Create temporary logs' directory
+    # Create temporary logs directory
     [[ ! -d "/tmp/manjaro-update" ]] && /usr/bin/mkdir /tmp/manjaro-update
     [[ -d "/tmp/manjaro-update" ]] && /usr/bin/mkdir "/tmp/manjaro-update/logs.$RUNTIMESTAMP"
     [[ -d "/tmp/manjaro-update/logs.$RUNTIMESTAMP" ]] && LOGSDIR="/tmp/manjaro-update/logs.$RUNTIMESTAMP"
@@ -206,7 +197,7 @@ else
         echo
         pamac upgrade --force-refresh --enable-downgrade | /usr/bin/tee --append $SYSUPDLOGFILE
         UPGRADE_OFFICIAL_RESULT=$?
-        # Check if the official update from the repositories is successful and if so, continue with the AUR upgrade.
+        # Check if the official update from the repositories is successful, and if so continue with the AUR upgrade.
         if [[ $UPGRADE_OFFICIAL_RESULT -eq 0 ]];
         then
             kdialog --title="System upgrade" --passivepopup="<b>Official package</b> upgrade successful, using <code>pamac upgrade</code> successfully finished." 5
@@ -238,7 +229,7 @@ else
                     echo -e '\033[0;91mAn error occurred during merging of the .pacnew files.\e[0m' | tee /dev/tty | systemd-cat --identifier=Upgrades --priority=err
                     exit 6
                 fi
-            # Shopw noptification that the AUR packages' update was unsuccessful.
+            # Show noptification that the AUR packages' update was unsuccessful.
             else
                 kdialog --ok-label='OK' --msgbox="<b>AUR package</b>(s) upgrade failed using <b><code>pamac upgrade</code></b>.<br /><b><i>Human intervention required.</b></i><br/></b>Not continuing.</b>"
                 echo -e '\033[0;91mAUR package using pamac upgrade failed.\e[0m' | tee /dev/tty | systemd-cat --identifier=Upgrades --priority=err
@@ -249,7 +240,7 @@ else
             kdialog --ok-label='OK' --msgbox="There was an error during the upgrade procedure using <b><code>pamac upgrade</code></b>.<br /><b><i>Human intervention required.</b></i>"
             exit 4
         fi
-    # If timeshift wasn't succeessful, print an error and exit
+    # If timeshift wasn't succeessful, notify, log and exit.
     else
         echo
         echo -e '\033[0;91m!!! An error occurred while making the pre-update backup snapshot. Not continuing. !!! \e[0m'  | tee /dev/tty | systemd-cat --identifier=Upgrades --priority=err
@@ -257,23 +248,23 @@ else
         echo
         exit 3
     fi
-    # If there were errorrs with the official packages' upgrade, show prompt about copying the process' output to the clipboard.
+    # If there were errors with the official packages' upgrade, show prompt about copying the process' output to the clipboard.
     if [[ $UPGRADE_OFFICIAL_RESULT -eq 0 ]];
     then
         read -p "There were errors while performing the updates from the official repositories. Copy result? [y/N]: " COPYOFFICIALCHOICE
         COPYOFFICIALCHOICE=${COPYOFFICIALCHOICE:-N}
     fi
-    # If there were errorrs with the AUR packages' upgrade, show prompt about copying the process' output to the clipboard.
+    # If there were errors with the AUR packages' upgrade, show prompt about copying the process' output to the clipboard.
     if [[ $UPGRADE_AUR_RESULT -eq 0 ]];
     then
         read -p "There were errors while performing the updates from the AUR. Copy result? [y/N]: " COPYAURCHOICE
         COPYAURCHOICE=${COPYAURCHOICE:-N}
     fi
 
-    # Get the information required for a standard forum post/
+    # Get the information required for a standard forum post
     SYSTEMINFO=$(inxi --admin --verbosity=7 --filter --no-host --width)
 
-    # Compose a forum message
+    # Compose a forum message.
     if [[ $COPYOFFICIALCHOICE =~ [Yy] ]] || [[ $COPYAURCHOICE =~ [Yy] ]];
     then
         MESSAGE='I encountered errors during the lat update,  which I performed on  **`'${RUNDATE}'`**. Please find my information below:
@@ -296,7 +287,7 @@ $(cat $SYSUPDLOGFILE)
 "
     fi
 
-    # If  chosen, add AUR packages' output.
+    # If chosen, add AUR packages' output.
     if [[ $COPYAURCHOICE =~ [Yy] ]];
     then
         MESSAGE+="##### \`pamac upgrade --enable-downgrade --aur --devel\`:
@@ -310,7 +301,7 @@ $(cat $AURUPDLOGFILE)
 "
     fi
 
-    # Add system information gathered above, whether any of the outputs are copied
+    # Add system information gathered above, if any of the outputs are copied.
     if [[ $COPYOFFICIALCHOICE =~ [Yy] ]] || [[ $COPYAURCHOICE =~ [Yy] ]];
     then
         MESSAGE+="##### My **\`inxi --admin --verbosity=7 --filter --no-host --width\`**:
@@ -347,26 +338,9 @@ Please see https://forum.manjaro.org/t/howto-request-support/91463 for more info
     fi
 
     # Some of the logs are only stored in RAM, so will be cleared on shutdown or restart.
-    ## Housekeeping follows.
-    # Clean out any logs except the 5 latest.
+    ## Clean out any logs except the 5 latest.
     ls -tp /var/log/manjaro-update-helper/ | grep -v '/$' | tail -n +5 | tr '\n' '\0' | sudo xargs -I {} rm -- {}
     # Unset any and all variables, functions and whatever else was used.
 
-    unset TEXTFORMATTING
-    unset UPDATES_AVAILABLE
-    unset CONTINUEUPDATE
-    unset RUNTIMESTAMP
-    unset RUNDATE
-    unset GREEN
-    unset BRIGHT
-    unset NORMAL
-    unset TIMESHIFT_COMMAND_RESULT
-    unset LOGSDIR
-    unset SYSUPDLOGFILE
-    unset UPGRADE_AUR_RESULT
-    unset NEWMERGE_RESULT
-    unset COPYOFFICIALCHOICE
-    unset COPYAURCHOICE
-    unset SYSTEMINFO
-    unset MESSAGE
+    unset TEXTFORMATTING UPDATES_AVAILABLE CONTINUEUPDATE RUNTIMESTAMP RUNDATE TIMESHIFT_COMMAND_RESULT LOGSDIR SYSUPDLOGFILE UPGRADE_AUR_RESULT NEWMERGE_RESULT COPYOFFICIALCHOICE COPYAURCHOICE SYSTEMINFO MESSAGE
 fi
