@@ -169,12 +169,6 @@ RUNDATE=$(echo $RUNTIMESTAMP | awk -F'@' '{print $1}')
 [[ -d "/tmp/manjaro-update" ]] && /usr/bin/mkdir "/tmp/manjaro-update/logs.$RUNTIMESTAMP"
 [[ -d "/tmp/manjaro-update/logs.$RUNTIMESTAMP" ]] && LOGSDIR="/tmp/manjaro-update/logs.$RUNTIMESTAMP"
 
-# Check that timeshhift is installed and can be executed.
-if ! command -v timeshift &> /dev/null
-then
-    echo "Timeshift could not be found. Exiting." | tee /dev/tty | systemd-cat --identifier=Upgrades && exit 2
-fi
-
 # Make the timeshift backup
 # If wished, the following can be added to /etc/sudoers.d/upgradescript to allow this command to run without requiring a password:
 #           <username> ALL=(ALL) NOPASSWD: /usr/bin/timeshift *
@@ -183,13 +177,18 @@ fi
 # This will allow all "timeshift" commands to be run with 'sudo' withoout requiring a password
 # If choosing to add the current user to sudoers, with the '-a' or '--addsudoers' arguments, this will be done automatically.
 # BUT BE CAREFUL WITH sudoers. You can lock yourself out of your system with it. Hence the recommendation to create a new file in /etc/sudoers.d/
-#
-# There seems to be some problem when using 'O' for a tag, so I chaned it to B - for Backup
+# Functionality to accomplish this has been added with the --addsudoers or -a argument
+
+# Check that timeshhift is installed and can be executed.
+if ! command -v timeshift &> /dev/null
+then
+    echo "Timeshift could not be found. Exiting." | tee /dev/tty | systemd-cat --identifier=Upgrades && exit 2
+fi
 
 # If the option to skip backups were not given, perform the backups and set the value to the exit status of the command
 if [ "${SKIPBACKUPS}" != true];
 then
-    sudo timeshift --create --comments "$(date +%Y.%m.%d@%H:%M)' - Pre-update'" --tags B
+    sudo timeshift --create --comments "$(date +%Y.%m.%d@%H:%M)' - Pre-update'"
     TIMESHIFT_COMMAND_RESULT=$?
 else
     # However, if it was given, set the output as a success, so the rest of the script can carry on.
