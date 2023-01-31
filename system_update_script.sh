@@ -169,6 +169,8 @@ RUNDATE=$(echo $RUNTIMESTAMP | awk -F'@' '{print $1}')
 [[ -d "/tmp/manjaro-update" ]] && /usr/bin/mkdir "/tmp/manjaro-update/logs.$RUNTIMESTAMP"
 [[ -d "/tmp/manjaro-update/logs.$RUNTIMESTAMP" ]] && LOGSDIR="/tmp/manjaro-update/logs.$RUNTIMESTAMP"
 
+# Functionality to accomplish this has been added with the --addsudoers or -a argument
+# --------------------------------------------------------------------------------------------------
 # Make the timeshift backup
 # If wished, the following can be added to /etc/sudoers.d/upgradescript to allow this command to run without requiring a password:
 #           <username> ALL=(ALL) NOPASSWD: /usr/bin/timeshift *
@@ -177,7 +179,6 @@ RUNDATE=$(echo $RUNTIMESTAMP | awk -F'@' '{print $1}')
 # This will allow all "timeshift" commands to be run with 'sudo' withoout requiring a password
 # If choosing to add the current user to sudoers, with the '-a' or '--addsudoers' arguments, this will be done automatically.
 # BUT BE CAREFUL WITH sudoers. You can lock yourself out of your system with it. Hence the recommendation to create a new file in /etc/sudoers.d/
-# Functionality to accomplish this has been added with the --addsudoers or -a argument
 
 # Check that timeshhift is installed and can be executed.
 if ! command -v timeshift &> /dev/null
