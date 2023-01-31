@@ -37,12 +37,12 @@ then
         printf '%s\n' "#       ${TEXTFORMATTING[BRIGHT]}CARE MUST BE TAKED WITH THE ${TEXTFORMATTING[GREEN]}/etc/sudoers${TEXTFORMATTING[NORMAL]} FILE, AS DOING IT   #"
         printf '%s\n' "#       INNCORRECTLY CAN LEAD TO BEING LOCKED OUT OF THE SYSTEM.     #"
         printf '%s\n' "#       ${TEXTFORMATTING[RED]}PLEASE BE ${TEXTFORMATTING[BRIGHT]}VERY${TEXTFORMATTING[NORMAL]}${TEXTFORMATTING[RED]} CAREFUL.${TEXTFORMATTING[NORMAL]}                                      #"
-        printf '%s\n' "#     * If no arguments are passed, the script performs its main     #"
-        printf '%s\n' "#       functionality.                                               #"
         printf '%s\n' "#     * ${TEXTFORMATTING[BRIGHT]}--skipbackup${TEXTFORMATTING[NORMAL]}, or ${TEXTFORMATTING[BRIGHT]}-s${TEXTFORMATTING[NORMAL]}                                          #"
         printf '%s\n' "#       This will cause the update process to skip the backup step   #"
         printf '%s\n' "#       for the update.                                              #"
         printf '%s\n' "#       function and performs the update.                            #"
+        printf '%s\n' "#     * If no arguments are passed, the script performs its main     #"
+        printf '%s\n' "#       functionality.                                               #"
         printf '%s\n' "######################################################################"
         echo
         exit 0
