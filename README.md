@@ -3,7 +3,7 @@
 ***
 
 ###### _Named after my adopted rescue dog because, why not?_
-###### _Her name is actuyally Lulu (pronounced Looloo) but before we adopted her, she had puppies. So with the little hanging tummy, from behind she looks like a miniature cow. So she became known to me as Mumu (pronounced Moomoo.)_
+###### _Her name is actuyally Lulu (pronounced Looloo) but before we adopted her, she had puppies. So with the little hanging tummy that reminds me of a cow's udder. So from behind she looks like a miniature cow. So she became known to me as Mumu (pronounced Moomoo.)_
 
 ###### **_So she shall be my Moomoo and I shall call her my Moomoo._**
 
