@@ -2,10 +2,10 @@
 
 ***
 
-### _Named after my dog because, why not?_
-### _Her name is actuyally Lulu (pronounced Looloo) but before we adopted her, she had puppies. So with the little hanging tummy, from behind she looks like a miniature cow. So she became known to me as Mumu (pronounced Moomoo.)_
+###### _Named after my dog because, why not?_
+###### _Her name is actuyally Lulu (pronounced Looloo) but before we adopted her, she had puppies. So with the little hanging tummy, from behind she looks like a miniature cow. So she became known to me as Mumu (pronounced Moomoo.)_
 
-### **_So she shall be my Moomoo and I shall call her my Moomoo._**
+###### **_So she shall be my Moomoo and I shall call her my Moomoo._**
 
 ***
 
