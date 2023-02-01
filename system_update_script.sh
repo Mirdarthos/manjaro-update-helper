@@ -201,14 +201,14 @@ fi
 if [ "${SKIPBACKUPS}" != true ];
 then
     sudo timeshift --create --comments "$(date +%Y.%m.%d@%H:%M)' - Pre-update'"
-    TIMESHIFT_COMMAND_RESULT=$?
+    BACKUP_COMMAND_RESULT=$?
 else
     # However, if it was given, set the output as a success, so the rest of the script can carry on.
-    TIMESHIFT_COMMAND_RESULT=0
+    BACKUP_COMMAND_RESULT=0
 fi
 
 # If timeshift was successful, continue with the upgrade
-if [[ $TIMESHIFT_COMMAND_RESULT -eq 0 ]];
+if [[ $BACKUP_COMMAND_RESULT -eq 0 ]];
 then
     if [ -z ${LOGSDIR+x} ];
     then
@@ -368,4 +368,4 @@ fi
 ls -tp /var/log/manjaro-update-helper/ | grep -v '/$' | tail -n +5 | tr '\n' '\0' | sudo xargs -I {} rm -- {}
 # Unset any and all variables, functions and whatever else was used.
 
-unset TEXTFORMATTING UPDATES_AVAILABLE CONTINUEUPDATE RUNTIMESTAMP RUNDATE TIMESHIFT_COMMAND_RESULT LOGSDIR SYSUPDLOGFILE UPGRADE_AUR_RESULT NEWMERGE_RESULT COPYOFFICIALCHOICE COPYAURCHOICE SYSTEMINFO MESSAGE
+unset TEXTFORMATTING UPDATES_AVAILABLE CONTINUEUPDATE RUNTIMESTAMP RUNDATE BACKUP_COMMAND_RESULT LOGSDIR SYSUPDLOGFILE UPGRADE_AUR_RESULT NEWMERGE_RESULT COPYOFFICIALCHOICE COPYAURCHOICE SYSTEMINFO MESSAGE
