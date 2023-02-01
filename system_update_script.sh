@@ -186,7 +186,7 @@ then
 fi
 
 # If the option to skip backups were not given, perform the backups and set the value to the exit status of the command
-if [ "${SKIPBACKUPS}" != true];
+if [ "${SKIPBACKUPS}" != true ];
 then
     sudo timeshift --create --comments "$(date +%Y.%m.%d@%H:%M)' - Pre-update'"
     TIMESHIFT_COMMAND_RESULT=$?
