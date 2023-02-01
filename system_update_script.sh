@@ -148,7 +148,7 @@ then
                 shift
             ;;
             --skipbackup|-s)
-                SKIPBACKUPs=true
+                SKIPTIMESHIFT=true
                 shift
             ;;
             --custombackupcommand|-c)
@@ -197,10 +197,16 @@ then
     echo "Timeshift could not be found. Exiting." | tee /dev/tty | systemd-cat --identifier=Upgrades && exit 2
 fi
 
+
 # If the option to skip backups were not given, perform the backups and set the value to the exit status of the command
-if [ "${SKIPBACKUPS}" != true ];
+# if [ -z ${var+x} ]; then echo "var is unset"; else echo "var is set to '$var'"; fi
+if [ -z ${CUSTOMBUCMD+x} ] && [ "${SKIPTIMESHIFT}" != true ];
 then
     sudo timeshift --create --comments "$(date +%Y.%m.%d@%H:%M)' - Pre-update'"
+    BACKUP_COMMAND_RESULT=$?
+elif [ ! -z ${CUSTOMBUCMD+x} ];
+then
+    ${CUSTOMBUCMD}
     BACKUP_COMMAND_RESULT=$?
 else
     # However, if it was given, set the output as a success, so the rest of the script can carry on.
