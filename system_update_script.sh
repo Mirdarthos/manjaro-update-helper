@@ -45,6 +45,9 @@ then
         printf '%s\n' "#       for if you want to use something other than the default      #"
         printf '%s\n' "#       timeshift one, or even is you use something other than       #"
         printf '%s\n' "#       timeshift.                                                   #"
+        printf '%s\n' "#       ${TEXTFORMATTING[BRIGHT]}NOTE:${TEXTFORMATTING[NORMAL]}                                                        #"
+        printf '%s\n' "#       If ${TEXTFORMATTING[BRIGHT]}--skipbackup${TEXTFORMATTING[NORMAL]}, or ${TEXTFORMATTING[BRIGHT]}-s${TEXTFORMATTING[NORMAL]} is specified, then specifying this    #"
+        printf '%s\n' "#       will have no effect.                                         #"
         printf '%s\n' "#     * If no arguments are passed, the script performs its main     #"
         printf '%s\n' "#       functionality.                                               #"
         printf '%s\n' "######################################################################"
@@ -146,6 +149,10 @@ then
             ;;
             --skipbackup|-s)
                 SKIPBACKUPs=true
+                shift
+            ;;
+            --custombackupcommand|-c)
+                CUSTOMBUCMD=$2
                 shift
             ;;
             --checkdeps|-d)
