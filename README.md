@@ -27,9 +27,10 @@ The script is **_not_** meant to be run as `root` or with `sudo`. It'll ask for 
 
 | Argument | Explanation |
 |---:|---|
-| `--addsudoers`, `-a` | Add the specified user as able to run all the required `sudo` commands without a password, without human intervention. |
-| `--checkdeps`, `-d` | Check to ensure all dependencies are installed. |
-| `--skipbackup`, `-s` | If no backup is required, skip creating one. |
+| `--addsudoers=`, `-a` | Add the specified user as able to run all the required `sudo` commands without a password, without human intervention. |
+| `--checkdeps=`, `-d` | Check to ensure all dependencies are installed. |
+| `--skipbackup=`, `-s` | If no backup is required, skip creating one. |
+| `--custombackupcommand=`, `-c` | Provides the ability to provide a custom bbackup command. Neccessary if using something other than _timeshift_ for backups. |
 
 There is the possibility of there being added to these, but if so this list will be updated.
 
