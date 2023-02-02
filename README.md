@@ -1,7 +1,5 @@
 # My Universal Manjaro Update Helper
 
-***
-
 ###### _Named after my adopted rescue dog because, why not?_
 ###### _Her name is actually Lulu (pronounced Looloo) but before we adopted her, she had puppies. So with the little hanging tummy that reminds me of a cow's udder, from behind she looks like a miniature cow. So she became known to me as Mumu (pronounced Moomoo.)_
 
