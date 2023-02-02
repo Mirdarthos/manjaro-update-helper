@@ -40,6 +40,14 @@ then
         printf '%s\n' "#     * ${TEXTFORMATTING[BRIGHT]}--skipbackup${TEXTFORMATTING[NORMAL]}, or ${TEXTFORMATTING[BRIGHT]}-s${TEXTFORMATTING[NORMAL]}                                          #"
         printf '%s\n' "#       This will cause the update process to skip the backup step   #"
         printf '%s\n' "#       for the update.                                              #"
+        printf '%s\n' "#     * ${TEXTFORMATTING[BRIGHT]}--custombackupcommand${TEXTFORMATTING[NORMAL]}, or ${TEXTFORMATTING[BRIGHT]}-c${TEXTFORMATTING[NORMAL]}                                 #"
+        printf '%s\n' "#     * This argument allows for specifying a custom backup command, #"
+        printf '%s\n' "#       for if you want to use something other than the default      #"
+        printf '%s\n' "#       timeshift one, or even is you use something other than       #"
+        printf '%s\n' "#       timeshift.                                                   #"
+        printf '%s\n' "#       ${TEXTFORMATTING[BRIGHT]}NOTE:${TEXTFORMATTING[NORMAL]}                                                        #"
+        printf '%s\n' "#       If ${TEXTFORMATTING[BRIGHT]}--skipbackup${TEXTFORMATTING[NORMAL]}, or ${TEXTFORMATTING[BRIGHT]}-s${TEXTFORMATTING[NORMAL]} is specified, then specifying this    #"
+        printf '%s\n' "#       will have no effect.                                         #"
         printf '%s\n' "#     * If no arguments are passed, the script performs its main     #"
         printf '%s\n' "#       functionality.                                               #"
         printf '%s\n' "######################################################################"
@@ -140,7 +148,11 @@ then
                 shift
             ;;
             --skipbackup|-s)
-                SKIPBACKUPs=true
+                SKIPTIMESHIFT=true
+                shift
+            ;;
+            --custombackupcommand=*|-c)
+                CUSTOMBUCMD=$1
                 shift
             ;;
             --checkdeps|-d)
@@ -185,18 +197,26 @@ then
     echo "Timeshift could not be found. Exiting." | tee /dev/tty | systemd-cat --identifier=Upgrades && exit 2
 fi
 
+
 # If the option to skip backups were not given, perform the backups and set the value to the exit status of the command
-if [ "${SKIPBACKUPS}" != true ];
+# if [ -z ${var+x} ]; then echo "var is unset"; else echo "var is set to '$var'"; fi
+if [ -z ${CUSTOMBUCMD+x} ] && [ "${SKIPTIMESHIFT}" != true ];
 then
     sudo timeshift --create --comments "$(date +%Y.%m.%d@%H:%M)' - Pre-update'"
-    TIMESHIFT_COMMAND_RESULT=$?
+    BACKUP_COMMAND_RESULT=$?
+elif [ ! -z ${CUSTOMBUCMD+x} ];
+then
+    echo "${CUSTOMBUCMD}"
+    CUSTOMBUCMD=$(echo "${CUSTOMBUCMD}" | cut -f2 -d=)
+    eval "${CUSTOMBUCMD}"
+    BACKUP_COMMAND_RESULT=$?
 else
     # However, if it was given, set the output as a success, so the rest of the script can carry on.
-    TIMESHIFT_COMMAND_RESULT=0
+    BACKUP_COMMAND_RESULT=0
 fi
 
 # If timeshift was successful, continue with the upgrade
-if [[ $TIMESHIFT_COMMAND_RESULT -eq 0 ]];
+if [[ $BACKUP_COMMAND_RESULT -eq 0 ]];
 then
     if [ -z ${LOGSDIR+x} ];
     then
@@ -356,4 +376,4 @@ fi
 ls -tp /var/log/manjaro-update-helper/ | grep -v '/$' | tail -n +5 | tr '\n' '\0' | sudo xargs -I {} rm -- {}
 # Unset any and all variables, functions and whatever else was used.
 
-unset TEXTFORMATTING UPDATES_AVAILABLE CONTINUEUPDATE RUNTIMESTAMP RUNDATE TIMESHIFT_COMMAND_RESULT LOGSDIR SYSUPDLOGFILE UPGRADE_AUR_RESULT NEWMERGE_RESULT COPYOFFICIALCHOICE COPYAURCHOICE SYSTEMINFO MESSAGE
+unset TEXTFORMATTING UPDATES_AVAILABLE CONTINUEUPDATE RUNTIMESTAMP RUNDATE BACKUP_COMMAND_RESULT LOGSDIR SYSUPDLOGFILE UPGRADE_AUR_RESULT NEWMERGE_RESULT COPYOFFICIALCHOICE COPYAURCHOICE SYSTEMINFO MESSAGE
