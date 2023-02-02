@@ -164,6 +164,15 @@ fi
 # Make sure the script isnt's being run as root
 [ $(id -u) -eq 0 ] && printf '%s\n' "${TEXTFORMATTING[BRIGHT]}You are attempting to run the script as root which isn't allowed. Exiting.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=Upgrades --priority=err && exit 1
 
+# For making eval statements safe later in the script
+function token_quote {
+    local quoted=()
+    for token; do
+        quoted+=( "$(printf '%q' "$token")" )
+    done
+    printf '%s\n' "${quoted[*]}"
+}
+
 # Check that there are updates, and confirm with the use whether to apply them or not.
 UPDATES_AVAILABLE=$(pamac checkupdates | head -n 1 | awk '{print $1}')
 [[ $UPDATES_AVAILABLE -gt 0 ]] && read -p "There are ${TEXTFORMATTING[BRIGHT]}${UPDATES_AVAILABLE}${TEXTFORMATTING[NORMAL]} updates available, continue? [Y/n]: " CONTINUEUPDATE
@@ -207,7 +216,7 @@ then
 elif [ ! -z ${CUSTOMBUCMD+x} ];
 then
     CUSTOMBUCMD=$(echo "${CUSTOMBUCMD}" | cut -f2 -d=)
-    eval "${CUSTOMBUCMD}"
+    eval "$(token_quote "${CUSTOMBUCMD}")"
     BACKUP_COMMAND_RESULT=$?
 else
     # However, if it was given, set the output as a success, so the rest of the script can carry on.
