@@ -151,8 +151,8 @@ then
                 SKIPTIMESHIFT=true
                 shift
             ;;
-            --custombackupcommand|-c)
-                CUSTOMBUCMD=$2
+            --custombackupcommand=*|-c)
+                CUSTOMBUCMD=$1
                 shift
             ;;
             --checkdeps|-d)
@@ -206,7 +206,9 @@ then
     BACKUP_COMMAND_RESULT=$?
 elif [ ! -z ${CUSTOMBUCMD+x} ];
 then
-    ${CUSTOMBUCMD}
+    echo "${CUSTOMBUCMD}"
+    CUSTOMBUCMD=$(echo "${CUSTOMBUCMD}" | cut -f2 -d=)
+    eval "${CUSTOMBUCMD}"
     BACKUP_COMMAND_RESULT=$?
 else
     # However, if it was given, set the output as a success, so the rest of the script can carry on.
