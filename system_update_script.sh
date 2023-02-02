@@ -150,7 +150,7 @@ then
     done
 fi
 # Make sure the script isnt's being run as root
-[[ $UID -eq 0 ]] && printf '%s\n' "${TEXTFORMATTING[BRIGHT]}You are attempting to run the script as root which isn't allowed. Exiting.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=Upgrades --priority=err && exit 1
+[ $(id -u) -eq 0 ] && printf '%s\n' "${TEXTFORMATTING[BRIGHT]}You are attempting to run the script as root which isn't allowed. Exiting.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=Upgrades --priority=err && exit 1
 
 # Check that there are updates, and confirm with the use whether to apply them or not.
 UPDATES_AVAILABLE=$(pamac checkupdates | head -n 1 | awk '{print $1}')
