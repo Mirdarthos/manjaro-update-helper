@@ -206,7 +206,6 @@ then
     BACKUP_COMMAND_RESULT=$?
 elif [ ! -z ${CUSTOMBUCMD+x} ];
 then
-    echo "${CUSTOMBUCMD}"
     CUSTOMBUCMD=$(echo "${CUSTOMBUCMD}" | cut -f2 -d=)
     eval "${CUSTOMBUCMD}"
     BACKUP_COMMAND_RESULT=$?
