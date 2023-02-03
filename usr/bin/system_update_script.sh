@@ -153,8 +153,7 @@ then
             ;;
             --custombackupcommand=*|-c)
                 CUSTOMBUARG=$1
-                
-                CUSTOMBUCMD=$1
+                CUSTOMBUCMD=$(echo "${CUSTOMBUARG}" | cut -f2 -d=)
                 shift
             ;;
             --checkdeps|-d)
@@ -230,10 +229,10 @@ then
     if [[ -v CUSTOMBUCMD ]];
     then
         printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}${CUSTOMBUCMD}${TEXTFORMATTING[NORMAL]} to be used to create the backup snapshot."
-        echo "eval \"$(token_quote \"${CUSTOMBUCMD}\")\""
+        eval $(token_quote ${CUSTOMBUCMD})
         BACKUP_COMMAND_RESULT=$?
     fi
-elif [ "${SKIPTIMESHIFT}" == true ];
+elif [ "${SKIPBACKUP}" == true ];
 then
     # However, if it was given, set the output as a success, so the rest of the script can carry on.
     BACKUP_COMMAND_RESULT=0
