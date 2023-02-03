@@ -200,15 +200,17 @@ RUNDATE=$(echo $RUNTIMESTAMP | awk -F'@' '{print $1}')
 # If choosing to add the current user to sudoers, with the '-a' or '--addsudoers' arguments, this will be done automatically.
 # BUT BE CAREFUL WITH sudoers. You can lock yourself out of your system with it. Hence the recommendation to create a new file in /etc/sudoers.d/
 
+# Check that timeshhift is installed and can be executed.
+if ! command -v timeshift &> /dev/null
+then
+    echo "Timeshift could not be found. Exiting." | tee /dev/tty | systemd-cat --identifier=Upgrades && exit 2
+fi
+
+
 # If the option to skip backups were not given, perform the backups and set the value to the exit status of the command
 # if [ -z ${var+x} ]; then echo "var is unset"; else echo "var is set to '$var'"; fi
 if [ -z ${CUSTOMBUCMD+x} ] && [ "${SKIPTIMESHIFT}" != true ];
 then
-    # Check that timeshhift is installed and can be executed.
-    if ! command -v timeshift &> /dev/null
-    then
-        echo "Timeshift could not be found. Exiting." | tee /dev/tty | systemd-cat --identifier=Upgrades && exit 2
-    fi
     sudo timeshift --create --comments "$(date +%Y.%m.%d@%H:%M)' - Pre-update'"
     BACKUP_COMMAND_RESULT=$?
 elif [ ! -z ${CUSTOMBUCMD+x} ];
@@ -289,13 +291,13 @@ else
     exit 3
 fi
 # If there were errors with the official packages' upgrade, show prompt about copying the process' output to the clipboard.
-if [[ $UPGRADE_OFFICIAL_RESULT -ne 0 ]];
+if [[ $UPGRADE_OFFICIAL_RESULT -eq 0 ]];
 then
     read -p "There were errors while performing the updates from the official repositories. Copy result? [y/N]: " COPYOFFICIALCHOICE
     COPYOFFICIALCHOICE=${COPYOFFICIALCHOICE:-N}
 fi
 # If there were errors with the AUR packages' upgrade, show prompt about copying the process' output to the clipboard.
-if [[ $UPGRADE_AUR_RESULT -ne 0 ]];
+if [[ $UPGRADE_AUR_RESULT -eq 0 ]];
 then
     read -p "There were errors while performing the updates from the AUR. Copy result? [y/N]: " COPYAURCHOICE
     COPYAURCHOICE=${COPYAURCHOICE:-N}
