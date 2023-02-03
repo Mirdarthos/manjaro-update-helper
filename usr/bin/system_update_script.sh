@@ -148,7 +148,7 @@ then
                 shift
             ;;
             --skipbackup|-s)
-                SKIPTIMESHIFT=true
+                SKIPBACKUP=true
                 shift
             ;;
             --custombackupcommand=*|-c)
@@ -161,6 +161,7 @@ then
         esac
     done
 fi
+
 # Make sure the script isnt's being run as root
 [ $(id -u) -eq 0 ] && printf '%s\n' "${TEXTFORMATTING[BRIGHT]}You are attempting to run the script as root which isn't allowed. Exiting.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=Upgrades --priority=err && exit 1
 
@@ -185,9 +186,8 @@ RUNTIMESTAMP=$(date +%Y.%m.%d@%H:%M)
 RUNDATE=$(echo $RUNTIMESTAMP | awk -F'@' '{print $1}')
 
 # Create temporary logs directory
-[[ ! -d "/tmp/manjaro-update" ]] && /usr/bin/mkdir /tmp/manjaro-update
-[[ -d "/tmp/manjaro-update" ]] && /usr/bin/mkdir "/tmp/manjaro-update/logs.$RUNTIMESTAMP"
-[[ -d "/tmp/manjaro-update/logs.$RUNTIMESTAMP" ]] && LOGSDIR="/tmp/manjaro-update/logs.$RUNTIMESTAMP"
+[[ ! -d "/tmp/manjaro-update" ]] && mkdir --parents "/tmp/manjaro-update/logs.${RUNDATE}"
+[[ -d "/tmp/manjaro-update/logs.${RUNDATE}" ]] && LOGSDIR="/tmp/manjaro-update/logs.${RUNDATE}"
 
 # Functionality to accomplish this has been added with the --addsudoers or -a argument
 # --------------------------------------------------------------------------------------------------
@@ -200,25 +200,37 @@ RUNDATE=$(echo $RUNTIMESTAMP | awk -F'@' '{print $1}')
 # If choosing to add the current user to sudoers, with the '-a' or '--addsudoers' arguments, this will be done automatically.
 # BUT BE CAREFUL WITH sudoers. You can lock yourself out of your system with it. Hence the recommendation to create a new file in /etc/sudoers.d/
 
-# Check that timeshhift is installed and can be executed.
-if ! command -v timeshift &> /dev/null
+# Check that timeshift is installed and can be executed.
+
+echo $SKIPBACKUP
+if [ "${SKIPBACKUP}" != true ];
 then
-    echo "Timeshift could not be found. Exiting." | tee /dev/tty | systemd-cat --identifier=Upgrades && exit 2
+    if [[ -v CUSTOMBUCMD ]];
+    then
+        BACKUPCMD=CUSTOMBUCMD
+    else
+        if ! command -v timeshift &> /dev/null
+        then
+            echo "* No custom backup command specified." | tee /dev/tty | systemd-cat --identifier=Upgrades
+            echo "* Skipping timeshift skip not specified." | tee /dev/tty | systemd-cat --identifier=Upgrades
+            echo "* Timeshift not found." | tee /dev/tty | systemd-cat --identifier=Upgrades
+            echo
+            echo "Exiting." | tee /dev/tty | systemd-cat --identifier=Upgrades
+            echo
+            exit 2
+        else
+            BACKUPCMD=sudo timeshift --create --comments "$(date +%Y.%m.%d@%H:%M)' - Pre-update'"
+        fi
+    fi
 fi
 
-
 # If the option to skip backups were not given, perform the backups and set the value to the exit status of the command
-# if [ -z ${var+x} ]; then echo "var is unset"; else echo "var is set to '$var'"; fi
 if [ -z ${CUSTOMBUCMD+x} ] && [ "${SKIPTIMESHIFT}" != true ];
 then
-    sudo timeshift --create --comments "$(date +%Y.%m.%d@%H:%M)' - Pre-update'"
-    BACKUP_COMMAND_RESULT=$?
-elif [ ! -z ${CUSTOMBUCMD+x} ];
-then
-    CUSTOMBUCMD=$(echo "${CUSTOMBUCMD}" | cut -f2 -d=)
     eval "$(token_quote "${CUSTOMBUCMD}")"
     BACKUP_COMMAND_RESULT=$?
-else
+elif [ "${SKIPTIMESHIFT}" == true ];
+then
     # However, if it was given, set the output as a success, so the rest of the script can carry on.
     BACKUP_COMMAND_RESULT=0
 fi
