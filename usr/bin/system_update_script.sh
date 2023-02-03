@@ -136,6 +136,7 @@ then
         fi
         # Some housekeeping for above functionality
         unset DEPENDENCIESTOINSTALL DEPENDENCIES CMDSTATUS INSTALLEDPKGLIST ISPKGINSTALLEDNFO ISPKGINSTALLEDCMDRESULT PKGNFO PKGFOUNDCHK INSTALLSOURCE PKGINSTALLCMD
+        exit 0
     }
     # Since arguments given, parse them
     while [[ $# -gt 0 ]]; do
@@ -222,6 +223,7 @@ then
             BACKUPCMD=sudo timeshift --create --comments "$(date +%Y.%m.%d@%H:%M)' - Pre-update'"
         fi
     fi
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Skipping backup creation.${TEXTFORMATTING[NORMAL]}"
 fi
 
 if [ "${SKIPBACKUP}" != true ];
