@@ -291,13 +291,13 @@ else
     exit 3
 fi
 # If there were errors with the official packages' upgrade, show prompt about copying the process' output to the clipboard.
-if [[ $UPGRADE_OFFICIAL_RESULT -eq 0 ]];
+if [[ $UPGRADE_OFFICIAL_RESULT -ne 0 ]];
 then
     read -p "There were errors while performing the updates from the official repositories. Copy result? [y/N]: " COPYOFFICIALCHOICE
     COPYOFFICIALCHOICE=${COPYOFFICIALCHOICE:-N}
 fi
 # If there were errors with the AUR packages' upgrade, show prompt about copying the process' output to the clipboard.
-if [[ $UPGRADE_AUR_RESULT -eq 0 ]];
+if [[ $UPGRADE_AUR_RESULT -ne 0 ]];
 then
     read -p "There were errors while performing the updates from the AUR. Copy result? [y/N]: " COPYAURCHOICE
     COPYAURCHOICE=${COPYAURCHOICE:-N}
