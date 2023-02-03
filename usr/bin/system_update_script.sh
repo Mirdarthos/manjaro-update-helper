@@ -152,6 +152,8 @@ then
                 shift
             ;;
             --custombackupcommand=*|-c)
+                CUSTOMBUARG=$1
+                
                 CUSTOMBUCMD=$1
                 shift
             ;;
@@ -202,7 +204,6 @@ RUNDATE=$(echo $RUNTIMESTAMP | awk -F'@' '{print $1}')
 
 # Check that timeshift is installed and can be executed.
 
-echo $SKIPBACKUP
 if [ "${SKIPBACKUP}" != true ];
 then
     if [[ -v CUSTOMBUCMD ]];
@@ -224,18 +225,21 @@ then
     fi
 fi
 
-# If the option to skip backups were not given, perform the backups and set the value to the exit status of the command
-if [ -z ${CUSTOMBUCMD+x} ] && [ "${SKIPTIMESHIFT}" != true ];
+if [ "${SKIPBACKUP}" != true ];
 then
-    eval "$(token_quote "${CUSTOMBUCMD}")"
-    BACKUP_COMMAND_RESULT=$?
+    if [[ -v CUSTOMBUCMD ]];
+    then
+        printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}${CUSTOMBUCMD}${TEXTFORMATTING[NORMAL]} to be used to create the backup snapshot."
+        echo "eval \"$(token_quote \"${CUSTOMBUCMD}\")\""
+        BACKUP_COMMAND_RESULT=$?
+    fi
 elif [ "${SKIPTIMESHIFT}" == true ];
 then
     # However, if it was given, set the output as a success, so the rest of the script can carry on.
     BACKUP_COMMAND_RESULT=0
 fi
 
-# If timeshift was successful, continue with the upgrade
+# If the backup was successful, continue with the upgrade
 if [[ $BACKUP_COMMAND_RESULT -eq 0 ]];
 then
     if [ -z ${LOGSDIR+x} ];
