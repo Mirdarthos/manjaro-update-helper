@@ -1,0 +1,17 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=MuMuh
+Comment=Manjaro Universal Update Helper
+# The path to the folder in which the executable is run
+Path=/tmp
+# The executable of the application, possibly with arguments.
+Exec=/usr/bin/system_update_script.sh %U
+# The name of the icon that will be used to display this entry
+Icon=manjaro
+# Describes whether this application needs to be run in a terminal or not
+Terminal=true
+# Describes the categories in which this entry should be shown
+Categories=System;Software;Updates
+# Hide entry from launcher.
+NoDisplay=true
