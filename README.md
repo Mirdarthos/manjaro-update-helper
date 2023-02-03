@@ -5,7 +5,7 @@
 
 ###### **_So she shall be my Moomoo and I shall call her my Moomoo._**
 
-###### **_I present to you MuMuh_**
+###### **_I present to you: MuMuh_**
 
 ***
 
@@ -13,7 +13,7 @@ After spending quite some time on the [Manjaro forum](https://forum.manjaro.org/
 
 Couple that with a desire to learn bash, and viola! I saw an opportunity to contribute, both to my favorite Linux distribution as well as myself.
 
-So, I present **My Universal Manjaro Update Helper.**
+Enter: **My Universal Manjaro Update Helper!**
 
 ## Usage:
 
