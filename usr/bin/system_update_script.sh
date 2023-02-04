@@ -112,7 +112,7 @@ then
         if [[ $CMDSTATUS -eq 0 ]]; then  # pamac is installed, now let's check the rest
             INSTALLEDPKGLIST=$(pamac list --installed)
             for item in "${!DEPENDENCIES[@]}"; do
-                ISPKGINSTALLEDNFO=$(echo "${INSTALLEDPKGLIST}" | grep "^${item} ")
+                echo "${INSTALLEDPKGLIST}" | grep "^${item} " | /dev/null
                 ISPKGINSTALLEDCMDRESULT=$?
                 if [[ ${ISPKGINSTALLEDCMDRESULT} -ne 0 ]]; then
                     DEPENDENCIESTOINSTALL+="${item} "
