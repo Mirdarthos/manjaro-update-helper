@@ -154,7 +154,12 @@ then
             ;;
             --custombackupcommand=*|-c)
                 CUSTOMBUARG=$1
-                CUSTOMBUCMD=$(echo "${CUSTOMBUARG}" | cut -f2 -d=)
+                if [[ "$CUSTOMBUARG" == *"rm"* ]]; then
+                    SKIPBACKUP=true
+                    printf '%s\n' "${TEXTFORMATTING[RED]}${TEXTFORMATTING[YELLOW]}Potentially dangerous custom command specified. Ignoring and contnuing.${TEXTFORMATTING[NORMAL]}"
+                else
+                    CUSTOMBUCMD=$(echo "${CUSTOMBUARG}" | cut -f2 -d=)
+                fi
                 shift
             ;;
             --checkdeps|-d)
@@ -185,7 +190,7 @@ then
     echo "Upgrade cancelled." | tee /dev/tty | systemd-cat --identifier=Upgrades && exit 7
 fi
 RUNTIMESTAMP=$(date +%Y.%m.%d@%H:%M)
-RUNDATE=$(echo $RUNTIMESTAMP | awk -F'@' '{print $1}')
+RUNDATE=$(echo "$RUNTIMESTAMP" | awk -F'@' '{print $1}')
 
 # Create temporary logs directory
 [[ ! -d "/tmp/manjaro-update" ]] && mkdir --parents "/tmp/manjaro-update/logs.${RUNDATE}"
