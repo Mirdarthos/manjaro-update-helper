@@ -145,7 +145,7 @@ then
                 usage
             ;;
             --addsudoers|-a)
-                addsudoers $2
+                addsudoers "$2"
                 shift
             ;;
             --skipbackup|-s)
@@ -183,7 +183,7 @@ function token_quote {
 
 # Check that there are updates, and confirm with the use whether to apply them or not.
 UPDATES_AVAILABLE=$(pamac checkupdates | head -n 1 | awk '{print $1}')
-[[ $UPDATES_AVAILABLE -gt 0 ]] && read -p "There are ${TEXTFORMATTING[BRIGHT]}${UPDATES_AVAILABLE}${TEXTFORMATTING[NORMAL]} updates available, continue? [Y/n]: " CONTINUEUPDATE
+[[ $UPDATES_AVAILABLE -gt 0 ]] && read -r -p "There are ${TEXTFORMATTING[BRIGHT]}${UPDATES_AVAILABLE}${TEXTFORMATTING[NORMAL]} updates available, continue? [Y/n]: " CONTINUEUPDATE
 CONTINUEUPDATE=${CONTINUEUPDATE:-Y}
 if [[ $CONTINUEUPDATE =~ [nN] ]];
 then
@@ -233,16 +233,17 @@ fi
 
 if [ "${SKIPBACKUP}" != true ];
 then
-    if [[ -v CUSTOMBUCMD ]];
+    if [[ -v BACKUPCMD ]];
     then
         printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}${CUSTOMBUCMD}${TEXTFORMATTING[NORMAL]} to be used to create the backup snapshot."
-        eval "$(token_quote "${CUSTOMBUCMD}")"
+        eval "$(token_quote "${BACKUPCMD}")"
         BACKUP_COMMAND_RESULT=$?
     fi
 elif [ "${SKIPBACKUP}" == true ];
 then
     # However, if it was given, set the output as a success, so the rest of the script can carry on.
     BACKUP_COMMAND_RESULT=0
+    printf '%s\n' "${TEXTFORMATTING[YELLOW]}Backup creation was specified to be skipped. ${TEXTFORMATTING[BRIGHT]}Skipping backup creation.${TEXTFORMATTING[NORMAL]}"
 fi
 
 # If the backup was successful, continue with the upgrade
