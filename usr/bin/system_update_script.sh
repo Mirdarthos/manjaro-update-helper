@@ -60,7 +60,7 @@ then
         if [[ -v $1 ]];
         then
             USERNAMETOSUDOERS=$1
-            id ${USERNAMETOSUDOERS} &> /dev/null
+            id "${USERNAMETOSUDOERS}" &> /dev/null
             USEREXISTS=$?
             if [[ USEREXISTS -ne 0 ]]; then
                 echo "Specified username, ${USERNAMETOSUDOERS}, is not valid. Exiting." | systemd-cat --identifier=Upgrades --priority=err
@@ -71,7 +71,7 @@ then
             USERNAMETOSUDOERS=$(logname)
         fi
         # Only continue if it is not root
-        if [ $USERNAMETOSUDOERS == "root" ]; then
+        if [ "$USERNAMETOSUDOERS" == "root" ]; then
             printf '%s\n' "${TEXTFORMATTING[RED]}${TEXTFORMATTING[BRIGHT]}SCRIPT SHOULDN'T BE RUN AS ROOT. USE sudo INSTEAD. EXITING.${TEXTFORMATTING[NORMAL]}"
             exit 9
         fi
@@ -84,7 +84,7 @@ then
             exit 8
         fi
         SUDOERSENTRY="${USERNAMETOSUDOERS} ALL=(ALL) NOPASSWD: /usr/bin/timeshift *,/usr/bin/pamac"
-        echo ${SUDOERSENTRY} | sudo tee --append /etc/sudoers.d/manjaro-update-helper > /dev/null
+        echo "${SUDOERSENTRY}" | sudo tee --append /etc/sudoers.d/manjaro-update-helper > /dev/null
         SUDOERSENTRYADDED=$?
         if [[ $SUDOERSENTRYADDED -eq 0 ]]; then
                 printf '%s\n' "sudoers entry created successfully in ${TEXTFORMATTING[BRIGHT]}/etc/sudoers.d/manjaro-update-helper${TEXTFORMATTING[NORMAL]}."
@@ -119,10 +119,10 @@ then
                 fi
             done
         fi
-        DEPENDENCIESTOINSTALL=$(echo "${DEPENDENCIESTOINSTALL}" | sed -e 's/\ *$//g')
+        DEPENDENCIESTOINSTALL=${DEPENDENCIESTOINSTALL/' *'/}
         if [ ! -z "${DEPENDENCIESTOINSTALL}" ]; then
             for dependency in ${DEPENDENCIESTOINSTALL}; do
-                PKGNFO=$(pamac info $dependency)
+                PKGNFO=$(pamac info "$dependency")
                 PKGFOUNDCHK=$?
                 if [[ ${PKGFOUNDCHK} -eq 0 ]]; then
                     INSTALLSOURCE=$(echo "${PKGNFO}" | grep Repository | awk -F': ' '{print $2}')
@@ -165,7 +165,7 @@ then
 fi
 
 # Make sure the script isnt's being run as root
-[ $(id -u) -eq 0 ] && printf '%s\n' "${TEXTFORMATTING[BRIGHT]}You are attempting to run the script as root which isn't allowed. Exiting.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=Upgrades --priority=err && exit 1
+[ "$(id -u)" -eq "0" ] && printf '%s\n' "${TEXTFORMATTING[BRIGHT]}You are attempting to run the script as root which isn't allowed. Exiting.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=Upgrades --priority=err && exit 1
 
 # For making eval statements safe later in the script
 function token_quote {
@@ -231,7 +231,7 @@ then
     if [[ -v CUSTOMBUCMD ]];
     then
         printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}${CUSTOMBUCMD}${TEXTFORMATTING[NORMAL]} to be used to create the backup snapshot."
-        eval $(token_quote ${CUSTOMBUCMD})
+        eval "$(token_quote "${CUSTOMBUCMD}")"
         BACKUP_COMMAND_RESULT=$?
     fi
 elif [ "${SKIPBACKUP}" == true ];
@@ -248,13 +248,13 @@ then
         echo "\$LOGSDIR is unset. Cannot log process";
         LOGSDIR=""
     else
-        touch $LOGSDIR"/system-upgrade.output";
+        touch "$LOGSDIR""/system-upgrade.output";
         SYSUPDLOGFILE=$LOGSDIR"/system-upgrade.output";
     fi
     echo
     echo -e '\033[0;92mPre-upgrade backup snapshot successfully created. Continuing with upgrade...\e[0m' | tee /dev/tty | systemd-cat --identifier=Upgrades --priority=info
     echo
-    pamac upgrade --force-refresh --enable-downgrade | /usr/bin/tee --append $SYSUPDLOGFILE
+    pamac upgrade --force-refresh --enable-downgrade | /usr/bin/tee --append "$SYSUPDLOGFILE"
     UPGRADE_OFFICIAL_RESULT=$?
     # Check if the official update from the repositories is successful, and if so continue with the AUR upgrade.
     if [[ $UPGRADE_OFFICIAL_RESULT -eq 0 ]];
@@ -265,11 +265,11 @@ then
             echo "\$LOGSDIR is unset. Cannot log process";
             LOGSDIR=""
         else
-            touch $LOGSDIR"/aur-upgrade.output";
+            touch "$LOGSDIR""/aur-upgrade.output";
             AURUPDLOGFILE=$LOGSDIR"/aur-upgrade.output";
         fi
         # Let's update AUR packages now.
-        pamac upgrade --enable-downgrade --aur --devel | /usr/bin/tee --append $AURUPDLOGFILE
+        pamac upgrade --enable-downgrade --aur --devel | /usr/bin/tee --append "$AURUPDLOGFILE"
         UPGRADE_AUR_RESULT=$?
         # Check if AUR packages' upgrade was successful, and if so, continue with merging .pacnew files.
         if [[ $UPGRADE_AUR_RESULT -eq 0 ]];
@@ -339,7 +339,7 @@ then
 
 [details=View more]
 ~~~
-$(cat $SYSUPDLOGFILE)
+$(cat "$SYSUPDLOGFILE")
 ~~~
 [/details]
 
@@ -353,7 +353,7 @@ then
 
 [details=View more]
 ~~~
-$(cat $AURUPDLOGFILE)
+$(cat "$AURUPDLOGFILE")
 ~~~
 [/details]
 
@@ -366,7 +366,7 @@ then
     MESSAGE+="##### My **\`inxi --admin --verbosity=7 --filter --no-host --width\`**:
 
 ~~~
-"$SYSTEMINFO"
+$SYSTEMINFO
 ~~~
 
 ***
@@ -377,11 +377,11 @@ then
 fi
 
 # Copy the message to a (temporary) log, as well as to the clipboard.
-[[ $(echo "${MESSAGE}" | tee ${LOGSDIR}"/${RUNTIMESTAMP}.update.log" | xsel --clipboard) ]] && printf 'Update successfully completed.\nDesired information copied successfully.\n'
+[[ $(echo "${MESSAGE}" | tee "${LOGSDIR}""/${RUNTIMESTAMP}.update.log" | xsel --clipboard) ]] && printf 'Update successfully completed.\nDesired information copied successfully.\n'
 
 # Copy the log for more permanent storage, so that it can be retrived later
 [[ ! -d "/var/log/manjaro-update-helper" ]] && sudo mkdir "/var/log/manjaro-update-helper"
-if [[ $(sudo cp ${LOGSDIR}"/${RUNTIMESTAMP}.update.log" "/var/log/manjaro-update-helper/${RUNTIMESTAMP}.update.log") ]]; then
+if [[ $(sudo cp "${LOGSDIR}""/${RUNTIMESTAMP}.update.log" "/var/log/manjaro-update-helper/${RUNTIMESTAMP}.update.log") ]]; then
     printf '%s\n' "${GREEEN}Log output successfully saved to ${BRIGHT}/var/log/manjaro-update-helper/${RUNTIMESTAMP}.update.log${NORMAL}"
     echo "Log output successfully saved to /var/log/manjaro-update-helper/${RUNTIMESTAMP}.update.log" | systemd-cat --identifier=Upgrades --priority=notice
 fi
