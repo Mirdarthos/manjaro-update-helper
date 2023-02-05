@@ -403,14 +403,10 @@ Please see https://forum.manjaro.org/t/howto-request-support/91463 for more info
 fi
 
 # Some of the logs are only stored in RAM, so will be cleared on shutdown or restart.
-## Clean out any logs except the 5 latest.
-OLDLOGS=$(find /var/log/manjaro-update-helper -type f -printf '%T+ %p\n' | sort | head -n 5)
-for LOG in $OLDLOGS; do
-    if [ -f "${LOG}" ];
-    then
-        rm --force "${LOG}"
-    fi
+ls -1tr /var/log/manjaro-update-helper/ | head -n -5 | while IFS= read -r f;
+do
+    rm --force "$f"
 done
 
 # Unset any and all variables, functions and whatever else was used.
-unset TEXTFORMATTING UPDATES_AVAILABLE CONTINUEUPDATE RUNTIMESTAMP RUNDATE BACKUP_COMMAND_RESULT LOGSDIR SYSUPDLOGFILE UPGRADE_AUR_RESULT NEWMERGE_RESULT COPYOFFICIALCHOICE COPYAURCHOICE SYSTEMINFO MESSAGE OLDLOGS
+unset TEXTFORMATTING UPDATES_AVAILABLE CONTINUEUPDATE RUNTIMESTAMP RUNDATE BACKUP_COMMAND_RESULT LOGSDIR SYSUPDLOGFILE UPGRADE_AUR_RESULT NEWMERGE_RESULT COPYOFFICIALCHOICE COPYAURCHOICE SYSTEMINFO MESSAGE
