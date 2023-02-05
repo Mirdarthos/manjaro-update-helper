@@ -388,7 +388,7 @@ fi
 # Copy the log for more permanent storage, so that it can be retrived later
 [[ ! -d "/var/log/manjaro-update-helper" ]] && sudo mkdir "/var/log/manjaro-update-helper"
 if [[ $(sudo cp "${LOGSDIR}""/${RUNTIMESTAMP}.update.log" "/var/log/manjaro-update-helper/${RUNTIMESTAMP}.update.log") ]]; then
-    printf '%s\n' "${GREEEN}Log output successfully saved to ${BRIGHT}/var/log/manjaro-update-helper/${RUNTIMESTAMP}.update.log${NORMAL}"
+    printf '%s\n' "${TEXTFORMATTING[GREEEN]}Log output successfully saved to ${TEXTFORMATTING[BRIGHT]}/var/log/manjaro-update-helper/${RUNTIMESTAMP}.update.log${TEXTFORMATTING[NORMAL]}"
     echo "Log output successfully saved to /var/log/manjaro-update-helper/${RUNTIMESTAMP}.update.log" | systemd-cat --identifier=MuMuh --priority=notice
 fi
 
@@ -401,9 +401,10 @@ Remember that a forum account is required for creating a new support request and
 Please see https://forum.manjaro.org/t/howto-request-support/91463 for more information and guides to request support.
 "
 fi
-
 # Some of the logs are only stored in RAM, so will be cleared on shutdown or restart.
-(cd /var/log/manjaro-update-helper && ls -tp | grep -v '/$' | tail -n +5 | xargs -I {} rm -- {})
+printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Cleaning older log files...${TEXTFORMATTING[NORMAL]}"
+(cd /var/log/manjaro-update-helper && ls -tr | head -n -5 | xargs rm)
+
 
 # Unset any and all variables, functions and whatever else was used.
 unset TEXTFORMATTING UPDATES_AVAILABLE CONTINUEUPDATE RUNTIMESTAMP RUNDATE BACKUP_COMMAND_RESULT LOGSDIR SYSUPDLOGFILE UPGRADE_AUR_RESULT NEWMERGE_RESULT COPYOFFICIALCHOICE COPYAURCHOICE SYSTEMINFO MESSAGE
