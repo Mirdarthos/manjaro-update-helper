@@ -404,7 +404,14 @@ fi
 
 # Some of the logs are only stored in RAM, so will be cleared on shutdown or restart.
 ## Clean out any logs except the 5 latest.
-ls -tp /var/log/manjaro-update-helper/ | grep -v '/$' | tail -n +5 | tr '\n' '\0' | sudo xargs -I {} rm -- {}
-# Unset any and all variables, functions and whatever else was used.
+# ls -tp /var/log/manjaro-update-helper/ | grep -v '/$' | tail -n +5 | tr '\n' '\0' | sudo xargs -I {} rm -- {}
+OLDLOGS=$(find /var/log/manjaro-update-helper -type f -printf '%T+ %p\n' | sort | head -n 5)
+for LOG in $OLDLOGS; do
+    if [ -f "${LOG}" ];
+    then
+        rm --force "${LOG}"
+    fi
+done
 
-unset TEXTFORMATTING UPDATES_AVAILABLE CONTINUEUPDATE RUNTIMESTAMP RUNDATE BACKUP_COMMAND_RESULT LOGSDIR SYSUPDLOGFILE UPGRADE_AUR_RESULT NEWMERGE_RESULT COPYOFFICIALCHOICE COPYAURCHOICE SYSTEMINFO MESSAGE
+# Unset any and all variables, functions and whatever else was used.
+unset TEXTFORMATTING UPDATES_AVAILABLE CONTINUEUPDATE RUNTIMESTAMP RUNDATE BACKUP_COMMAND_RESULT LOGSDIR SYSUPDLOGFILE UPGRADE_AUR_RESULT NEWMERGE_RESULT COPYOFFICIALCHOICE COPYAURCHOICE SYSTEMINFO MESSAGE OLDLOGS
