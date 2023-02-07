@@ -12,7 +12,7 @@ After spending quite some time on the [Manjaro forum](https://forum.manjaro.org/
 Couple that with a desire to learn bash, and viola! I saw an opportunity to contribute, both to my favorite Linux distribution as well as myself.
 
 So, I present **My Universal Manjaro Update Helper.**
-_(Or, **`MuMuh`** if you will.)_
+_(Or, **`mumuh`** if you will.)_
 
 ## Usage:
 
