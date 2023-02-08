@@ -27,11 +27,8 @@ then
         printf '%s\n' "# Usage:                                                             #"
         printf '%s\n' "#     * ${TEXTFORMATTING[BRIGHT]}--addsudoers${TEXTFORMATTING[NORMAL]}, or ${TEXTFORMATTING[BRIGHT]}-a${TEXTFORMATTING[NORMAL]}                                          #"
         printf '%s\n' "#       Will add a file called ${TEXTFORMATTING[BRIGHT]}/etc/sudoers.d/manjaro-update-helper${TEXTFORMATTING[NORMAL]}  #"
-        printf '%s\n' "#       with entries to enable running this script as normal user,   #"
-        printf '%s\n' "#       without sudo. This functionality requires root access,       #"
-        printf '%s\n' "#       however, or to be run with sudo.                             #"
-        printf '%s\n' "#       Optionally a valid username can be passed to enable the      #"
-        printf '%s\n' "#       sudoers entries to be for the specified user.                #"
+        printf '%s\n' "#       with entries to enable running this script as the current    #"
+        printf '%s\n' "#       user without a password.                                     #"
         printf '%s\n' "#     * ${TEXTFORMATTING[BRIGHT]}--checkdeps${TEXTFORMATTING[NORMAL]}, or ${TEXTFORMATTING[BRIGHT]}-d${TEXTFORMATTING[NORMAL]}                                           #"
         printf '%s\n' "#       Will check for and install any missing dependencies.         #"
         printf '%s\n' "#       ${TEXTFORMATTING[BRIGHT]}CARE MUST BE TAKED WITH THE ${TEXTFORMATTING[GREEN]}/etc/sudoers${TEXTFORMATTING[NORMAL]} FILE, AS DOING IT   #"
@@ -57,22 +54,10 @@ then
 
     addsudoers () {
         # Lets get the username to add to the sudoers list
-        if [[ -v $1 ]];
-        then
-            USERNAMETOSUDOERS=$1
-            id "${USERNAMETOSUDOERS}" &> /dev/null
-            USEREXISTS=$?
-            if [[ USEREXISTS -ne 0 ]]; then
-                echo "Specified username, ${USERNAMETOSUDOERS}, is not valid. Exiting." | systemd-cat --identifier=MuMuh --priority=err
-                printf '%s\n' "${TEXTFORMATTING[RED]}Specified username, ${TEXTFORMATTING[BRIGHT]}${USERNAMETOSUDOERS}${TEXTFORMATTING[NORMAL]}${TEXTFORMATTING[RED]}, is not valid. Exiting."
-                exit 10
-            fi
-        else
-            USERNAMETOSUDOERS=$(logname)
-        fi
+        USERNAMETOSUDOERS=$(whoami)
         # Only continue if it is not root
         if [ "$USERNAMETOSUDOERS" == "root" ]; then
-            printf '%s\n' "${TEXTFORMATTING[RED]}${TEXTFORMATTING[BRIGHT]}SCRIPT SHOULDN'T BE RUN AS ROOT. USE sudo INSTEAD. EXITING.${TEXTFORMATTING[NORMAL]}"
+            printf '%s\n' "${TEXTFORMATTING[RED]}${TEXTFORMATTING[BRIGHT]}SCRIPT SHOULDN'T BE RUN AS ROOT. EXITING.${TEXTFORMATTING[NORMAL]}"
             exit 9
         fi
         sudo install --owner=root --group=root --mode=0440 /dev/null /etc/sudoers.d/manjaro-update-helper
@@ -80,7 +65,7 @@ then
         if [[ ${SUDOERSFILECREEATION} -eq 0 ]]; then
             printf '%s\n' "${TEXTFORMATTING[GREEN]}Successfully created file ${TEXTFORMATTING[BRIGHT]}/etc/sudoers.d/manjaro-update-helper${TEXTFORMATTING[NORMAL]}"
         else
-            printf '%s\n' "${TEXTFORMATTING[RED]}Failed create file ${TEXTFORMATTING[BRIGHT]}/etc/sudoers.d/manjaro-update-helper ${TEXTFORMATTING[NORMAL]}${TEXTFORMATTING[RED]}due to not having the required permissions."
+            printf '%s\n' "${TEXTFORMATTING[RED]}Failed create file ${TEXTFORMATTING[BRIGHT]}/etc/sudoers.d/manjaro-update-helper${TEXTFORMATTING[NORMAL]} ${TEXTFORMATTING[RED]}due to not having the required permissions."
             exit 8
         fi
         SUDOERSENTRY="${USERNAMETOSUDOERS} ALL=(ALL) NOPASSWD: /usr/bin/timeshift *,/usr/bin/pamac"
@@ -207,7 +192,6 @@ RUNDATE=$(echo "$RUNTIMESTAMP" | awk -F'@' '{print $1}')
 # If choosing to add the current user to sudoers, with the '-a' or '--addsudoers' arguments, this will be done automatically.
 # BUT BE CAREFUL WITH sudoers. You can lock yourself out of your system with it. Hence the recommendation to create a new file in /etc/sudoers.d/
 
-# Check that timeshift is installed and can be executed.
 
 if [ "${SKIPBACKUP}" != true ];
 then
@@ -265,7 +249,10 @@ then
     # Check if the official update from the repositories is successful, and if so continue with the AUR upgrade.
     if [[ $UPGRADE_OFFICIAL_RESULT -eq 0 ]];
     then
-        kdialog --title="System upgrade" --passivepopup="<b>Official package</b> upgrade successful, using <code>pamac upgrade</code> successfully finished." 5
+        if command -v kdialog &> /dev/null
+        then
+            kdialog --title="System upgrade" --passivepopup="<b>Official package</b> upgrade successful, using <code>pamac upgrade</code> successfully finished." 5
+        fi
         if [ -z ${LOGSDIR+x} ];
         then
             echo "\$LOGSDIR is unset. Cannot log process";
@@ -280,7 +267,10 @@ then
         # Check if AUR packages' upgrade was successful, and if so, continue with merging .pacnew files.
         if [[ $UPGRADE_AUR_RESULT -eq 0 ]];
         then
-            kdialog --title="System upgrade" --passivepopup="<b>AUR package</b> upgrade successful, using <code>pamac upgrade</code> successfully finished." 5
+            if command -v kdialog &> /dev/null
+            then
+                kdialog --title="System upgrade" --passivepopup="<b>AUR package</b> upgrade successful, using <code>pamac upgrade</code> successfully finished." 5
+            fi
             echo -e '\033[0;92mAUR package upgrade, using pamac upgrade successfully finished.\e[0m' | tee /dev/tty | systemd-cat --identifier=MuMuh --priority=info
             # An now, we have to merge any .pacnew files.
             sudo DIFFPROG=meld pacdiff
@@ -288,7 +278,10 @@ then
             # Check if merging .pacnew files were successful and if so, show success notification.
             if [[ $NEWMERGE_RESULT -eq 0 ]];
             then
-                kdialog --title="System upgrade" --passivepopup="<b><code>.pacnew</code></b> files successfully, merged." 5
+                if command -v kdialog &> /dev/null
+                then
+                    kdialog --title="System upgrade" --passivepopup="<b><code>.pacnew</code></b> files successfully, merged." 5
+                fi
                 echo -e '\033[0;92m.pacnew files successfully merged.\e[0m' | tee /dev/tty | systemd-cat --identifier=MuMuh --priority=info
             else
                 echo -e '\033[0;91mAn error occurred during merging of the .pacnew files.\e[0m' | tee /dev/tty | systemd-cat --identifier=MuMuh --priority=err
@@ -296,20 +289,29 @@ then
             fi
         # Show noptification that the AUR packages' update was unsuccessful.
         else
-            kdialog --ok-label='OK' --msgbox="<b>AUR package</b>(s) upgrade failed using <b><code>pamac upgrade</code></b>.<br /><b><i>Human intervention required.</b></i><br/></b>Not continuing.</b>"
+            if command -v kdialog &> /dev/null
+            then
+                kdialog --ok-label='OK' --msgbox="<b>AUR package</b>(s) upgrade failed using <b><code>pamac upgrade</code></b>.<br /><b><i>Human intervention required.</b></i><br/></b>Not continuing.</b>"
+            fi
             echo -e '\033[0;91mAUR package using pamac upgrade failed.\e[0m' | tee /dev/tty | systemd-cat --identifier=MuMuh --priority=err
             exit 5
         fi
     # Show notification that official packackaages' updates was unsuccessful.
     else
-        kdialog --ok-label='OK' --msgbox="There was an error during the upgrade procedure using <b><code>pamac upgrade</code></b>.<br /><b><i>Human intervention required.</b></i>"
+        if command -v kdialog &> /dev/null
+        then
+            kdialog --ok-label='OK' --msgbox="There was an error during the upgrade procedure using <b><code>pamac upgrade</code></b>.<br /><b><i>Human intervention required.</b></i>"
+        fi
         exit 4
     fi
 # If timeshift wasn't succeessful, notify, log and exit.
 else
     echo
     echo -e '\033[0;91m!!! An error occurred while making the pre-update backup snapshot. Not continuing. !!! \e[0m'  | tee /dev/tty | systemd-cat --identifier=MuMuh --priority=err
-    kdialog --ok-label='OK' --msgbox="An error occurred while making the backup snapshot.<br /><br/> </b>Not continuing.</b>"
+    if command -v kdialog &> /dev/null
+    then
+        kdialog --ok-label='OK' --msgbox="An error occurred while making the backup snapshot.<br /><br/> </b>Not continuing.</b>"
+    fi
     echo
     exit 3
 fi
