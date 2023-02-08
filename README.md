@@ -35,4 +35,12 @@ The script is **_not_** meant to be run as `root` or with `sudo`. It'll ask for 
 
 There is the possibility of there being added to these, but if so this list will be updated.
 
-Any feedback is welcome. Smell even slightly like a troll and you will be ignored.
+***
+
+This my firest attempt at a package that can be used by more than just me. With the result that there is quite the possibility the `pkgbuild` file is either incorrect, or missing something.
+
+I've also run `system_update_script.sh` through [Shellcheck](https://www.shellcheck.net/) and implemented _nearly_ all suggestions.
+
+So I'm asking to please respond gently, I'd much rather have guidance and advice to fix aany issues than just unhelpful criticism.
+
+So please be helpful in responses, I'll appreciate it much more. Smell even slightly like a troll, though, and you'll be ignored.
