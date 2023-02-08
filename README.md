@@ -24,7 +24,7 @@ _(For now, you'll still have to run it directly. This might (probably will) chan
 
 The script is **_not_** meant to be run as `root` or with `sudo`. It'll ask for the `sudo` password if it requires it.
 
-### Currentt arguments:
+### Current arguments:
 
 | Argument | Explanation |
 |---:|---|
