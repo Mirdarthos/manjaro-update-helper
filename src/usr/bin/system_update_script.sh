@@ -146,7 +146,6 @@ then
             ;;
             --addsudoers|-a)
                 addsudoers "$2"
-                shift
             ;;
             --skipbackup|-s)
                 SKIPBACKUP=true
@@ -164,7 +163,6 @@ then
             ;;
             --checkdeps|-d)
                 checkdeps
-                shift
         esac
     done
 fi
@@ -242,7 +240,7 @@ elif [ "${SKIPBACKUP}" == true ];
 then
     # However, if it was given, set the output as a success, so the rest of the script can carry on.
     BACKUP_COMMAND_RESULT=0
-    printf '%s\n' "${TEXTFORMATTING[YELLOW]}Backup creation was specified to be skipped. ${TEXTFORMATTING[BRIGHT]}Skipping backup creation.${TEXTFORMATTING[NORMAL]}"
+    printf '%s\n' "${TEXTFORMATTING[YELLOW]}${TEXTFORMATTING[BRIGHT]}Skipping backup creation.${TEXTFORMATTING[NORMAL]}"
 fi
 
 # If the backup was successful, continue with the upgrade
@@ -256,13 +254,16 @@ then
         touch "$LOGSDIR""/system-upgrade.output";
         SYSUPDLOGFILE=$LOGSDIR"/system-upgrade.output";
     fi
-    echo
-    echo -e '\033[0;92mPre-upgrade backup snapshot successfully created. Continuing with upgrade...\e[0m' | tee /dev/tty | systemd-cat --identifier=mumuh --priority=info
-    echo
+    if [ "${SKIPBACKUP}" != true ];
+    then
+        echo
+        echo -e '\033[0;92mPre-upgrade backup snapshot successfully created. Continuing with upgrade...\e[0m' | tee /dev/tty | systemd-cat --identifier=mumuh --priority=info
+        echo
+    fi
     pamac upgrade --force-refresh --enable-downgrade | /usr/bin/tee --append "$SYSUPDLOGFILE"
     UPGRADE_OFFICIAL_RESULT=$?
     # Check if the official update from the repositories is successful, and if so continue with the AUR upgrade.
-    if [[ $UPGRADE_OFFICIAL_RESULT -eq 0 ]];
+    if [ "${UPGRADE_OFFICIAL_RESULT}" -eq "0" ];
     then
         if command -v kdialog &> /dev/null
         then
@@ -280,13 +281,13 @@ then
         pamac upgrade --enable-downgrade --aur --devel | /usr/bin/tee --append "$AURUPDLOGFILE"
         UPGRADE_AUR_RESULT=$?
         # Check if AUR packages' upgrade was successful, and if so, continue with merging .pacnew files.
-        if [[ $UPGRADE_AUR_RESULT -eq 0 ]];
+        if [ "${UPGRADE_AUR_RESULT}" -eq "0" ];
         then
             if command -v kdialog &> /dev/null
             then
                 kdialog --title="System upgrade" --passivepopup="<b>AUR package</b> upgrade successful, using <code>pamac upgrade</code> successfully finished." 5
             fi
-            echo -e '\033[0;92mAUR package upgrade, using pamac upgrade successfully finished.\e[0m' | tee /dev/tty | systemd-cat --identifier=mumuh --priority=info
+            echo -e '\033[0;92mAUR package upgrade, using pamac upgrade, successfully finished.\e[0m' | tee /dev/tty | systemd-cat --identifier=mumuh --priority=info
             # An now, we have to merge any .pacnew files.
             sudo DIFFPROG=meld pacdiff
             NEWMERGE_RESULT=$?
