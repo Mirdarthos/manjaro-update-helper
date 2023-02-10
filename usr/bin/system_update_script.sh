@@ -156,7 +156,7 @@ then
 fi
 
 # Make sure the script isnt's being run as root
-[ "$(id -u)" -eq "0" ] && printf '%s\n' "${TEXTFORMATTING[BRIGHT]}You are attempting to run the script as root which isn't allowed. Exiting.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=MuMuh --priority=err && exit 1
+[ "$(id -u)" -eq "0" ] && printf '%s\n' "${TEXTFORMATTING[BRIGHT]}You are attempting to run the script as root which isn't allowed. Exiting.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err && exit 1
 
 # For making eval statements safe later in the script
 function token_quote {
@@ -173,7 +173,7 @@ UPDATES_AVAILABLE=$(pamac checkupdates | head -n 1 | awk '{print $1}')
 CONTINUEUPDATE=${CONTINUEUPDATE:-Y}
 if [[ ${CONTINUEUPDATE} =~ [nN] ]];
 then
-    echo "Upgrade cancelled." | tee /dev/tty | systemd-cat --identifier=MuMuh && exit 7
+    echo "Upgrade cancelled." | tee /dev/tty | systemd-cat --identifier=mumuh && exit 7
 fi
 RUNTIMESTAMP=$(date +%Y.%m.%d@%H:%M)
 RUNDATE=$(echo "$RUNTIMESTAMP" | awk -F'@' '{print $1}')
@@ -202,11 +202,11 @@ then
     else
         if ! command -v timeshift &> /dev/null
         then
-            echo "* No custom backup command specified." | tee /dev/tty | systemd-cat --identifier=MuMuh
-            echo "* Skipping timeshift skip not specified." | tee /dev/tty | systemd-cat --identifier=MuMuh
-            echo "* Timeshift not found." | tee /dev/tty | systemd-cat --identifier=MuMuh
+            echo "* No custom backup command specified." | tee /dev/tty | systemd-cat --identifier=mumuh
+            echo "* Skipping timeshift skip not specified." | tee /dev/tty | systemd-cat --identifier=mumuh
+            echo "* Timeshift not found." | tee /dev/tty | systemd-cat --identifier=mumuh
             echo
-            echo "Exiting." | tee /dev/tty | systemd-cat --identifier=MuMuh
+            echo "Exiting." | tee /dev/tty | systemd-cat --identifier=mumuh
             echo
             exit 2
         else
@@ -243,7 +243,7 @@ then
         SYSUPDLOGFILE=$LOGSDIR"/system-upgrade.output";
     fi
     echo
-    echo -e '\033[0;92mPre-upgrade backup snapshot successfully created. Continuing with upgrade...\e[0m' | tee /dev/tty | systemd-cat --identifier=MuMuh --priority=info
+    echo -e '\033[0;92mPre-upgrade backup snapshot successfully created. Continuing with upgrade...\e[0m' | tee /dev/tty | systemd-cat --identifier=mumuh --priority=info
     echo
     pamac upgrade --force-refresh --enable-downgrade | /usr/bin/tee --append "$SYSUPDLOGFILE"
     UPGRADE_OFFICIAL_RESULT=$?
@@ -272,7 +272,7 @@ then
             then
                 kdialog --title="System upgrade" --passivepopup="<b>AUR package</b> upgrade successful, using <code>pamac upgrade</code> successfully finished." 5
             fi
-            echo -e '\033[0;92mAUR package upgrade, using pamac upgrade successfully finished.\e[0m' | tee /dev/tty | systemd-cat --identifier=MuMuh --priority=info
+            echo -e '\033[0;92mAUR package upgrade, using pamac upgrade successfully finished.\e[0m' | tee /dev/tty | systemd-cat --identifier=mumuh --priority=info
             # An now, we have to merge any .pacnew files.
             sudo DIFFPROG=meld pacdiff
             NEWMERGE_RESULT=$?
@@ -283,9 +283,9 @@ then
                 then
                     kdialog --title="System upgrade" --passivepopup="<b><code>.pacnew</code></b> files successfully, merged." 5
                 fi
-                echo -e '\033[0;92m.pacnew files successfully merged.\e[0m' | tee /dev/tty | systemd-cat --identifier=MuMuh --priority=info
+                echo -e '\033[0;92m.pacnew files successfully merged.\e[0m' | tee /dev/tty | systemd-cat --identifier=mumuh --priority=info
             else
-                echo -e '\033[0;91mAn error occurred during merging of the .pacnew files.\e[0m' | tee /dev/tty | systemd-cat --identifier=MuMuh --priority=err
+                echo -e '\033[0;91mAn error occurred during merging of the .pacnew files.\e[0m' | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
                 exit 6
             fi
         # Show noptification that the AUR packages' update was unsuccessful.
@@ -294,7 +294,7 @@ then
             then
                 kdialog --ok-label='OK' --msgbox="<b>AUR package</b>(s) upgrade failed using <b><code>pamac upgrade</code></b>.<br /><b><i>Human intervention required.</b></i><br/></b>Not continuing.</b>"
             fi
-            echo -e '\033[0;91mAUR package using pamac upgrade failed.\e[0m' | tee /dev/tty | systemd-cat --identifier=MuMuh --priority=err
+            echo -e '\033[0;91mAUR package using pamac upgrade failed.\e[0m' | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
             exit 5
         fi
     # Show notification that official packackaages' updates was unsuccessful.
@@ -308,7 +308,7 @@ then
 # If timeshift wasn't succeessful, notify, log and exit.
 else
     echo
-    echo -e '\033[0;91m!!! An error occurred while making the pre-update backup snapshot. Not continuing. !!! \e[0m'  | tee /dev/tty | systemd-cat --identifier=MuMuh --priority=err
+    echo -e '\033[0;91m!!! An error occurred while making the pre-update backup snapshot. Not continuing. !!! \e[0m'  | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
     if command -v kdialog &> /dev/null
     then
         kdialog --ok-label='OK' --msgbox="An error occurred while making the backup snapshot.<br /><br/> </b>Not continuing.</b>"
@@ -392,7 +392,7 @@ fi
 [[ ! -d "/var/log/manjaro-update-helper" ]] && sudo mkdir "/var/log/manjaro-update-helper"
 if [[ $(sudo cp "${LOGSDIR}""/${RUNTIMESTAMP}.update.log" "/var/log/manjaro-update-helper/${RUNTIMESTAMP}.update.log") ]]; then
     printf '%s\n' "${TEXTFORMATTING[GREEEN]}Log output successfully saved to ${TEXTFORMATTING[BRIGHT]}/var/log/manjaro-update-helper/${RUNTIMESTAMP}.update.log${TEXTFORMATTING[NORMAL]}"
-    echo "Log output successfully saved to /var/log/manjaro-update-helper/${RUNTIMESTAMP}.update.log" | systemd-cat --identifier=MuMuh --priority=notice
+    echo "Log output successfully saved to /var/log/manjaro-update-helper/${RUNTIMESTAMP}.update.log" | systemd-cat --identifier=mumuh --priority=notice
 fi
 
 if [[ $? = 0 ]];
