@@ -131,22 +131,6 @@ then
                 fi
             done
         fi
-        DEPENDENCIESTOINSTALL=${DEPENDENCIESTOINSTALL/' *'/}
-        if [ -n "${DEPENDENCIESTOINSTALL}" ]; then
-            for dependency in ${DEPENDENCIESTOINSTALL}; do
-                PKGNFO=$(pamac info "$dependency")
-                PKGFOUNDCHK=$?
-                if [[ ${PKGFOUNDCHK} -eq 0 ]]; then
-                    INSTALLSOURCE=$(echo "${PKGNFO}" | grep Repository | awk -F': ' '{print $2}')
-                    if [ "${INSTALLSOURCE}" == "AUR" ]; then
-                        INSTALLMETHOD='build'
-                    else
-                        INSTALLMETHOD='install'
-                    fi
-                    PKGINSTALLCMD="pamac ${INSTALLMETHOD} ${dependency}"
-                fi
-            done
-        fi
         # Some housekeeping for above functionality
         unset DEPENDENCIESTOINSTALL DEPENDENCIES CMDSTATUS INSTALLEDPKGLIST ISPKGINSTALLEDNFO ISPKGINSTALLEDCMDRESULT PKGNFO PKGFOUNDCHK INSTALLSOURCE INSTALLMETHOD PKGINSTALLCMD
         exit 0
