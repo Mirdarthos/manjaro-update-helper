@@ -406,7 +406,7 @@ Please see https://forum.manjaro.org/t/howto-request-support/91463 for more info
 fi
 # Some of the logs are only stored in RAM, so will be cleared on shutdown or restart.
 printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Cleaning older log files...${TEXTFORMATTING[NORMAL]}"
-(cd /var/log/manjaro-update-helper && ls -tr | head -n -5 | xargs rm)
+(cd /var/log/manjaro-update-helper && ls -tr | head -n -5 | xargs -I{} rm --force)
 
 
 # Unset any and all variables, functions and whatever else was used.
