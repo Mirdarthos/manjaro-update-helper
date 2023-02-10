@@ -112,10 +112,11 @@ then
                 if [[ ${PKGFOUNDCHK} -eq 0 ]]; then
                     INSTALLSOURCE=$(echo "${PKGNFO}" | grep Repository | awk -F': ' '{print $2}')
                     if [ "${INSTALLSOURCE}" == "AUR" ]; then
-                        PKGINSTALLCMD="pamac build ${dependency}"
+                        INSTALLMETHOD='build'
                     else
-                        PKGINSTALLCMD="pamac install ${dependency}"
+                        INSTALLMETHOD='install'
                     fi
+                    PKGINSTALLCMD="pamac ${INSTALLMETHOD} ${dependency}"
                 fi
             done
         fi
