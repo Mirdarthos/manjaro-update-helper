@@ -15,7 +15,7 @@ then
     usage() {
         echo
         printf '%s\n' "######################################################################"
-        printf '%s\n' "################### Manjaro update helper script.#####################"
+        printf '%s\n' "################### ${TEXTFORMATTING[BRIGHT]}Manjaro update helper script.${TEXTFORMATTING[NORMAL]}#####################"
         printf '%s\n' "######################################################################"
         printf '%s\n' "# This script is just a wrapper for pamac, with the exception that   #"
         printf '%s\n' "# if there were any errors, it allows you to copy them, neatly       #"
