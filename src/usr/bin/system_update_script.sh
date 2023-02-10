@@ -29,8 +29,6 @@ then
         printf '%s\n' "#       Will add a file called ${TEXTFORMATTING[BRIGHT]}/etc/sudoers.d/manjaro-update-helper${TEXTFORMATTING[NORMAL]}  #"
         printf '%s\n' "#       with entries to enable running this script as the current    #"
         printf '%s\n' "#       user without a password.                                     #"
-        printf '%s\n' "#     * ${TEXTFORMATTING[BRIGHT]}--checkdeps${TEXTFORMATTING[NORMAL]}, or ${TEXTFORMATTING[BRIGHT]}-d${TEXTFORMATTING[NORMAL]}                                           #"
-        printf '%s\n' "#       Will check for and install any missing dependencies.         #"
         printf '%s\n' "#       ${TEXTFORMATTING[BRIGHT]}CARE MUST BE TAKED WITH THE ${TEXTFORMATTING[GREEN]}/etc/sudoers${TEXTFORMATTING[NORMAL]} FILE, AS DOING IT   #"
         printf '%s\n' "#       INNCORRECTLY CAN LEAD TO BEING LOCKED OUT OF THE SYSTEM.     #"
         printf '%s\n' "#       ${TEXTFORMATTING[RED]}PLEASE BE ${TEXTFORMATTING[BRIGHT]}VERY${TEXTFORMATTING[NORMAL]}${TEXTFORMATTING[RED]} CAREFUL.${TEXTFORMATTING[NORMAL]}                                      #"
@@ -80,64 +78,6 @@ then
         unset USERNAMETOSUDOERS USEREXISTS SUDOERSENTRY SUDOERSFILECREEATION SUDOERSENTRYADDED
         exit 0
     }
-    # a Function to check and enszure the dependencies are available
-    checkdeps() {
-        declare -A DEPENDENCIES=(
-            [xsel]=0
-            [ncurses]=0
-            [pamac-cli]=0
-            [pacman]=0
-            [inxi]=0
-            [meld]=0
-        )
-        DEPENDENCIESTOINSTALL=""
-        # Let's see if pamac is installed
-        pamac --version 1> /dev/null 2> /dev/null
-        CMDSTATUS=$?
-        if [[ $CMDSTATUS -eq 0 ]]; then  # pamac is installed, now let's check the rest
-            INSTALLEDPKGLIST=$(pamac list --installed)
-            for item in "${!DEPENDENCIES[@]}"; do
-                echo "${INSTALLEDPKGLIST}" | grep "^${item} " | /dev/null
-                ISPKGINSTALLEDCMDRESULT=$?
-                if [[ ${ISPKGINSTALLEDCMDRESULT} -ne 0 ]]; # The package isn't installed.
-                then
-                    DEPENDENCIESTOINSTALL+="${item} "
-                fi
-            done
-            if [ -n "${DEPENDENCIESTOINSTALL}" ];
-            then
-                PKGNFO=$(pamac info "${item}")
-                PKGFOUNDCHK=$?
-                if [[ ${PKGFOUNDCHK} -eq 0 ]];
-                then
-                    INSTALLSOURCE=$(echo "${PKGNFO}" | grep Repository | awk -F': ' '{print $2}')
-                    if [ "${INSTALLSOURCE}" == "AUR" ];
-                    then
-                        BUILDLIST+="${item} "
-                    else
-                        INSTLIST+="${item} "
-                    fi
-                fi
-                if [ -n "${INSTLIST}" ];
-                then
-                    INSTLIST=$(sed -e 's/[[:space:]]$//' <<< "${INSTLIST}") # Just the space at the end, if poresent
-                    eval "pamac install ${INSTLIST}"
-                fi
-                INSTCMDRESULT=$?
-                if [ "${INSTCMDRESULT}" -eq "0" ];
-                then
-                    if [ -n "${BUILDLIST}" ];
-                    then
-                        BUILDLIST=$(sed -e 's/[[:space:]]$//' <<< "${BUILDLIST}") # Just the space at the end, if poresent
-                        eval "pamac build ${BUILDLIST}"
-                    fi
-                fi
-            fi
-        fi
-        # Some housekeeping for above functionality
-        unset DEPENDENCIESTOINSTALL DEPENDENCIES CMDSTATUS INSTALLEDPKGLIST ISPKGINSTALLEDNFO ISPKGINSTALLEDCMDRESULT PKGNFO PKGFOUNDCHK INSTALLSOURCE INSTALLMETHOD PKGINSTALLCMD
-        exit 0
-    }
     # Since arguments given, parse them
     while [[ $# -gt 0 ]]; do
         case $1 in
@@ -161,8 +101,6 @@ then
                 fi
                 shift
             ;;
-            --checkdeps|-d)
-                checkdeps
         esac
     done
 fi
