@@ -41,6 +41,6 @@ This my first attempt at a package that can be used by more than just me. With t
 
 I've also run `system_update_script.sh` through [Shellcheck](https://www.shellcheck.net/) and implemented _nearly_ all suggestions.
 
-So I'm asking to please respond gently, I'd much rather have guidance and advice to fix aany issues than just unhelpful criticism.
+So I'm asking to please respond gently, I'd much rather have guidance and advice to fix any issues than just unhelpful criticism.
 
 So please be helpful in responses, I'll appreciate it much more. Smell even slightly like a troll, though, and you'll be ignored.
