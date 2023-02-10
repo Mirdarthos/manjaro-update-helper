@@ -99,8 +99,35 @@ then
             for item in "${!DEPENDENCIES[@]}"; do
                 echo "${INSTALLEDPKGLIST}" | grep "^${item} " | /dev/null
                 ISPKGINSTALLEDCMDRESULT=$?
-                if [[ ${ISPKGINSTALLEDCMDRESULT} -ne 0 ]]; then
+                if [[ ${ISPKGINSTALLEDCMDRESULT} -ne 0 ]];
+                then
                     DEPENDENCIESTOINSTALL+="${item} "
+                    PKGNFO=$(pamac info "${item}")
+                    PKGFOUNDCHK=$?
+                    if [[ ${PKGFOUNDCHK} -eq 0 ]];
+                    then
+                        INSTALLSOURCE=$(echo "${PKGNFO}" | grep Repository | awk -F': ' '{print $2}')
+                        if [ "${INSTALLSOURCE}" == "AUR" ];
+                        then
+                            BUILDLIST+="${item} "
+                        else
+                            INSTLIST+="${item} "
+                        fi
+                    fi
+                    if [ -n "${INSTLIST}" ];
+                    then
+                        INSTLIST=$(sed -e 's/[[:space:]]$//' <<< $INSTLIST) # Just the space at the end, if poresent
+                        eval "pamac install ${INSTLIST}"
+                    fi
+                    INSTCMDRESULT=$?
+                    if [ "${INSTCMDRESULT}" -eq "0" ];
+                    then
+                        if [ -n "${BUILDLIST}" ];
+                        then
+                            BUILDLIST=$(sed -e 's/[[:space:]]$//' <<< $BUILDLIST) # Just the space at the end, if poresent
+                            evall "pamac build ${BUILDLIST}"
+                        fi
+                    fi
                 fi
             done
         fi
