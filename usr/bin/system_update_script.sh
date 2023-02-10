@@ -171,7 +171,7 @@ function token_quote {
 UPDATES_AVAILABLE=$(pamac checkupdates | head -n 1 | awk '{print $1}')
 [[ $UPDATES_AVAILABLE -gt 0 ]] && read -r -p "There are ${TEXTFORMATTING[BRIGHT]}${UPDATES_AVAILABLE}${TEXTFORMATTING[NORMAL]} updates available, continue? [Y/n]: " CONTINUEUPDATE
 CONTINUEUPDATE=${CONTINUEUPDATE:-Y}
-if [[ $CONTINUEUPDATE =~ [nN] ]];
+if [[ ${CONTINUEUPDATE} =~ [nN] ]];
 then
     echo "Upgrade cancelled." | tee /dev/tty | systemd-cat --identifier=MuMuh && exit 7
 fi
