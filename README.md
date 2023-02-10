@@ -37,7 +37,7 @@ There is the possibility of there being added to these, but if so this list will
 
 ***
 
-This my firest attempt at a package that can be used by more than just me. With the result that there is quite the possibility the `pkgbuild` file is either incorrect, or missing something.
+This my first attempt at a package that can be used by more than just me. With the result that there is quite the possibility the `pkgbuild` file is either incorrect, or missing something.
 
 I've also run `system_update_script.sh` through [Shellcheck](https://www.shellcheck.net/) and implemented _nearly_ all suggestions.
 
