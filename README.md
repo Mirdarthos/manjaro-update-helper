@@ -29,7 +29,6 @@ The script is **_not_** meant to be run as `root` or with `sudo`. It'll ask for 
 | Argument | Explanation |
 |---:|---|
 | `--addsudoers`, `-a` | Add the specified user as able to run all the required `sudo` commands without a password, without human intervention. |
-| `--checkdeps`, `-d` | Check to ensure all dependencies are installed. |
 | `--skipbackup`, `-s` | If no backup is required, skip creating one. |
 | `--custombackupcommand`, `-c` | If you use some other command for performing backups, specify it here. Will skip for anything that contains an `rm` command, as that can be dangerous and cause havoc. |
 
