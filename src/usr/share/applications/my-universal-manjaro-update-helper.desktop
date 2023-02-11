@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
 Version=1.0
-Name=MuMuh
+Name=manjaro-update-helper
 Comment=Manjaro Universal Update Helper
 # The path to the folder in which the executable is run
 Path=/tmp
