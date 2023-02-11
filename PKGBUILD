@@ -23,3 +23,4 @@ package() {
     sudo install --owner=root --group=root --mode=0644 "${srcdir}/src/usr/bin/system_update_script.sh" --target-directory="/usr/bin/"
     sudo install --owner=root --group=root --mode=0644 "${srcdir}/src/usr/applications/mumuh.desktop" --target-directory="/usr/share/applications/"
 }
+sha256sums=('d37656912815b95c87be265f7b9b90bbf08341a98eb85a68d7303eb4db590f18')
