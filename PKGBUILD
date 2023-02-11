@@ -12,7 +12,7 @@ makedepends=('unzip')
 optdepends=('timeshift: For creating backups with prior to updating.')
 
 source=("mumuh.zip::https://github.com/Mirdarthos/manjaro-update-helper/archive/refs/heads/master.zip")
-sha256sums=('3a83e897238b4ad4f4eea5ddeb1665fde3d8ee9d8d896fc770f3e30076c90681')
+sha256sums=('9769a8fdfb5e15678a7d5235a243d268c2a050689603b0c2f18d191180518522')
 
 conflicts=()
 replaces=()
@@ -21,6 +21,6 @@ backup=()
 package() {
     unzip mumuh.zip -d /tmp
     cd "/tmp" || exit
-    sudo install --owner=root --group=root --mode=0644 "${srcdir}/manjaro-update-helper-master/src/usr/bin/system_update_script.sh" --target-directory="/usr/bin/"
-    sudo install --owner=root --group=root --mode=0644 "${srcdir}/manjaro-update-helper-master/src/usr/applications/mumuh.desktop" --target-directory="/usr/share/applications/"
+    sudo install --owner=root --group=root --mode=0644 "${srcdir}/src/usr/bin/system_update_script.sh" --target-directory="/usr/bin/"
+    sudo install --owner=root --group=root --mode=0644 "${srcdir}/src/usr/applications/mumuh.desktop" --target-directory="/usr/share/applications/"
 }
