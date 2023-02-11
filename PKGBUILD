@@ -11,7 +11,7 @@ depends=('xsel' 'ncurses' 'pamac-cli' 'pacman' 'inxi' 'meld')
 makedepends=()
 optdepends=('timeshift: For creating backups with prior to updating.')
 
-source=("git+https://github.com/Mirdarthos/manjaro-update-helper.git")
+source=("manjaro-update-helper.zip::https://github.com/Mirdarthos/manjaro-update-helper/archive/refs/heads/master.zip")
 sha256sums=('SKIP')
 
 conflicts=()
@@ -19,7 +19,9 @@ replaces=()
 backup=()
 
 package() {
-    sudo install --owner=root --group=root --mode=0644 "${srcdir}/manjaro-update-helper/src/usr/bin/system_update_script.sh" --target-directory="/usr/bin/"
-    sudo install --owner=root --group=root --mode=0644 "${srcdir}/manjaro-update-helper/src/usr/share/applications/my-universal-manjaro-update-helper.desktop" --target-directory="/usr/share/applications/"
+    # unzip manjaro-update-helper.zip
+    sudo install --owner=root --group=root --mode=0355 "${srcdir}/manjaro-update-helper-master/src/usr/bin/system_update_script" --target-directory="/usr/bin/"
+    sudo install --owner=root --group=root --mode=0355 "${srcdir}/manjaro-update-helper-master/src/usr/share/applications/my-universal-manjaro-update-helper.desktop" --target-directory="/usr/share/applications/"
     sudo update-desktop-database /usr/share/applications
+    sudo rm --force --recursive "${srcdir}/manjaro-update-helper-master"
 }
