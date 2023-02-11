@@ -12,7 +12,6 @@ makedepends=('unzip')
 optdepends=('timeshift: For creating backups with prior to updating.')
 
 source=("mumuh.zip::https://github.com/Mirdarthos/manjaro-update-helper/archive/refs/heads/master.zip")
-sha256sums=('9769a8fdfb5e15678a7d5235a243d268c2a050689603b0c2f18d191180518522')
 
 conflicts=()
 replaces=()
