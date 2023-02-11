@@ -22,7 +22,5 @@ package() {
     unzip mumuh.zip -d /tmp
     cd "/tmp" || exit
     sudo install --owner=root --group=root --mode=0644 "${srcdir}/manjaro-update-helper-master/src/usr/bin/system_update_script.sh" --target-directory="/usr/bin/"
-    sudo install --owner=root --group=root --mode=0644 "${srcdir}/manjaro-update-helper-master/src/usr/applications/mumuh.desktop" --target-directory="/usr/applications/"
-    rm --recursive --force "manjaro-update-helper-master"
-    cd "~" || exit
+    sudo install --owner=root --group=root --mode=0644 "${srcdir}/manjaro-update-helper-master/src/usr/applications/mumuh.desktop" --target-directory="/usr/share/applications/"
 }
