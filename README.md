@@ -16,13 +16,53 @@ _(Or, **`mumuh`** if you will.)_
 
 ## Usage:
 
-_(For now, you'll still have to run it directly. This might (probably will) change in the future.)_
+After running the installation, the script executed as follows:
+```
+mumuh
+```
+
+### For example:
 
 ```
-./system_update_script.sh
+$ mumuh --help
+
+######################################################################
+################### Manjaro update helper script.#####################
+######################################################################
+# This script is just a wrapper for pamac, with the exception that   #
+# if there were any errors, it allows you to copy them, neatly       #
+# formatted for use as. or with a forum post, along with all the     #
+# details required for requesting assistance.                        #
+# It also allows you to set the required suddoers permissions in     #
+# '/etc/sudoers.d'                                                   #
+#                                                                    #
+# Usage:                                                             #
+#     * --addsudoers, or -a                                          #
+#       Will add a file called /etc/sudoers.d/manjaro-update-helper  #
+#       with entries to enable running this script as the current    #
+#       user without a password.                                     #
+#       CARE MUST BE TAKED WITH THE /etc/sudoers FILE, AS DOING IT   #
+#       INNCORRECTLY CAN LEAD TO BEING LOCKED OUT OF THE SYSTEM.     #
+#       PLEASE BE VERY CAREFUL.                                      #
+#     * --skipbackup, or -s                                          #
+#       This will cause the update process to skip the backup step   #
+#       for the update.                                              #
+#     * --custombackupcommand, or -c                                 #
+#     * This argument allows for specifying a custom backup command, #
+#       for if you want to use something other than the default      #
+#       timeshift one, or even is you use something other than       #
+#       timeshift.                                                   #
+#       NOTE:                                                        #
+#       If --skipbackup, or -s is specified, then specifying this    #
+#       will have no effect.                                         #
+#     * If no arguments are passed, the script performs its main     #
+#       functionality.                                               #
+######################################################################
 ```
 
 The script is **_not_** meant to be run as `root` or with `sudo`. It'll ask for the `sudo` password if it requires it.
+
+***
 
 ### Current arguments:
 
