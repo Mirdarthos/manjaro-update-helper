@@ -20,7 +20,7 @@ backup=()
 package() {
     unzip mumuh.zip -d /tmp
     cd "/tmp" || exit
-    sudo install --owner=root --group=root --mode=0644 "${srcdir}/src/usr/bin/system_update_script.sh" --target-directory="/usr/bin/"
-    sudo install --owner=root --group=root --mode=0644 "${srcdir}/src/usr/applications/mumuh.desktop" --target-directory="/usr/share/applications/"
+    sudo install --owner=root --group=root --mode=0644 "src/usr/bin/system_update_script.sh" --target-directory="/usr/bin/"
+    sudo install --owner=root --group=root --mode=0644 "src/usr/applications/mumuh.desktop" --target-directory="/usr/share/applications/"
 }
 sha256sums=('SKIP')
