@@ -11,7 +11,7 @@ depends=('xsel' 'ncurses' 'pamac-cli' 'pacman' 'inxi' 'meld')
 makedepends=('unzip')
 optdepends=('timeshift: For creating backups with prior to updating.')
 
-source=("mumuh.zip::https://github.com/Mirdarthos/manjaro-update-helper/archive/refs/heads/master.zip")
+source=("git+https://github.com/Mirdarthos/manjaro-update-helper/archive/refs/heads/master.zip")
 
 conflicts=()
 replaces=()
