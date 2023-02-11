@@ -21,6 +21,5 @@ backup=()
 package() {
     # unzip manjaro-update-helper.zip
     sudo install --owner=root --group=root --mode=0355 "${srcdir}/manjaro-update-helper-master/src/usr/bin/mumuh" --target-directory="/usr/bin/"
-    sudo update-desktop-database /usr/share/applications
     sudo rm --force --recursive "${srcdir}/manjaro-update-helper-master"
 }
