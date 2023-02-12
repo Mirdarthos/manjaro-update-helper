@@ -198,7 +198,7 @@ then
         echo -e '\033[0;92mPre-upgrade backup snapshot successfully created. Continuing with upgrade...\e[0m' | tee /dev/tty | systemd-cat --identifier=mumuh --priority=info
         echo
     fi
-    pamac upgrade --force-refresh --enable-downgrade | /usr/bin/tee --append "$SYSUPDLOGFILE"
+    pamac upgrade --force-refresh --enable-downgrade | tee --append "$SYSUPDLOGFILE"
     UPGRADE_OFFICIAL_RESULT=$?
     # Check if the official update from the repositories is successful, and if so continue with the AUR upgrade.
     if [ "${UPGRADE_OFFICIAL_RESULT}" -eq "0" ];
@@ -216,7 +216,7 @@ then
             AURUPDLOGFILE=$LOGSDIR"/aur-upgrade.output";
         fi
         # Let's update AUR packages now.
-        pamac upgrade --enable-downgrade --aur --devel | /usr/bin/tee --append "$AURUPDLOGFILE"
+        pamac upgrade --enable-downgrade --aur --devel | tee --append "$AURUPDLOGFILE"
         UPGRADE_AUR_RESULT=$?
         # Check if AUR packages' upgrade was successful, and if so, continue with merging .pacnew files.
         if [ "${UPGRADE_AUR_RESULT}" -eq "0" ];
