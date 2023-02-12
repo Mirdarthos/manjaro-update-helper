@@ -78,7 +78,7 @@ There is the possibility of there being added to these, but if so this list will
 
 This my first attempt at a package that can be used by more than just me. With the result that there is quite the possibility the `pkgbuild` file is either incorrect, or missing something.
 
-I've also run `system_update_script.sh` through [Shellcheck](https://www.shellcheck.net/) and implemented _nearly_ all suggestions.
+I've also run `mumuh` through [Shellcheck](https://www.shellcheck.net/) and implemented _nearly_ all suggestions.
 
 So I'm asking to please respond gently, I'd much rather have guidance and advice to fix any issues than just unhelpful criticism.
 
