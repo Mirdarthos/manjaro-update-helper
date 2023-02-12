@@ -258,7 +258,7 @@ then
         fi
         exit 4
     fi
-# If timeshift wasn't succeessful, notify, log and exit.
+# If timeshift wasn't successful, notify, log and exit.
 else
     echo
     echo -e '\033[0;91m!!! An error occurred while making the pre-update backup snapshot. Not continuing. !!! \e[0m'  | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
