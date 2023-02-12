@@ -287,7 +287,7 @@ SYSTEMINFO=$(inxi --admin --verbosity=7 --filter --no-host --width)
 # Compose a forum message.
 if [[ $COPYOFFICIALCHOICE =~ [Yy] ]] || [[ $COPYAURCHOICE =~ [Yy] ]];
 then
-    MESSAGE='I encountered errors during the lat update,  which I performed on  **`'${RUNDATE}'`**. Please find my information below:
+    MESSAGE='I encountered errors during the last update, which I performed on  **`'${RUNDATE}'`**. Please find my information below:
 
 '
 
