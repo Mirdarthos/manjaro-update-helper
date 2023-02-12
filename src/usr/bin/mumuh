@@ -198,7 +198,7 @@ then
         echo -e '\033[0;92mPre-upgrade backup snapshot successfully created. Continuing with upgrade...\e[0m' | tee /dev/tty | systemd-cat --identifier=mumuh --priority=info
         echo
     fi
-    pamac upgrade --force-refresh --enable-downgrade 1> tee --append "$SYSUPDLOGFILE"
+    pamac upgrade --force-refresh --enable-downgrade 1> tee --append "${SYSUPDLOGFILE}"
     UPGRADE_OFFICIAL_RESULT=$?
     # Check if the official update from the repositories is successful, and if so continue with the AUR upgrade.
     if [ "${UPGRADE_OFFICIAL_RESULT}" -eq "0" ];
@@ -216,7 +216,7 @@ then
             AURUPDLOGFILE=$LOGSDIR"/aur-upgrade.output";
         fi
         # Let's update AUR packages now.
-        pamac upgrade --enable-downgrade --aur --devel 1> tee --append "$AURUPDLOGFILE"
+        pamac upgrade --enable-downgrade --aur --devel 1> tee --append "${AURUPDLOGFILE}"
         UPGRADE_AUR_RESULT=$?
         # Check if AUR packages' upgrade was successful, and if so, continue with merging .pacnew files.
         if [ "${UPGRADE_AUR_RESULT}" -eq "0" ];
@@ -250,7 +250,7 @@ then
             echo -e '\033[0;91mAUR package using pamac upgrade failed.\e[0m' | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
             exit 5
         fi
-    # Show notification that official packackaages' updates was unsuccessful.
+    # Show notification that official packackages' updates was unsuccessful.
     else
         if command -v kdialog &> /dev/null
         then
@@ -258,8 +258,7 @@ then
         fi
         exit 4
     fi
-# If timeshift wasn't successful, notify, log and exit.
-else
+else # If timeshift wasn't successful, notify, log and exit.
     echo
     echo -e '\033[0;91m!!! An error occurred while making the pre-update backup snapshot. Not continuing. !!! \e[0m'  | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
     if command -v kdialog &> /dev/null
