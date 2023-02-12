@@ -6,10 +6,10 @@ pkgrel=1
 pkgdesc="a Helper for updating your Manjaro Linux."
 arch=('any')
 url="https://github.com/Mirdarthos/manjaro-update-helper"
-license=('Apache 2.0')
+license=('Apache2')
 depends=('xsel' 'ncurses' 'pamac-cli' 'pacman' 'inxi' 'meld')
 makedepends=()
-optdepends=('timeshift: For creating backups with prior to updating.')
+optdepends=('timeshift: For creating backups with prior to updating if custom command not specified.')
 
 source=("manjaro-update-helper.zip::https://github.com/Mirdarthos/manjaro-update-helper/archive/refs/heads/master.zip")
 sha256sums=('SKIP')
