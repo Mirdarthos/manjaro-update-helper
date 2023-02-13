@@ -143,38 +143,35 @@ RUNDATE=$(echo "$RUNTIMESTAMP" | awk -F'@' '{print $1}')
 # If choosing to add the current user to sudoers, with the '-a' or '--addsudoers' arguments, this will be done automatically.
 # BUT BE CAREFUL WITH sudoers. You can lock yourself out of your system with it. Hence the recommendation to create a new file in /etc/sudoers.d/
 
-
-if [ "${SKIPBACKUP}" != true ];
+if [[ -z ${SKIPBACKUP+x} ]]; # Check if backup creating specified.
 then
-    if [[ -v CUSTOMBUCMD ]];
+    printf '%s\n' "* ${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Not skipping backup creation.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh
+    if [[ -v CUSTOMBUCMD ]]; # Check if custom backup command specified.
     then
-        BACKUPCMD=CUSTOMBUCMD
+        BACKUPCMD=$CUSTOMBUCMD
     else
-        if ! command -v timeshift &> /dev/null
+        printf '%s\n' "* ${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}No custom backup command specified.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh
+        if ! command -v sudo timeshift 1> /dev/null 2> /dev/null
         then
-            echo "* No custom backup command specified." | tee /dev/tty | systemd-cat --identifier=mumuh
-            echo "* Skipping timeshift skip not specified." | tee /dev/tty | systemd-cat --identifier=mumuh
-            echo "* Timeshift not found." | tee /dev/tty | systemd-cat --identifier=mumuh
+            printf '%s\n' "* ${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Timeshift ${TEXTFORMATTING[RED]}not${TEXTFORMATTING[YELLOW]} found.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh
             echo
-            echo "Exiting." | tee /dev/tty | systemd-cat --identifier=mumuh
-            echo
+            printf '%s\n' "* ${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}Exiting.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh
             exit 2
         else
-            BACKUPCMD=sudo timeshift --create --comments "$(date +%Y.%m.%d@%H:%M)' - Pre-update'"
+            BACKUPCMD="sudo timeshift --create --comments \"$(date +%Y.%m.%d@%H:%M)\"' - Pre-update'"
         fi
     fi
+else # backup creation skipped
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Skipping backup creation.${TEXTFORMATTING[NORMAL]}"
 fi
 
-if [ "${SKIPBACKUP}" != true ];
+if [[ -n ${BACKUPCMD+x} ]];
 then
-    if [[ -v BACKUPCMD ]];
-    then
-        printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}${CUSTOMBUCMD}${TEXTFORMATTING[NORMAL]} to be used to create the backup snapshot."
-        eval "$(token_quote "${BACKUPCMD}")"
-        BACKUP_COMMAND_RESULT=$?
-    fi
-elif [ "${SKIPBACKUP}" == true ];
+    printf '%s\n' "Using ${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}${CUSTOMBUCMD}${TEXTFORMATTING[NORMAL]} to create the backup snapshot."
+    eval "${BACKUPCMD}"
+    BACKUP_COMMAND_RESULT=$?
+fi
+if [[ -n ${SKIPBACKUP} ]]; # don't create backup
 then
     # However, if it was given, set the output as a success, so the rest of the script can carry on.
     BACKUP_COMMAND_RESULT=0
@@ -192,7 +189,7 @@ then
         touch "$LOGSDIR""/system-upgrade.output";
         SYSUPDLOGFILE=$LOGSDIR"/system-upgrade.output";
     fi
-    if [ "${SKIPBACKUP}" != true ];
+    if [[ -z ${SKIPBACKUP+x} ]];
     then
         echo
         echo -e '\033[0;92mPre-upgrade backup snapshot successfully created. Continuing with upgrade...\e[0m' | tee /dev/tty | systemd-cat --identifier=mumuh --priority=info
