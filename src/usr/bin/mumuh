@@ -280,8 +280,6 @@ fi
 
 # Get the information required for a standard forum post
 SYSTEMINFO=$(inxi --admin --verbosity=7 --filter --no-host --width)
-# Get mirrror status debug inforrmation]
-MIRRORSTATUS=$(pacman-mirrors --status)
 
 # Compose a forum message.
 if [[ $COPYOFFICIALCHOICE =~ [Yy] ]] || [[ $COPYAURCHOICE =~ [Yy] ]];
@@ -319,18 +317,6 @@ $(cat "$AURUPDLOGFILE")
 
 "
 fi
-
-# Include mirror status for debugging
-MESSAGE+="##### \`pacman-mirror --status\`:
-
-[details=View more]
-~~~
-${MIRRORSTATUS}
-~~~
-[/details]
-
-"
-
 
 # Add system information gathered above, if any of the outputs are copied.
 if [[ $COPYOFFICIALCHOICE =~ [Yy] ]] || [[ $COPYAURCHOICE =~ [Yy] ]];
