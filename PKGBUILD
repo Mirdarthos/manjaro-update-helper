@@ -1,25 +1,18 @@
 # Maintainer: Mirdarthos mirdarthos[at]duck[dot]com
 
 pkgname=my-universal-manjaro-update-helper
-pkgver=v2.1
+pkgver=2.1
 pkgrel=1
-pkgdesc="a Helper for updating your Manjaro Linux."
+pkgdesc="A helper for updating Manjaro Linux."
 arch=('any')
 url="https://github.com/Mirdarthos/manjaro-update-helper"
-license=('Apache2')
+license=('Apache')
 depends=('xsel' 'ncurses' 'pamac-cli' 'pacman' 'inxi' 'meld')
-makedepends=()
 optdepends=('timeshift: For creating backups with prior to updating if custom command not specified.')
-
-source=("manjaro-update-helper.zip::https://github.com/Mirdarthos/manjaro-update-helper/archive/refs/heads/master.zip")
-sha256sums=('SKIP')
-
-conflicts=()
-replaces=()
-backup=()
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/V$pkgver.tar.gz")
+sha256sums=('3af96ecfa322e05b5ca5e216abf1fc879f62466e58ec79e255a4b44a01ed2b70')
 
 package() {
-    # unzip manjaro-update-helper.zip
-    sudo install --owner=root --group=root --mode=0355 "${srcdir}/manjaro-update-helper-master/src/usr/bin/mumuh" --target-directory="/usr/bin/"
-    sudo rm --force --recursive "${srcdir}/manjaro-update-helper-master"
+    cd manjaro-update-helper-$pkgver
+    install -Dm755 src/usr/bin/mumuh -t "$pkgdir/usr/bin/"
 }
