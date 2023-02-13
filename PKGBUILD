@@ -1,7 +1,7 @@
 # Maintainer: Mirdarthos mirdarthos[at]duck[dot]com
 
 pkgname=my-universal-manjaro-update-helper
-pkgver=2.2
+pkgver=2.1
 pkgrel=1
 pkgdesc="A helper for updating Manjaro Linux."
 arch=('any')
