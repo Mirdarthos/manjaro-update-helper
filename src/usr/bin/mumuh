@@ -7,6 +7,7 @@ declare -A TEXTFORMATTING=(
     [YELLOW]=$(tput setaf 3)
     [BRIGHT]=$(tput bold)
     [NORMAL]=$(tput sgr0)
+    [MAGENTA]=$(tput setaf 5)
 )
 
 # If arguments are given, prepare some of the functionality
