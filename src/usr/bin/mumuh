@@ -143,6 +143,9 @@ RUNDATE=$(echo "$RUNTIMESTAMP" | awk -F'@' '{print $1}')
 # If choosing to add the current user to sudoers, with the '-a' or '--addsudoers' arguments, this will be done automatically.
 # BUT BE CAREFUL WITH sudoers. You can lock yourself out of your system with it. Hence the recommendation to create a new file in /etc/sudoers.d/
 
+###
+# START backup section
+###
 if [[ -z ${SKIPBACKUP+x} ]]; # Check if backup creating specified.
 then
     printf '%s\n' "* ${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Not skipping backup creation.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh
@@ -178,6 +181,13 @@ then
     printf '%s\n' "${TEXTFORMATTING[YELLOW]}${TEXTFORMATTING[BRIGHT]}Skipping backup creation.${TEXTFORMATTING[NORMAL]}"
 fi
 
+###
+# END backup section
+###
+
+###
+# START upgrade section
+###
 # If the backup was successful, continue with the upgrade
 if [[ $BACKUP_COMMAND_RESULT -eq 0 ]];
 then
@@ -265,6 +275,9 @@ else # If timeshift wasn't successful, notify, log and exit.
     echo
     exit 3
 fi
+###
+# END backup section
+###
 # If there were errors with the official packages' upgrade, show prompt about copying the process' output to the clipboard.
 if [[ $UPGRADE_OFFICIAL_RESULT -ne 0 ]];
 then
@@ -278,6 +291,9 @@ then
     COPYAURCHOICE=${COPYAURCHOICE:-N}
 fi
 
+###
+# START post generation section
+###
 # Get the information required for a standard forum post
 SYSTEMINFO=$(inxi --admin --verbosity=7 --filter --no-host --width)
 MIRRORSTATUS=$(pacman-mirrors --status)
@@ -346,6 +362,9 @@ $SYSTEMINFO
 
 "
 fi
+###
+# END post generation section
+###
 
 # Copy the message to a (temporary) log, as well as to the clipboard.
 [[ $(echo "${MESSAGE}" | tee "${LOGSDIR}""/${RUNTIMESTAMP}.update.log" | xclip -selection clipboard) ]] && printf 'Update successfully completed.\nDesired information copied successfully.\n'
