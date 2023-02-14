@@ -7,7 +7,6 @@ declare -A TEXTFORMATTING=(
     [YELLOW]=$(tput setaf 3)
     [BRIGHT]=$(tput bold)
     [NORMAL]=$(tput sgr0)
-    [MAGENTA]=$(tput setaf 5)
 )
 
 # If arguments are given, prepare some of the functionality
@@ -349,7 +348,7 @@ $SYSTEMINFO
 fi
 
 # Copy the message to a (temporary) log, as well as to the clipboard.
-[[ $(echo "${MESSAGE}" | tee "${LOGSDIR}""/${RUNTIMESTAMP}.update.log" | xsel --clipboard) ]] && printf 'Update successfully completed.\nDesired information copied successfully.\n'
+[[ $(echo "${MESSAGE}" | tee "${LOGSDIR}""/${RUNTIMESTAMP}.update.log" | xclip -selection clipboard) ]] && printf 'Update successfully completed.\nDesired information copied successfully.\n'
 
 # Copy the log for more permanent storage, so that it can be retrived later
 [[ ! -d "/var/log/manjaro-update-helper" ]] && sudo mkdir "/var/log/manjaro-update-helper"
