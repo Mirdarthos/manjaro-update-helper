@@ -349,7 +349,7 @@ $(cat "$AURUPDLOGFILE")
 fi
 
 # Include mirror status for debugging
-MESSAGE+="##### \`pacman-mirror --status\`:
+MESSAGE+="##### \`pacman-mirrors --status\`:
 
 [details=View more]
 
