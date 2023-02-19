@@ -325,7 +325,7 @@ if [[ $COPYOFFICIALCHOICE =~ [Yy] ]];
 then
     MESSAGE+="##### \`pamac upgrade --force-refresh --enable-downgrade\`:
 
-[details=View more]
+[details=View details]
 ~~~
 $(cat "$SYSUPDLOGFILE")
 ~~~
@@ -339,7 +339,7 @@ if [[ $COPYAURCHOICE =~ [Yy] ]];
 then
     MESSAGE+="##### \`pamac upgrade --enable-downgrade --aur --devel\`:
 
-[details=View more]
+[details=View details]
 ~~~
 $(cat "$AURUPDLOGFILE")
 ~~~
@@ -351,7 +351,7 @@ fi
 # Include mirror status for debugging
 MESSAGE+="##### \`pacman-mirrors --status\`:
 
-[details=View more]
+[details=View details]
 
 ~~~
 $MIRRORSTATUS
