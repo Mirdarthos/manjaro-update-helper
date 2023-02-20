@@ -13,7 +13,6 @@ declare -A TEXTFORMATTING=(
 if [[ $# -gt 0 ]];
 then
     usage() {
-        echo
         printf '%s\n' "######################################################################"
         printf '%s\n' "################### ${TEXTFORMATTING[BRIGHT]}Manjaro update helper script.${TEXTFORMATTING[NORMAL]}#####################"
         printf '%s\n' "######################################################################"
@@ -61,7 +60,6 @@ then
         printf '%s\n' "#          OR                                                        #"
         printf '%s\n' "#        mumu -c <custom command>                                    #"
         printf '%s\n' "######################################################################"
-        echo
         exit 0
     }
 
