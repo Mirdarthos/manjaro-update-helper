@@ -10,7 +10,7 @@ license=('Apache')
 depends=('xclip' 'ncurses' 'pamac-cli' 'pacman' 'inxi' 'meld' 'pacman-mirrors')
 optdepends=('timeshift: For creating backups with prior to updating if custom command not specified.')
 source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/V$pkgver.tar.gz")
-sha256sums=('41fcdaae7318eb776573810c1ceacb082769df1fd62bbd32027d5055638156b8')
+sha256sums=('425e9f663bf568bac23cc0c90c075f529f6a488e8569f7933976a7532d9c9ecf')
 
 package() {
     cd manjaro-update-helper-$pkgver
