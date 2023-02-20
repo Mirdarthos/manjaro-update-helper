@@ -57,6 +57,19 @@ $ mumuh --help
 #       will have no effect.                                         #
 #     * If no arguments are passed, the script performs its main     #
 #       functionality.                                               #
+# Examples:                                                          #
+#     * To add the current user to the sudoers list:                 #
+#        mumu --addsudoers                                           #
+#          OR                                                        #
+#        mumu -a                                                     #
+#     * If you wish to skip performing backups for this execution:   #
+#        mumu --skipbackup                                           #
+#          OR                                                        #
+#        mumu -s                                                     #
+#     * If you want to use a custom command:                         #
+#        mumu --custombackupcommand=<custom command>                 #
+#          OR                                                        #
+#        mumu -c <custom command>                                    #
 ######################################################################
 ```
 
