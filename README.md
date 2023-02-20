@@ -48,13 +48,15 @@ $ mumuh --help
 #       This will cause the update process to skip the backup step   #
 #       for the update.                                              #
 #     * --custombackupcommand, or -c                                 #
-#     * This argument allows for specifying a custom backup command, #
+#       This argument allows for specifying a custom backup command, #
 #       for if you want to use something other than the default      #
 #       timeshift one, or even is you use something other than       #
 #       timeshift.                                                   #
 #       NOTE:                                                        #
 #       If --skipbackup, or -s is specified, then specifying this    #
 #       will have no effect.                                         #
+#     * --help, or -h                                                #
+#       Show this help and exit.                                     #
 #     * If no arguments are passed, the script performs its main     #
 #       functionality.                                               #
 # Examples:                                                          #
