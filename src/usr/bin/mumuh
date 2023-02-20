@@ -348,18 +348,6 @@ $(cat "$AURUPDLOGFILE")
 "
 fi
 
-# Include mirror status for debugging
-MESSAGE+="##### \`pacman-mirrors --status\`:
-
-[details=View details]
-
-~~~
-$MIRRORSTATUS
-~~~
-
-[/details]
-"
-
 # Add system information gathered above, if any of the outputs are copied.
 if [[ $COPYOFFICIALCHOICE =~ [Yy] ]] || [[ $COPYAURCHOICE =~ [Yy] ]];
 then
@@ -368,6 +356,17 @@ then
 ~~~
 $SYSTEMINFO
 ~~~
+
+##### \`pacman-mirrors --status\`:
+
+[details=View details]
+
+~~~
+$MIRRORSTATUS
+~~~
+
+[/details]
+
 
 ***
 
