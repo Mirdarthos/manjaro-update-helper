@@ -57,8 +57,8 @@ $ mumuh --help
 #       will have no effect.                                         #
 #     * --help, or -h                                                #
 #       Show this help and exit.                                     #
-#     * If no arguments are passed, the script performs its main     #
-#       functionality.                                               #
+#     If no arguments are passed, the script performs its main       #
+#     functionality.                                                 #
 # Examples:                                                          #
 #     * To add the current user to the sudoers list:                 #
 #        mumu --addsudoers                                           #
