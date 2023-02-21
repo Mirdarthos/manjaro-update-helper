@@ -223,9 +223,9 @@ then
     # Check if the official update from the repositories is successful, and if so continue with the AUR upgrade.
     if [ "${UPGRADE_OFFICIAL_RESULT}" -eq "0" ];
     then
-        if command -v kdialog &> /dev/null
+        if command -v notify-send &> /dev/null
         then
-            kdialog --title="System upgrade" --passivepopup="<b>Official package</b> upgrade successful, using <code>pamac upgrade</code> successfully finished." 5
+            notify-send --icon=checkmark --app-name="MUMUH" --expire-time=5000 "Official package upgrade" "\n\nUsing, \<b\>pamac upgrade\<\/b\>, successfully finished."
         fi
         if [ -z ${LOGSDIR+x} ];
         then
@@ -241,9 +241,9 @@ then
         # Check if AUR packages' upgrade was successful, and if so, continue with merging .pacnew files.
         if [ "${UPGRADE_AUR_RESULT}" -eq "0" ];
         then
-            if command -v kdialog &> /dev/null
+            if command -v notify-send &> /dev/null
             then
-                kdialog --title="System upgrade" --passivepopup="<b>AUR package</b> upgrade successful, using <code>pamac upgrade</code> successfully finished." 5
+                notify-send --icon=checkmark --app-name="MUMUH" --expire-time=5000 "AUR package upgrade" "\n\nUsing, \<b\>pamac upgrade --enable-downgrade --aur --devel\<\/b\>, successfully finished."
             fi
             echo -e '\033[0;92mAUR package upgrade, using pamac upgrade, successfully finished.\e[0m' | tee /dev/tty | systemd-cat --identifier=mumuh --priority=info
             # An now, we have to merge any .pacnew files.
@@ -252,9 +252,9 @@ then
             # Check if merging .pacnew files were successful and if so, show success notification.
             if [[ $NEWMERGE_RESULT -eq 0 ]];
             then
-                if command -v kdialog &> /dev/null
+                if command -v notify-send &> /dev/null
                 then
-                    kdialog --title="System upgrade" --passivepopup="<b><code>.pacnew</code></b> files successfully, merged." 5
+                    notify-send --icon=checkmark --app-name="MUMUH" --expire-time=5000 "AUR package upgrade" "\n\n\<b\>\<code\>.pacnew\<\/code\>\<\/b\> files successfully, merged."
                 fi
                 echo -e '\033[0;92m.pacnew files successfully merged.\e[0m' | tee /dev/tty | systemd-cat --identifier=mumuh --priority=info
             else
