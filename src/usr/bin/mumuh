@@ -263,27 +263,27 @@ then
             fi
         # Show noptification that the AUR packages' update was unsuccessful.
         else
-            if command -v kdialog &> /dev/null
+            if command -v notify-send &> /dev/null
             then
-                kdialog --ok-label='OK' --msgbox="<b>AUR package</b>(s) upgrade failed using <b><code>pamac upgrade</code></b>.<br /><b><i>Human intervention required.</b></i><br/></b>Not continuing.</b>"
+                notify-send --urgency=critical --icon=error --app-name="MUMUH" "AUR package upgrade" "\n\nUsing, \<b\>pamac upgrade\<\/b\>, failed.\<br /\>\<br \/\>\<i\>Human intervention required.\<\/b\>\<\/i\>\<br\/\>\<\/b\>Not continuing.\<\/b\>"
             fi
             echo -e '\033[0;91mAUR package using pamac upgrade failed.\e[0m' | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
             exit 5
         fi
     # Show notification that official packackages' updates was unsuccessful.
     else
-        if command -v kdialog &> /dev/null
+        if command -v notify-send &> /dev/null
         then
-            kdialog --ok-label='OK' --msgbox="There was an error during the upgrade procedure using <b><code>pamac upgrade</code></b>.<br /><b><i>Human intervention required.</b></i>"
+            notify-send --urgency=critical --icon=error --app-name="MUMUH" "AUR package upgrade" "\n\nUsing, pamac upgrade --enable-downgrade --aur --devel\<b\>\<\/b\>, failed.\<br /\>\<br \/\>\<i\>Human intervention required.\<\/b\>\<\/i\>\<br\/\>\<\/b\>Not continuing.\<\/b\>"
         fi
         exit 4
     fi
 else # If timeshift wasn't successful, notify, log and exit.
     echo
     echo -e '\033[0;91m!!! An error occurred while making the pre-update backup snapshot. Not continuing. !!! \e[0m'  | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
-    if command -v kdialog &> /dev/null
+    if command -v notify-send &> /dev/null
     then
-        kdialog --ok-label='OK' --msgbox="An error occurred while making the backup snapshot.<br /><br/> </b>Not continuing.</b>"
+        notify-send --urgency=critical --icon=error --app-name="MUMUH" "Backup creation" "\n\nUsing, ${BACKUPCMD}\<b\>\<\/b\>, failed.\<br /\>\<br \/\>\<i\>Human intervention required.\<\/b\>\<\/i\>\<br\/\>\<\/b\>Not continuing.\<\/b\>"
     fi
     echo
     exit 3
