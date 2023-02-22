@@ -330,12 +330,14 @@ System information:
 ${SYSTEMINFO}
 "
 
-echo "${LOGMESSAGE}" > "${LOGSDIR}""/${RUNTIMESTAMP}.update.log"
-LOGCREATION=$?
-if [[ "${LOGCREATION}" -eq "0" ]];
-then
-    printf '%s\n' "${TEXTFORMATTING[GREEEN]}${TEXTFORMATTING[BRIGHT]}MUMUH logs stored at: ${LOGSDIR}""/${RUNTIMESTAMP}.update.log${TEXTFORMATTING[NORMAL]}"
+# Copy the log for more permanent storage, so that it can be retrived later
+[[ ! -d "/var/log/manjaro-update-helper" ]] && sudo mkdir "/var/log/manjaro-update-helper"
+if [[ $("${LOGMESSAGE}" > "${LOGSDIR}""/${RUNTIMESTAMP}.update.log") ]]; then
+    printf '%s\n' "${TEXTFORMATTING[GREEEN]}Log output successfully saved to ${TEXTFORMATTING[BRIGHT]}/var/log/manjaro-update-helper/${RUNTIMESTAMP}.update.log${TEXTFORMATTING[NORMAL]}"
+    notify-send --urgency=info --icon=checkbox --app-name="MUMUH" "Mumuh upgrade" "\n\nLogfile saved at \<code\>\/var/log/manjaro-update-helper/${RUNTIMESTAMP}.update.log<\/code\>"
 fi
+
+
 ###
 # END logging section
 ###
@@ -412,13 +414,6 @@ fi
 
 # Copy the message to a (temporary) log, as well as to the clipboard.
 # [[ $(echo "${MESSAGE}" | tee "${LOGSDIR}""/${RUNTIMESTAMP}.update.log" | xclip -selection clipboard) ]] && printf 'Update successfully completed.\nDesired information copied successfully.\n'
-
-# Copy the log for more permanent storage, so that it can be retrived later
-[[ ! -d "/var/log/manjaro-update-helper" ]] && sudo mkdir "/var/log/manjaro-update-helper"
-if [[ $(sudo cp "${LOGSDIR}""/${RUNTIMESTAMP}.update.log" "/var/log/manjaro-update-helper/${RUNTIMESTAMP}.update.log") ]]; then
-    printf '%s\n' "${TEXTFORMATTING[GREEEN]}Log output successfully saved to ${TEXTFORMATTING[BRIGHT]}/var/log/manjaro-update-helper/${RUNTIMESTAMP}.update.log${TEXTFORMATTING[NORMAL]}"
-    echo "Log output successfully saved to /var/log/manjaro-update-helper/${RUNTIMESTAMP}.update.log" | systemd-cat --identifier=mumuh --priority=notice
-fi
 
 if [[ $? = 0 ]];
 then
