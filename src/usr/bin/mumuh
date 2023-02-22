@@ -324,8 +324,7 @@ Mirror status:
 
 ${MIRRORSTATUS}
 
-System information:
-(inxi --admin --verbosity=7 --filter --no-host --width)::
+System information (inxi --admin --verbosity=7 --filter --no-host --width):
 
 ${SYSTEMINFO}
 "
