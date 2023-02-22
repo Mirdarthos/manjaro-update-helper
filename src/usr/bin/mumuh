@@ -336,8 +336,6 @@ if [[ $("${LOGMESSAGE}" > "${LOGSDIR}""/${RUNTIMESTAMP}.update.log") ]]; then
     printf '%s\n' "${TEXTFORMATTING[GREEEN]}Log output successfully saved to ${TEXTFORMATTING[BRIGHT]}/var/log/manjaro-update-helper/${RUNTIMESTAMP}.update.log${TEXTFORMATTING[NORMAL]}"
     notify-send --urgency=info --icon=checkbox --app-name="MUMUH" "Mumuh upgrade" "\n\nLogfile saved at \<code\>\/var/log/manjaro-update-helper/${RUNTIMESTAMP}.update.log<\/code\>"
 fi
-
-
 ###
 # END logging section
 ###
@@ -351,7 +349,6 @@ then
     MESSAGE='I encountered errors during the last update, which I performed on  **`'${RUNDATE}'`**. Please find my information below:
 
 '
-
 fi
 
 # If chosen, add official update output.
@@ -409,25 +406,20 @@ $MIRRORSTATUS
 "
 fi
 ###
-# END post generation section
+# END forum post generation section
 ###
 
-# Copy the message to a (temporary) log, as well as to the clipboard.
-# [[ $(echo "${MESSAGE}" | tee "${LOGSDIR}""/${RUNTIMESTAMP}.update.log" | xclip -selection clipboard) ]] && printf 'Update successfully completed.\nDesired information copied successfully.\n'
-
-if [[ $? = 0 ]];
-then
-    echo
-    echo "Message to start forum topic successfully copied to clipboard.
-Please visit https://forum.manjaro.org/ and start a new support topic and paste the copied messaage ass the main post, but only after checking if the issue hasn't been asked and resolved already.
-Remember that a forum account is required for creating a new support request and that the forum is manned by volunteers, so no demand can be madee on their time.
-Please see https://forum.manjaro.org/t/howto-request-support/91463 for more information and guides to request support.
-"
-fi
-# Some of the logs are only stored in RAM, so will be cleared on shutdown or restart.
+# if [[ $? = 0 ]];
+# then
+#     echo
+#     echo "Message to start forum topic successfully copied to clipboard.
+# Please visit https://forum.manjaro.org/ and start a new support topic and paste the copied messaage ass the main post, but only after checking if the issue hasn't been asked and resolved already.
+# Remember that a forum account is required for creating a new support request and that the forum is manned by volunteers, so no demand can be madee on their time.
+# Please see https://forum.manjaro.org/t/howto-request-support/91463 for more information and guides to request support.
+# "
+# fi
+# Some of the logs are only stored in RAM, so will be cleared on shutdown or restart, but let's take care of older log files.
 printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Cleaning older log files...${TEXTFORMATTING[NORMAL]}"
 (cd /var/log/manjaro-update-helper && ls -tr | head -n -5 | xargs -I{} rm --force)
-
-
 # Unset any and all variables, functions and whatever else was used.
 unset TEXTFORMATTING UPDATES_AVAILABLE CONTINUEUPDATE RUNTIMESTAMP RUNDATE BACKUP_COMMAND_RESULT LOGSDIR SYSUPDLOGFILE UPGRADE_AUR_RESULT NEWMERGE_RESULT COPYOFFICIALCHOICE COPYAURCHOICE SYSTEMINFO MESSAGE
