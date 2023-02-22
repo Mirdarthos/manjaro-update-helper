@@ -304,13 +304,45 @@ then
     COPYAURCHOICE=${COPYAURCHOICE:-N}
 fi
 
-###
-# START post generation section
-###
-# Get the information required for a standard forum post
+# Get the information required for the logs as well as a generated forum post
 SYSTEMINFO=$(inxi --admin --verbosity=7 --filter --no-host --width)
 MIRRORSTATUS=$(pacman-mirrors --status)
 
+###
+# START logging section
+###
+LOGMESSAGE="${RUNDATE} upgrade log:
+Official package upgrades:
+
+$(cat "$SYSUPDLOGFILE")
+
+AUR packacge upgrade:
+
+$(cat "$AURUPDLOGFILE")
+
+Mirror status:
+
+${MIRRORSTATUS}
+
+System information:
+(inxi --admin --verbosity=7 --filter --no-host --width)::
+
+${SYSTEMINFO}
+"
+
+echo "${LOGMESSAGE}" > "${LOGSDIR}""/${RUNTIMESTAMP}.update.log"
+LOGCREATION=$?
+if [[ "${LOGCREATION}" -eq "0" ]];
+then
+    printf '%s\n' "${TEXTFORMATTING[GREEEN]}${TEXTFORMATTING[BRIGHT]}MUMUH logs stored at: ${LOGSDIR}""/${RUNTIMESTAMP}.update.log${TEXTFORMATTING[NORMAL]}"
+fi
+###
+# END logging section
+###
+
+###
+# START post generation section
+###
 # Compose a forum message.
 if [[ $COPYOFFICIALCHOICE =~ [Yy] ]] || [[ $COPYAURCHOICE =~ [Yy] ]];
 then
@@ -379,7 +411,7 @@ fi
 ###
 
 # Copy the message to a (temporary) log, as well as to the clipboard.
-[[ $(echo "${MESSAGE}" | tee "${LOGSDIR}""/${RUNTIMESTAMP}.update.log" | xclip -selection clipboard) ]] && printf 'Update successfully completed.\nDesired information copied successfully.\n'
+# [[ $(echo "${MESSAGE}" | tee "${LOGSDIR}""/${RUNTIMESTAMP}.update.log" | xclip -selection clipboard) ]] && printf 'Update successfully completed.\nDesired information copied successfully.\n'
 
 # Copy the log for more permanent storage, so that it can be retrived later
 [[ ! -d "/var/log/manjaro-update-helper" ]] && sudo mkdir "/var/log/manjaro-update-helper"
