@@ -121,7 +121,7 @@ fi
 # Make sure the script isnt's being run as root
 [ "$(id -u)" -eq "0" ] && printf '%s\n' "${TEXTFORMATTING[BRIGHT]}You are attempting to run the script as root which isn't allowed. Exiting.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err && exit 1
 
-# For making eval statements safe later in the script
+# For making eval statements safer later in the script
 function token_quote {
     local quoted=()
     for token; do
