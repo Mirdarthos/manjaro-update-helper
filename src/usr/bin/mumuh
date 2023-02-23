@@ -193,7 +193,6 @@ then
     BACKUP_COMMAND_RESULT=0
     printf '%s\n' "${TEXTFORMATTING[YELLOW]}${TEXTFORMATTING[BRIGHT]}Skipping backup creation.${TEXTFORMATTING[NORMAL]}"
 fi
-
 ###
 # END backup section
 ###
@@ -206,17 +205,16 @@ if [[ $BACKUP_COMMAND_RESULT -eq 0 ]];
 then
     if [ -z ${LOGSDIR+x} ];
     then
-        echo "\$LOGSDIR is unset. Cannot log process";
+        printf '%s\n' "${TEXTFORMATTING[RED]}${TEXTFORMATTING[BRIGHT]}\$LOGSDIR${TEXTFORMATTING[NORMAL]}${TEXTFORMATTING[RED]} is unset. Cannot log process.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
         LOGSDIR=""
     else
-        touch "$LOGSDIR""/system-upgrade.output";
-        SYSUPDLOGFILE=$LOGSDIR"/system-upgrade.output";
+        touch "${LOGSDIR}/system-upgrade.output";
+        SYSUPDLOGFILE="${LOGSDIR}/system-upgrade.output";
     fi
     if [[ -z ${SKIPBACKUP+x} ]];
     then
         echo
-        echo -e '\033[0;92mPre-upgrade backup snapshot successfully created. Continuing with upgrade...\e[0m' | tee /dev/tty | systemd-cat --identifier=mumuh --priority=info
-        echo
+        printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}Pre-upgrade backup snapshot successfully created. ${TEXTFORMATTING[NORMAL]}${TEXTFORMATTING[GREEN]}Continuing with upgrade...${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=info
     fi
     PAMAC_CLI_AUTH=1 pamac upgrade --force-refresh --enable-downgrade > >(tee --append "${SYSUPDLOGFILE}")
     UPGRADE_OFFICIAL_RESULT=$?
@@ -229,11 +227,12 @@ then
         fi
         if [ -z ${LOGSDIR+x} ];
         then
-            echo "\$LOGSDIR is unset. Cannot log process";
+            echo
+            printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}\$LOGSDIR is unset. Cannot log process. ${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=warn
             LOGSDIR=""
         else
-            touch "$LOGSDIR""/aur-upgrade.output";
-            AURUPDLOGFILE=$LOGSDIR"/aur-upgrade.output";
+            touch "$LOGSDIR""/aur-upgrade.output"
+            AURUPDLOGFILE=$LOGSDIR"/aur-upgrade.output"
         fi
         # Let's update AUR packages now.
         PAMAC_CLI_AUTH=1 pamac upgrade --enable-downgrade --aur --devel  > >(tee --append "${AURUPDLOGFILE}")
@@ -245,7 +244,7 @@ then
             then
                 kdialog --title="System upgrade" --passivepopup="<b>AUR package</b> upgrade successful, using <code>pamac upgrade</code> successfully finished." 5
             fi
-            echo -e '\033[0;92mAUR package upgrade, using pamac upgrade, successfully finished.\e[0m' | tee /dev/tty | systemd-cat --identifier=mumuh --priority=info
+            printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}AUR package upgrade, using pamac upgrade, successfully finished.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=info
             # An now, we have to merge any .pacnew files.
             sudo DIFFPROG=meld pacdiff
             NEWMERGE_RESULT=$?
@@ -256,18 +255,18 @@ then
                 then
                     kdialog --title="System upgrade" --passivepopup="<b><code>.pacnew</code></b> files successfully, merged." 5
                 fi
-                echo -e '\033[0;92m.pacnew files successfully merged.\e[0m' | tee /dev/tty | systemd-cat --identifier=mumuh --priority=info
+                printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}.pacnew files successfully merged.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=info
             else
-                echo -e '\033[0;91mAn error occurred during merging of the .pacnew files.\e[0m' | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
+                printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occurred during merging of the .pacnew files.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
                 exit 6
             fi
         # Show noptification that the AUR packages' update was unsuccessful.
         else
             if command -v kdialog &> /dev/null
             then
-                kdialog --ok-label='OK' --msgbox="<b>AUR package</b>(s) upgrade failed using <b><code>pamac upgrade</code></b>.<br /><b><i>Human intervention required.</b></i><br/></b>Not continuing.</b>"
+                kdialog --ok-label='OK' --msgbox="<b>AUR package</b>(s) upgrade failed using <b><code>pamac upgrade --enable-downgrade --aur --devel</code></b>.<br /><b><i>Human intervention required.</b></i><br/></b>Not continuing.</b>"
             fi
-            echo -e '\033[0;91mAUR package using pamac upgrade failed.\e[0m' | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
+            printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}AUR package using pamac upgrade --enable-downgrade --aur --devel failed.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
             exit 5
         fi
     # Show notification that official packackages' updates was unsuccessful.
@@ -280,7 +279,7 @@ then
     fi
 else # If timeshift wasn't successful, notify, log and exit.
     echo
-    echo -e '\033[0;91m!!! An error occurred while making the pre-update backup snapshot. Not continuing. !!! \e[0m'  | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}!!! An error occurred while making the pre-update backup snapshot. Not continuing. !!!${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
     if command -v kdialog &> /dev/null
     then
         kdialog --ok-label='OK' --msgbox="An error occurred while making the backup snapshot.<br /><br/> </b>Not continuing.</b>"
@@ -289,7 +288,7 @@ else # If timeshift wasn't successful, notify, log and exit.
     exit 3
 fi
 ###
-# END backup section
+# END bupgradeackup section
 ###
 # If there were errors with the official packages' upgrade, show prompt about copying the process' output to the clipboard.
 if [[ $UPGRADE_OFFICIAL_RESULT -ne 0 ]];
