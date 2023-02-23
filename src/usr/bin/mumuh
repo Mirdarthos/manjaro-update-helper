@@ -117,9 +117,30 @@ then
         esac
     done
 fi
+# Configure a few variables to be used throughout the script
+RUNTIMESTAMP=$(date +%Y.%m.%d@%H:%M)
+RUNDATE=$(echo "$RUNTIMESTAMP" | awk -F'@' '{print $1}')
+
+# Create the logs directory
+[[ ! -d "/var/log/manjaro-update/logs.${RUNDATE}" ]] && mkdir --parents "/var/log/manjaro-update/logs.${RUNDATE}"
+[[ -d "/var/log/manjaro-update/logs.${RUNDATE}" ]] && LOGSDIR="/var/log/manjaro-update/logs.${RUNDATE}"
+# Create the log files
+if [ -z ${LOGSDIR+x} ];
+then
+    printf '%s\n' "${TEXTFORMATTING[RED]}${TEXTFORMATTING[BRIGHT]}\$LOGSDIR${TEXTFORMATTING[NORMAL]}${TEXTFORMATTING[RED]} is unset. Cannot log process.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=warn
+    LOGSDIR=""
+else
+    touch "${LOGSDIR}/system-upgrade.output" && SYSDUPLOGFILE="${LOGSDIR}/system-upgrade.output"
+    touch "${LOGSDIR}/aur-upgrade.output" && AURUPDLOGFILE="${LOGSDIR}/aur-upgrade.output"
+fi
 
 # Make sure the script isnt's being run as root
-[ "$(id -u)" -eq "0" ] && printf '%s\n' "${TEXTFORMATTING[BRIGHT]}You are attempting to run the script as root which isn't allowed. Exiting.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err && exit 1
+if [[ "$(id -u)" -eq "0" ]];
+then
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}You are attempting to run the script as root which isn't allowed. Exiting.${TEXTFORMATTING[NORMAL]}"
+    echo "Attempting to run the script as root.  Exiting." >> "${SYSDUPLOGFILE}"
+    exit 1
+fi
 
 # For making eval statements safer later in the script
 function token_quote {
@@ -131,19 +152,15 @@ function token_quote {
 }
 
 # Check that there are updates, and confirm with the use whether to apply them or not.
-UPDATES_AVAILABLE=$(pamac checkupdates | head -n 1 | awk '{print $1}')
+printf '%s\n' "[%s]: Official packages to upgrade:" "$(date +%Y.%m.%d@%H:%M)" "${SYSDUPLOGFILE}" > "${SYSDUPLOGFILE}"
+UPDATES_AVAILABLE=$(pamac checkupdates | head -n 1 | tee --append "${SYSDUPLOGFILE}" | awk '{print $1}')
 [[ $UPDATES_AVAILABLE -gt 0 ]] && read -r -p "There are ${TEXTFORMATTING[BRIGHT]}${UPDATES_AVAILABLE}${TEXTFORMATTING[NORMAL]} updates available, continue? [Y/n]: " CONTINUEUPDATE
 CONTINUEUPDATE=${CONTINUEUPDATE:-Y}
 if [[ ${CONTINUEUPDATE} =~ [nN] ]];
 then
-    echo "Upgrade cancelled." | tee /dev/tty | systemd-cat --identifier=mumuh && exit 7
+    printf "[%s]: Upgrade cancelled.\n" "$(date +%Y.%m.%d@%H:%M)" > "${SYSDUPLOGFILE}" 
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}Upgrade cancelled.${TEXTFORMATTING[NORMAL]}" |  systemd-cat --identifier=mumuh && exit 7
 fi
-RUNTIMESTAMP=$(date +%Y.%m.%d@%H:%M)
-RUNDATE=$(echo "$RUNTIMESTAMP" | awk -F'@' '{print $1}')
-
-# Create temporary logs directory
-[[ ! -d "/tmp/manjaro-update" ]] && mkdir --parents "/tmp/manjaro-update/logs.${RUNDATE}"
-[[ -d "/tmp/manjaro-update/logs.${RUNDATE}" ]] && LOGSDIR="/tmp/manjaro-update/logs.${RUNDATE}"
 
 # Functionality to accomplish this has been added with the --addsudoers or -a argument
 # --------------------------------------------------------------------------------------------------
@@ -203,43 +220,29 @@ fi
 # If the backup was successful, continue with the upgrade
 if [[ $BACKUP_COMMAND_RESULT -eq 0 ]];
 then
-    if [ -z ${LOGSDIR+x} ];
-    then
-        printf '%s\n' "${TEXTFORMATTING[RED]}${TEXTFORMATTING[BRIGHT]}\$LOGSDIR${TEXTFORMATTING[NORMAL]}${TEXTFORMATTING[RED]} is unset. Cannot log process.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
-        LOGSDIR=""
-    else
-        touch "${LOGSDIR}/system-upgrade.output";
-        SYSUPDLOGFILE="${LOGSDIR}/system-upgrade.output";
-    fi
     if [[ -z ${SKIPBACKUP+x} ]];
     then
-        echo
-        printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}Pre-upgrade backup snapshot successfully created. ${TEXTFORMATTING[NORMAL]}${TEXTFORMATTING[GREEN]}Continuing with upgrade...${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=info
+        printf '%s\n' "[%s]: Pre-upgrade backup snapshot successfully created.\n" "$(date +%Y.%m.%d@%H:%M)" >> "${SYSDUPLOGFILE}"
+        printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}Pre-upgrade backup snapshot successfully created. ${TEXTFORMATTING[NORMAL]}${TEXTFORMATTING[GREEN]}Continuing with upgrade...${TEXTFORMATTING[NORMAL]}"
     fi
     PAMAC_CLI_AUTH=1 pamac upgrade --force-refresh --enable-downgrade > >(tee --append "${SYSUPDLOGFILE}")
     UPGRADE_OFFICIAL_RESULT=$?
     # Check if the official update from the repositories is successful, and if so continue with the AUR upgrade.
     if [ "${UPGRADE_OFFICIAL_RESULT}" -eq "0" ];
     then
+        printf "[%s]: Packages upgraded successfully from the official repositories.\n" "$(date +%Y.%m.%d@%H:%M)" >> "${SYSDUPLOGFILE}"
         if command -v kdialog &> /dev/null
         then
             kdialog --title="System upgrade" --passivepopup="<b>Official package</b> upgrade successful, using <code>pamac upgrade</code> successfully finished." 5
         fi
-        if [ -z ${LOGSDIR+x} ];
-        then
-            echo
-            printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}\$LOGSDIR is unset. Cannot log process. ${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=warn
-            LOGSDIR=""
-        else
-            touch "$LOGSDIR""/aur-upgrade.output"
-            AURUPDLOGFILE=$LOGSDIR"/aur-upgrade.output"
-        fi
         # Let's update AUR packages now.
+        printf '%s\n' "[%s]: AUR packages to upgrade:" "$(date +%Y.%m.%d@%H:%M)" "${AURUPDLOGFILE}" > "${AURUPDLOGFILE}"
         PAMAC_CLI_AUTH=1 pamac upgrade --enable-downgrade --aur --devel  > >(tee --append "${AURUPDLOGFILE}")
         UPGRADE_AUR_RESULT=$?
         # Check if AUR packages' upgrade was successful, and if so, continue with merging .pacnew files.
         if [ "${UPGRADE_AUR_RESULT}" -eq "0" ];
         then
+            printf '%s\n' "[%s]: Packages upgraded successfully from the official repositories.\n" "$(date +%Y.%m.%d@%H:%M)" >> "${AURUPDLOGFILE}"
             if command -v kdialog &> /dev/null
             then
                 kdialog --title="System upgrade" --passivepopup="<b>AUR package</b> upgrade successful, using <code>pamac upgrade</code> successfully finished." 5
@@ -255,17 +258,19 @@ then
                 then
                     kdialog --title="System upgrade" --passivepopup="<b><code>.pacnew</code></b> files successfully, merged." 5
                 fi
+                printf '%s\n' "[%s]: Successfully merged .pacnew files." "$(date +%Y.%m.%d@%H:%M)" >> "${SYSDUPLOGFILE}"
                 printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}.pacnew files successfully merged.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=info
             else
                 printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occurred during merging of the .pacnew files.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
                 exit 6
             fi
-        # Show noptification that the AUR packages' update was unsuccessful.
+        # Show notification that the AUR packages' update was unsuccessful.
         else
             if command -v kdialog &> /dev/null
             then
                 kdialog --ok-label='OK' --msgbox="<b>AUR package</b>(s) upgrade failed using <b><code>pamac upgrade --enable-downgrade --aur --devel</code></b>.<br /><b><i>Human intervention required.</b></i><br/></b>Not continuing.</b>"
             fi
+            printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}AUR package using pamac upgrade --enable-downgrade --aur --devel failed.${TEXTFORMATTING[NORMAL]}" >> "${SYSDUPLOGFILE}"
             printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}AUR package using pamac upgrade --enable-downgrade --aur --devel failed.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
             exit 5
         fi
