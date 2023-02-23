@@ -288,7 +288,7 @@ else # If timeshift wasn't successful, notify, log and exit.
     exit 3
 fi
 ###
-# END bupgradeackup section
+# END upgrade section
 ###
 # If there were errors with the official packages' upgrade, show prompt about copying the process' output to the clipboard.
 if [[ $UPGRADE_OFFICIAL_RESULT -ne 0 ]];
