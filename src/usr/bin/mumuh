@@ -200,8 +200,23 @@ while IFS= read -r line; do
 done <<< "${MIRRORSTATUS}"
 if [[ "${UNSYNCDMIRRORS}" -gt "0" ]];
 then
-    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}${MIRRORSTATUS} mirrors remain unsynchronized and could cause problems. Not continuing."
-    printf "[%s]: ${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}${MIRRORSTATUS} mirrors remain unsynchronized and could cause problems. Not continuing.\n" "$(date +%Y.%m.%d@%H:%M:S)" >> "${SYSDUPLOGFILE}"
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}${UNSYNCDMIRRORS} mirrors remain unsynchronized and could cause problems.${TEXTFORMATTING[NORMAL]}"
+    read -r -p "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}${UNSYNCDMIRRORS} mirrors remain unsynchronized and could cause problems.${TEXTFORMATTING[NORMAL]} [y/N]: " CONTTINUECHOICE
+    if [[ $COPYOFFICIALCHOICE =~ [Nn] ]];
+    then
+        printf "There were %s unsynchronised mirrors. Not continuing." "${UNSYNCDMIRRORS}" >> "${SYSDUPLOGFILE}"
+    elif [[ $COPYOFFICIALCHOICE =~ [Yy] ]];
+    then
+        printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}You are conrinuing even though you are using unsynchronised mirrors.${TEXTFORMATTING[RED]}"
+        printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}This is dangerous and known to cause problems and thus not recommended.${TEXTFORMATTING[RED]}"
+        read -r -p "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Please confirm if you wish to continue by pressing C.${TEXTFORMATTING[RED]} [C/N]: " CONFIRMCONTINUECHOICE
+        if [[ $CONFIRMCONTINUECHOICE != "C" ]];
+        then
+            printf '%s\n' "Did not confirm. Exiting."
+            exit 12
+        fi
+
+    fi
     exit 11
 fi
 ###
