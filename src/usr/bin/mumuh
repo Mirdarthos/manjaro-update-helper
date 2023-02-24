@@ -132,6 +132,7 @@ then
 else
     touch "${LOGSDIR}/system-upgrade.output" && SYSDUPLOGFILE="${LOGSDIR}/system-upgrade.output"
     touch "${LOGSDIR}/aur-upgrade.output" && AURUPDLOGFILE="${LOGSDIR}/aur-upgrade.output"
+    UPGRADEERRORS=0
 fi
 
 # Make sure the script isnt's being run as root
@@ -172,6 +173,26 @@ fi
 # This will allow all "timeshift" commands to be run with 'sudo' withoout requiring a password
 # If choosing to add the current user to sudoers, with the '-a' or '--addsudoers' arguments, this will be done automatically.
 # BUT BE CAREFUL WITH sudoers. You can lock yourself out of your system with it. Hence the recommendation to create a new file in /etc/sudoers.d/
+
+###
+# START mirror checking section
+###
+MIRRORSTATUS=$(pacman-mirrors --status)
+UNSYNCDMIRRORS=0
+while IFS= read -r line; do
+    if [[ "$line" == *"OK"* ]];
+    then
+        UNSYNCDMIRRORS=$(echo "${UNSYNCDMIRRORS}+1" | bc)
+    fi
+done <<< "${MIRRORSTATUS}"
+if [[ "${UNSYNCDMIRRORS}" -gt "0" ]];
+then
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}${MIRRORSTATUS} mirrors remain unsynchronized and could cause problems. Not continuing."
+    exit 11
+fi
+###
+# END mirror checking section
+###
 
 ###
 # START backup section
@@ -236,13 +257,13 @@ then
             kdialog --title="System upgrade" --passivepopup="<b>Official package</b> upgrade successful, using <code>pamac upgrade</code> successfully finished." 5
         fi
         # Let's update AUR packages now.
-        printf '%s\n' "[%s]: AUR packages to upgrade:" "$(date +%Y.%m.%d@%H:%M)" "${AURUPDLOGFILE}" > "${AURUPDLOGFILE}"
+        echo "[$(date +%Y.%m.%d@%H:%M)]: AUR packages to upgrade:" > "${AURUPDLOGFILE}"
         PAMAC_CLI_AUTH=1 pamac upgrade --enable-downgrade --aur --devel  > >(tee --append "${AURUPDLOGFILE}")
         UPGRADE_AUR_RESULT=$?
         # Check if AUR packages' upgrade was successful, and if so, continue with merging .pacnew files.
         if [ "${UPGRADE_AUR_RESULT}" -eq "0" ];
         then
-            printf '%s\n' "[%s]: Packages upgraded successfully from the official repositories.\n" "$(date +%Y.%m.%d@%H:%M)" >> "${AURUPDLOGFILE}"
+            echo "[$(date +%Y.%m.%d@%H:%M)]: Packages upgraded successfully from the official repositories." >> "${AURUPDLOGFILE}"
             if command -v kdialog &> /dev/null
             then
                 kdialog --title="System upgrade" --passivepopup="<b>AUR package</b> upgrade successful, using <code>pamac upgrade</code> successfully finished." 5
@@ -258,7 +279,7 @@ then
                 then
                     kdialog --title="System upgrade" --passivepopup="<b><code>.pacnew</code></b> files successfully, merged." 5
                 fi
-                printf '%s\n' "[%s]: Successfully merged .pacnew files." "$(date +%Y.%m.%d@%H:%M)" >> "${SYSDUPLOGFILE}"
+                echo "[$(date +%Y.%m.%d@%H:%M)]: Successfully merged .pacnew files." >> "${SYSDUPLOGFILE}"
                 printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}.pacnew files successfully merged.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=info
             else
                 printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occurred during merging of the .pacnew files.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
@@ -270,7 +291,7 @@ then
             then
                 kdialog --ok-label='OK' --msgbox="<b>AUR package</b>(s) upgrade failed using <b><code>pamac upgrade --enable-downgrade --aur --devel</code></b>.<br /><b><i>Human intervention required.</b></i><br/></b>Not continuing.</b>"
             fi
-            printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}AUR package using pamac upgrade --enable-downgrade --aur --devel failed.${TEXTFORMATTING[NORMAL]}" >> "${SYSDUPLOGFILE}"
+            echo "AUR package using pamac upgrade --enable-downgrade --aur --devel failed." >> "${SYSDUPLOGFILE}"
             printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}AUR package using pamac upgrade --enable-downgrade --aur --devel failed.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
             exit 5
         fi
@@ -279,6 +300,7 @@ then
         if command -v kdialog &> /dev/null
         then
             kdialog --ok-label='OK' --msgbox="There was an error during the upgrade procedure using <b><code>pamac upgrade</code></b>.<br /><b><i>Human intervention required.</b></i>"
+            UPGRADEERRORS=$(echo "${UPGRADEERRORS} + 1" | bc)
         fi
         exit 4
     fi
@@ -295,57 +317,29 @@ fi
 ###
 # END upgrade section
 ###
-# If there were errors with the official packages' upgrade, show prompt about copying the process' output to the clipboard.
-if [[ $UPGRADE_OFFICIAL_RESULT -ne 0 ]];
-then
-    read -r -p "There were errors while performing the updates from the official repositories. Copy result? [y/N]: " COPYOFFICIALCHOICE
-    COPYOFFICIALCHOICE=${COPYOFFICIALCHOICE:-N}
-fi
-# If there were errors with the AUR packages' upgrade, show prompt about copying the process' output to the clipboard.
-if [[ $UPGRADE_AUR_RESULT -ne 0 ]];
-then
-    read -r -p "There were errors while performing the updates from the AUR. Copy result? [y/N]: " COPYAURCHOICE
-    COPYAURCHOICE=${COPYAURCHOICE:-N}
-fi
 
 # Get the information required for the logs as well as a generated forum post
 SYSTEMINFO=$(inxi --admin --verbosity=7 --filter --no-host --width)
-MIRRORSTATUS=$(pacman-mirrors --status)
 
-###
-# START logging section
-###
-LOGMESSAGE="${RUNDATE} upgrade log:
-Official package upgrades:
-
-$(cat "$SYSUPDLOGFILE")
-
-AUR packacge upgrade:
-
-$(cat "$AURUPDLOGFILE")
-
-Mirror status:
-
-${MIRRORSTATUS}
-
-System information (inxi --admin --verbosity=7 --filter --no-host --width):
-
-${SYSTEMINFO}
-"
-
-# Copy the log for more permanent storage, so that it can be retrived later
-[[ ! -d "/var/log/manjaro-update-helper" ]] && sudo mkdir "/var/log/manjaro-update-helper"
-if [[ $("${LOGMESSAGE}" > "${LOGSDIR}""/${RUNTIMESTAMP}.update.log") ]]; then
-    printf '%s\n' "${TEXTFORMATTING[GREEEN]}Log output successfully saved to ${TEXTFORMATTING[BRIGHT]}/var/log/manjaro-update-helper/${RUNTIMESTAMP}.update.log${TEXTFORMATTING[NORMAL]}"
-    notify-send --urgency=info --icon=checkbox --app-name="MUMUH" "Mumuh upgrade" "\n\nLogfile saved at \<code\>\/var/log/manjaro-update-helper/${RUNTIMESTAMP}.update.log<\/code\>"
+if [[ "${UPGRADEERRORS}" -gt "0" ]];
+then
+    # If there were errors with the official packages' upgrade, show prompt about copying the process' output to the clipboard.
+    if [[ $UPGRADE_OFFICIAL_RESULT -ne 0 ]];
+    then
+        read -r -p "There were errors while performing the updates from the official repositories. Copy result? [y/N]: " COPYOFFICIALCHOICE
+        COPYOFFICIALCHOICE=${COPYOFFICIALCHOICE:-N}
+    fi
+    # If there were errors with the AUR packages' upgrade, show prompt about copying the process' output to the clipboard.
+    if [[ $UPGRADE_AUR_RESULT -ne 0 ]];
+    then
+        read -r -p "There were errors while performing the updates from the AUR. Copy result? [y/N]: " COPYAURCHOICE
+        COPYAURCHOICE=${COPYAURCHOICE:-N}
+    fi
 fi
-###
-# END logging section
-###
-
 ###
 # START post generation section
 ###
+
 # Compose a forum message.
 if [[ $COPYOFFICIALCHOICE =~ [Yy] ]] || [[ $COPYAURCHOICE =~ [Yy] ]];
 then
