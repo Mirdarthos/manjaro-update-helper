@@ -202,7 +202,7 @@ if [[ "${UNSYNCDMIRRORS}" -gt "0" ]];
 then
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}${UNSYNCDMIRRORS} mirrors remain unsynchronized and could cause problems.${TEXTFORMATTING[NORMAL]}"
     read -r -p "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}${UNSYNCDMIRRORS} mirrors remain unsynchronized and could cause problems.${TEXTFORMATTING[NORMAL]} [y/N]: " CONTTINUECHOICE
-    if [[ $COPYOFFICIALCHOICE =~ [Nn] ]];
+    if [[ $CONTTINUECHOICE =~ [Nn] ]];
     then
         printf "There were %s unsynchronised mirrors. Not continuing." "${UNSYNCDMIRRORS}" >> "${SYSDUPLOGFILE}"
     elif [[ $COPYOFFICIALCHOICE =~ [Yy] ]];
