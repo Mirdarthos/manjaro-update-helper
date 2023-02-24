@@ -118,12 +118,25 @@ then
     done
 fi
 # Configure a few variables to be used throughout the script
-RUNTIMESTAMP=$(date +%Y.%m.%d@%H:%M)
+RUNTIMESTAMP=$(date +%Y.%m.%d@%Hh%Mm)
 RUNDATE=$(echo "$RUNTIMESTAMP" | awk -F'@' '{print $1}')
 
 # Create the logs directory
-[[ ! -d "/var/log/manjaro-update/logs.${RUNTIMESTAMP}" ]] && mkdir --parents "/var/log/manjaro-update/logs.${RUNTIMESTAMP}"
-[[ -d "/var/log/manjaro-update/logs.${RUNTIMESTAMP}" ]] && LOGSDIR="/var/log/manjaro-update/logs.${RUNTIMESTAMP}"
+if [[ ! -d "/var/log/manjaro-update" ]];
+then
+    sudo mkdir --mode=470 "/var/log/manjaro-update"
+    sudo chgrp wheel "/var/log/manjaro-update"
+fi
+if [[ -d "/var/log/manjaro-update/" ]];
+then
+    mkdir --mode=755 "/var/log/manjaro-update/logs.${RUNTIMESTAMP}"
+    sudo chgrp wheel "/var/log/manjaro-update/logs.${RUNTIMESTAMP}"
+fi
+if [[ -d "/var/log/manjaro-update/logs.${RUNTIMESTAMP}" ]];
+then
+    LOGSDIR="/var/log/manjaro-update/logs.${RUNTIMESTAMP}"
+fi
+
 # Create the log files
 if [ -z ${LOGSDIR+x} ];
 then
@@ -153,8 +166,8 @@ function token_quote {
 }
 
 # Check that there are updates, and confirm with the use whether to apply them or not.
-printf "[%s]: Official packages to upgrade:\n" "$(date +%Y.%m.%d@%H:%M:S)" >> "${SYSDUPLOGFILE}"
-UPDATES_AVAILABLE=$(pamac checkupdates | head -n 1 | tee --append "${SYSDUPLOGFILE}" | awk '{print $1}')
+UPDATES_AVAILABLE=$(pamac checkupdates | head -n 1  | awk '{print $1}')
+printf "[%s]: %s Official packages to upgrade:\n" "$(date +%Y.%m.%d@%H:%M:S)" "${UPDATES_AVAILABLE}" >> "${SYSDUPLOGFILE}"
 [[ $UPDATES_AVAILABLE -gt 0 ]] && read -r -p "There are ${TEXTFORMATTING[BRIGHT]}${UPDATES_AVAILABLE}${TEXTFORMATTING[NORMAL]} updates available, continue? [Y/n]: " CONTINUEUPDATE
 CONTINUEUPDATE=${CONTINUEUPDATE:-Y}
 if [[ ${CONTINUEUPDATE} =~ [nN] ]];
