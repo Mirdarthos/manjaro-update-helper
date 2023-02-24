@@ -159,7 +159,7 @@ UPDATES_AVAILABLE=$(pamac checkupdates | head -n 1 | tee --append "${SYSDUPLOGFI
 CONTINUEUPDATE=${CONTINUEUPDATE:-Y}
 if [[ ${CONTINUEUPDATE} =~ [nN] ]];
 then
-    printf "[%s]: Upgrade cancelled.\n" "$(date +%Y.%m.%d@%H:%M)" > "${SYSDUPLOGFILE}" 
+    printf "[%s]: Upgrade cancelled.\n" "$(date +%Y.%m.%d@%H:%M)" > "${SYSDUPLOGFILE}"
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}Upgrade cancelled.${TEXTFORMATTING[NORMAL]}" |  systemd-cat --identifier=mumuh && exit 7
 fi
 
@@ -243,7 +243,7 @@ if [[ $BACKUP_COMMAND_RESULT -eq 0 ]];
 then
     if [[ -z ${SKIPBACKUP+x} ]];
     then
-        printf '%s\n' "[%s]: Pre-upgrade backup snapshot successfully created.\n" "$(date +%Y.%m.%d@%H:%M)" >> "${SYSDUPLOGFILE}"
+        printf "[%s]: Pre-upgrade backup snapshot successfully created.\n" "$(date +%Y.%m.%d@%H:%M:%S)" >> "${SYSDUPLOGFILE}"
         printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}Pre-upgrade backup snapshot successfully created. ${TEXTFORMATTING[NORMAL]}${TEXTFORMATTING[GREEN]}Continuing with upgrade...${TEXTFORMATTING[NORMAL]}"
     fi
     PAMAC_CLI_AUTH=1 pamac upgrade --force-refresh --enable-downgrade > >(tee --append "${SYSUPDLOGFILE}")
@@ -257,13 +257,13 @@ then
             kdialog --title="System upgrade" --passivepopup="<b>Official package</b> upgrade successful, using <code>pamac upgrade</code> successfully finished." 5
         fi
         # Let's update AUR packages now.
-        echo "[$(date +%Y.%m.%d@%H:%M)]: AUR packages to upgrade:" > "${AURUPDLOGFILE}"
+        printf "[%s]: AUR packages to upgrade:\n" "$(date +%Y.%m.%d@%H:%M:%S)" >> "${AURUPDLOGFILE}"
         PAMAC_CLI_AUTH=1 pamac upgrade --enable-downgrade --aur --devel  > >(tee --append "${AURUPDLOGFILE}")
         UPGRADE_AUR_RESULT=$?
         # Check if AUR packages' upgrade was successful, and if so, continue with merging .pacnew files.
         if [ "${UPGRADE_AUR_RESULT}" -eq "0" ];
         then
-            echo "[$(date +%Y.%m.%d@%H:%M)]: Packages upgraded successfully from the official repositories." >> "${AURUPDLOGFILE}"
+            printf "[%s]: Packages upgraded successfully from the AUR.\n" "$(date +%Y.%m.%d@%H:%M:%S)" >> "${AURUPDLOGFILE}"
             if command -v kdialog &> /dev/null
             then
                 kdialog --title="System upgrade" --passivepopup="<b>AUR package</b> upgrade successful, using <code>pamac upgrade</code> successfully finished." 5
@@ -279,7 +279,7 @@ then
                 then
                     kdialog --title="System upgrade" --passivepopup="<b><code>.pacnew</code></b> files successfully, merged." 5
                 fi
-                echo "[$(date +%Y.%m.%d@%H:%M)]: Successfully merged .pacnew files." >> "${SYSDUPLOGFILE}"
+                printf "[%s]: Successfully merged .pacnew files.\n" "$(date +%Y.%m.%d@%H:%M:%S)" >> "${SYSDUPLOGFILE}"
                 printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}.pacnew files successfully merged.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=info
             else
                 printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occurred during merging of the .pacnew files.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
@@ -291,7 +291,7 @@ then
             then
                 kdialog --ok-label='OK' --msgbox="<b>AUR package</b>(s) upgrade failed using <b><code>pamac upgrade --enable-downgrade --aur --devel</code></b>.<br /><b><i>Human intervention required.</b></i><br/></b>Not continuing.</b>"
             fi
-            echo "AUR package using pamac upgrade --enable-downgrade --aur --devel failed." >> "${SYSDUPLOGFILE}"
+            printf "[%s]: AUR package using pamac upgrade --enable-downgrade --aur --devel failed.\n" "$(date +%Y.%m.%d@%H:%M:%S)" >> "${SYSDUPLOGFILE}"
             printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}AUR package using pamac upgrade --enable-downgrade --aur --devel failed.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
             exit 5
         fi
