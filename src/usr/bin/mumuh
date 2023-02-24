@@ -122,8 +122,8 @@ RUNTIMESTAMP=$(date +%Y.%m.%d@%H:%M)
 RUNDATE=$(echo "$RUNTIMESTAMP" | awk -F'@' '{print $1}')
 
 # Create the logs directory
-[[ ! -d "/var/log/manjaro-update/logs.${RUNDATE}" ]] && mkdir --parents "/var/log/manjaro-update/logs.${RUNDATE}"
-[[ -d "/var/log/manjaro-update/logs.${RUNDATE}" ]] && LOGSDIR="/var/log/manjaro-update/logs.${RUNDATE}"
+[[ ! -d "/var/log/manjaro-update/logs.${RUNTIMESTAMP}" ]] && mkdir --parents "/var/log/manjaro-update/logs.${RUNTIMESTAMP}"
+[[ -d "/var/log/manjaro-update/logs.${RUNTIMESTAMP}" ]] && LOGSDIR="/var/log/manjaro-update/logs.${RUNTIMESTAMP}"
 # Create the log files
 if [ -z ${LOGSDIR+x} ];
 then
@@ -139,7 +139,7 @@ fi
 if [[ "$(id -u)" -eq "0" ]];
 then
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}You are attempting to run the script as root which isn't allowed. Exiting.${TEXTFORMATTING[NORMAL]}"
-    echo "Attempting to run the script as root.  Exiting." >> "${SYSDUPLOGFILE}"
+    printf "[%s]: Attempting to run the script as root. Exiting.\n" "$(date +%Y.%m.%d@%H:%M)" >> "${SYSDUPLOGFILE}"
     exit 1
 fi
 
@@ -153,13 +153,13 @@ function token_quote {
 }
 
 # Check that there are updates, and confirm with the use whether to apply them or not.
-printf '%s\n' "[%s]: Official packages to upgrade:" "$(date +%Y.%m.%d@%H:%M)" "${SYSDUPLOGFILE}" > "${SYSDUPLOGFILE}"
+printf "[%s]: Official packages to upgrade:\n" "$(date +%Y.%m.%d@%H:%M:S)" >> "${SYSDUPLOGFILE}"
 UPDATES_AVAILABLE=$(pamac checkupdates | head -n 1 | tee --append "${SYSDUPLOGFILE}" | awk '{print $1}')
 [[ $UPDATES_AVAILABLE -gt 0 ]] && read -r -p "There are ${TEXTFORMATTING[BRIGHT]}${UPDATES_AVAILABLE}${TEXTFORMATTING[NORMAL]} updates available, continue? [Y/n]: " CONTINUEUPDATE
 CONTINUEUPDATE=${CONTINUEUPDATE:-Y}
 if [[ ${CONTINUEUPDATE} =~ [nN] ]];
 then
-    printf "[%s]: Upgrade cancelled.\n" "$(date +%Y.%m.%d@%H:%M)" > "${SYSDUPLOGFILE}"
+    printf "[%s]: Upgrade cancelled.\n" "$(date +%Y.%m.%d@%H:%M:S)" >> "${SYSDUPLOGFILE}"
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}Upgrade cancelled.${TEXTFORMATTING[NORMAL]}" |  systemd-cat --identifier=mumuh && exit 7
 fi
 
@@ -188,6 +188,7 @@ done <<< "${MIRRORSTATUS}"
 if [[ "${UNSYNCDMIRRORS}" -gt "0" ]];
 then
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}${MIRRORSTATUS} mirrors remain unsynchronized and could cause problems. Not continuing."
+    printf "[%s]: ${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}${MIRRORSTATUS} mirrors remain unsynchronized and could cause problems. Not continuing.\n" "$(date +%Y.%m.%d@%H:%M:S)" >> "${SYSDUPLOGFILE}"
     exit 11
 fi
 ###
@@ -200,6 +201,7 @@ fi
 if [[ -z ${SKIPBACKUP+x} ]]; # Check if backup creating specified.
 then
     printf '%s\n' "* ${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Not skipping backup creation.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh
+    printf "[%s]: Not skipping backup creation.\n" "$(date +%Y.%m.%d@%H:%M:S)" >> "${SYSDUPLOGFILE}"
     if [[ -v CUSTOMBUCMD ]]; # Check if custom backup command specified.
     then
         BACKUPCMD=$CUSTOMBUCMD
@@ -208,8 +210,10 @@ then
         if ! command -v sudo timeshift 1> /dev/null 2> /dev/null
         then
             printf '%s\n' "* ${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Timeshift ${TEXTFORMATTING[RED]}not${TEXTFORMATTING[YELLOW]} found.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh
+            printf "[%s]: Timeshift not founnd.\n" "$(date +%Y.%m.%d@%H:%M:S)" >> "${SYSDUPLOGFILE}"
             echo
             printf '%s\n' "* ${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}Exiting.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh
+            printf "[%s]: Exiting.\n" "$(date +%Y.%m.%d@%H:%M:S)" >> "${SYSDUPLOGFILE}"
             exit 2
         else
             BACKUPCMD="sudo timeshift --create --comments \"$(date +%Y.%m.%d@%H:%M)\"' - Pre-update'"
@@ -217,11 +221,13 @@ then
     fi
 else # backup creation skipped
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Skipping backup creation.${TEXTFORMATTING[NORMAL]}"
+    printf "[%s]: Skipping backup creation.\n" "$(date +%Y.%m.%d@%H:%M:S)" >> "${SYSDUPLOGFILE}"
 fi
 
 if [[ -n ${BACKUPCMD+x} ]];
 then
     printf '%s\n' "Using ${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}${CUSTOMBUCMD}${TEXTFORMATTING[NORMAL]} to create the backup snapshot."
+    printf "[%s]: Using %s to create the backup snapshot.\n" "$(date +%Y.%m.%d@%H:%M:S)" "${CUSTOMBUCMD}" >> "${SYSDUPLOGFILE}"
     eval "${BACKUPCMD}"
     BACKUP_COMMAND_RESULT=$?
 fi
@@ -230,6 +236,7 @@ then
     # However, if it was given, set the output as a success, so the rest of the script can carry on.
     BACKUP_COMMAND_RESULT=0
     printf '%s\n' "${TEXTFORMATTING[YELLOW]}${TEXTFORMATTING[BRIGHT]}Skipping backup creation.${TEXTFORMATTING[NORMAL]}"
+    printf "[%s]: Skipping backup creation.\n" "$(date +%Y.%m.%d@%H:%M:S)" >> "${SYSDUPLOGFILE}"
 fi
 ###
 # END backup section
