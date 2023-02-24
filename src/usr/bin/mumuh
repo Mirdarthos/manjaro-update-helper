@@ -200,8 +200,8 @@ while IFS= read -r line; do
 done <<< "${MIRRORSTATUS}"
 if [[ "${UNSYNCDMIRRORS}" -gt "0" ]];
 then
-    printf "%s mirrors remain unsynchronized and could cause problems. Not continuing.\n" "${UNSYNCDMIRRORS}"
-    printf "[%s]: %s mirrors remain unsynchronized and could cause problems. Not continuing.\n" "$(date +%Y.%m.%d@%H:%M:S)" "${UNSYNCDMIRRORS}" >> "${SYSDUPLOGFILE}"
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}${MIRRORSTATUS} mirrors remain unsynchronized and could cause problems. Not continuing."
+    printf "[%s]: ${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}${MIRRORSTATUS} mirrors remain unsynchronized and could cause problems. Not continuing.\n" "$(date +%Y.%m.%d@%H:%M:S)" >> "${SYSDUPLOGFILE}"
     exit 11
 fi
 ###
