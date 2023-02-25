@@ -195,7 +195,7 @@ UNSYNCDMIRRORS=0
 while IFS= read -r line; do
     if [[ "$line" != *"OK"* ]];
     then
-        NSYNCDMIRRORS=$(echo "${UNSYNCDMIRRORS}+1" | bc)
+        UNSYNCDMIRRORS=$(echo "${UNSYNCDMIRRORS}+1" | bc)
     fi
 done <<< "${MIRRORSTATUS}"
 if [[ "${UNSYNCDMIRRORS}" -gt "0" ]];
