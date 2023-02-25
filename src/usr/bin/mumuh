@@ -124,7 +124,7 @@ RUNDATE=$(echo "$RUNTIMESTAMP" | awk -F'@' '{print $1}')
 # Create the logs directory
 if [[ ! -d "/var/log/manjaro-update" ]];
 then
-    sudo mkdir --mode=470 "/var/log/manjaro-update"
+    sudo mkdir --mode=770 "/var/log/manjaro-update"
     sudo chgrp wheel "/var/log/manjaro-update"
 fi
 if [[ -d "/var/log/manjaro-update/" ]];
@@ -195,12 +195,11 @@ UNSYNCDMIRRORS=0
 while IFS= read -r line; do
     if [[ "$line" != *"OK"* ]];
     then
-        UNSYNCDMIRRORS=$(echo "${UNSYNCDMIRRORS}+1" | bc)
+        NSYNCDMIRRORS=$(echo "${UNSYNCDMIRRORS}+1" | bc)
     fi
 done <<< "${MIRRORSTATUS}"
 if [[ "${UNSYNCDMIRRORS}" -gt "0" ]];
 then
-    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}${UNSYNCDMIRRORS} mirrors remain unsynchronized and could cause problems.${TEXTFORMATTING[NORMAL]}"
     read -r -p "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}${UNSYNCDMIRRORS} mirrors remain unsynchronized and could cause problems.${TEXTFORMATTING[NORMAL]} [y/N]: " CONTTINUECHOICE
     if [[ $CONTTINUECHOICE =~ [Nn] ]];
     then
