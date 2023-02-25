@@ -233,10 +233,10 @@ then
     then
         BACKUPCMD=$CUSTOMBUCMD
     else
-        printf '%s\n' "* ${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}No custom backup command specified.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh
+        printf '%s\n' "> ${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}No custom backup command specified.${TEXTFORMATTING[NORMAL]} <" | tee /dev/tty | systemd-cat --identifier=mumuh
         if ! command -v sudo timeshift 1> /dev/null 2> /dev/null
         then
-            printf '%s\n' "* ${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Timeshift ${TEXTFORMATTING[RED]}not${TEXTFORMATTING[YELLOW]} found.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh
+            printf '%s\n' "> ${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Timeshift ${TEXTFORMATTING[RED]}not${TEXTFORMATTING[YELLOW]} found.${TEXTFORMATTING[NORMAL]} <" | tee /dev/tty | systemd-cat --identifier=mumuh
             printf "[%s]: Timeshift not founnd.\n" "$(date +%Y.%m.%d@%H:%M:S)" >> "${SYSDUPLOGFILE}"
             echo
             printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}Exiting.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh
