@@ -385,7 +385,17 @@ fi
 # If chosen, add official update output.
 if [[ $COPYOFFICIALCHOICE =~ [Yy] ]];
 then
+    UPGRADEOFFPKGAMNT=$(head -1 "${SYSDUPLOGFILE}" | awk '{print $2}')
+    if [[ ${UPGRADEOFFPKGAMNT} -eq 1 ]];
+    then
+        SYSUPGDTITLE="${UPGRADEOFFPKGAMNT} package updated:"
+    elif [[ ${UPGRADEOFFPKGAMNT} -gt 1 ]];
+    then
+        SYSUPGDTITLE="${UPGRADEOFFPKGAMNT} packages updated:"
+    fi
     MESSAGE+="##### \`pamac upgrade --force-refresh --enable-downgrade\`:
+
+##### ${SYSUPGDTITLE}
 
 [details=View details]
 ~~~
@@ -399,9 +409,18 @@ fi
 # If chosen, add AUR packages' output.
 if [[ $COPYAURCHOICE =~ [Yy] ]];
 then
+    UPGRADEAURPKGAMNT=$(head -1 "${AURUPDLOGFILE}" | awk '{print $2}')
+    if [[ ${UPGRADEAURPKGAMNT} -eq 1 ]];
+    then
+        SYSUPGDTITLE="${UPGRADEAURPKGAMNT} package updated:"
+    elif [[ ${UPGRADEAURPKGAMNT} -gt 1 ]];
+    then
+        SYSUPGDTITLE="${UPGRADEAURPKGAMNT} packages updated:"
+    fi
     MESSAGE+="##### \`pamac upgrade --enable-downgrade --aur --devel\`:
 
 [details=View details]
+
 ~~~
 $(cat "$AURUPDLOGFILE")
 ~~~
