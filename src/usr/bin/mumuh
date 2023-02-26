@@ -403,9 +403,10 @@ then
     fi
     MESSAGE+="##### \`pamac upgrade --force-refresh --enable-downgrade\`:
 
+[details=View details]
+
 ##### ${SYSUPGDTITLE}
 
-[details=View details]
 ~~~
 $(cat "${SYSDUPLOGFILE}")
 ~~~
@@ -420,14 +421,16 @@ then
     UPGRADEAURPKGAMNT=$(head -1 "${AURUPDLOGFILE}" | awk '{print $2}')
     if [[ "${UPGRADEAURPKGAMNT}" -eq "1" ]];
     then
-        SYSUPGDTITLE="${UPGRADEAURPKGAMNT} package updated:"
+        AURUPGDTITLE="${UPGRADEAURPKGAMNT} package updated:"
     elif [[ "${UPGRADEAURPKGAMNT}" -gt "1" ]];
     then
-        SYSUPGDTITLE="${UPGRADEAURPKGAMNT} packages updated:"
+        AURUPGDTITLE="${UPGRADEAURPKGAMNT} packages updated:"
     fi
     MESSAGE+="##### \`pamac upgrade --enable-downgrade --aur --devel\`:
 
 [details=View details]
+
+##### ${AURUPGDTITLE}
 
 ~~~
 $(cat "$AURUPDLOGFILE")
