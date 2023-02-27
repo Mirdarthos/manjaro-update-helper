@@ -286,7 +286,7 @@ then
     if [ "${UPGRADE_OFFICIAL_RESULT}" -eq "0" ];
     then
         printf "[%s]: Packages upgraded successfully from the official repositories.\n" "$(date +%Y.%m.%d@%H:%M)" >> "${SYSDUPLOGFILE}"
-        notify-send --icon=checkmark --app-name="MUMUH" "Official package upgrade" "\n\nUsing, \<b\><code>pamac upgrade</code>\<\/b\>, successfully finished."
+        notify-send --icon=checkmark --app-name="MUMUH" "Official package upgrade" "\<br \/\>Using, \<b\><code>pamac upgrade</code>\<\/b\>, successfully finished."
         if [ -z ${LOGSDIR+x} ];
         then
             echo "\$LOGSDIR is unset. Cannot log process";
@@ -303,7 +303,7 @@ then
         if [ "${UPGRADE_AUR_RESULT}" -eq "0" ];
         then
             printf "[%s]: Packages upgraded successfully from the AUR.\n" "$(date +%Y.%m.%d@%H:%M:%S)" >> "${AURUPDLOGFILE}"
-            notify-send --icon=checkmark --app-name="MUMUH" --expire-time=5000 "AUR package upgrade" "\n\nUsing, \<b\>pamac upgrade --enable-downgrade --aur --devel\<\/b\>, successfully finished."
+            notify-send --icon=checkmark --app-name="MUMUH" --expire-time=5000 "AUR package upgrade" "\<br \/\>Using, \<b\>pamac upgrade --enable-downgrade --aur --devel\<\/b\>, successfully finished."
             printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}AUR package upgrade, using pamac upgrade, successfully finished.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=info
             # An now, we have to merge any .pacnew files.
             sudo DIFFPROG=meld pacdiff
@@ -311,7 +311,7 @@ then
             # Check if merging .pacnew files were successful and if so, show success notification.
             if [[ $NEWMERGE_RESULT -eq 0 ]];
             then
-                notify-send --icon=checkmark --app-name="MUMUH" --expire-time=5000 "AUR package upgrade" "\n\n\<b\>\<code\>.pacnew\<\/code\>\<\/b\> files successfully, merged."
+                notify-send --icon=checkmark --app-name="MUMUH" --expire-time=5000 "AUR package upgrade" "\<br \/\>\<b\>\<code\>.pacnew\<\/code\>\<\/b\> files successfully, merged."
                 printf "[%s]: Successfully merged .pacnew files.\n" "$(date +%Y.%m.%d@%H:%M:%S)" >> "${SYSDUPLOGFILE}"
                 printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}.pacnew files successfully merged.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=info
             else
@@ -320,14 +320,14 @@ then
             fi
         # Show notification that the AUR packages' update was unsuccessful.
         else
-            notify-send --urgency=critical --icon=error --app-name="MUMUH" "AUR package upgrade" "\n\nUsing, \<b\>pamac upgrade --enable-downgrade --aur --devel\<\/b\>, failed.\<br /\>\<br \/\>\<i\>Human intervention required.\<\/b\>\<\/i\>\<br\/\>\<\/b\>Not continuing.\<\/b\>"
+            notify-send --urgency=critical --icon=error --app-name="MUMUH" "AUR package upgrade" "\<br \/\>Using, \<b\>pamac upgrade --enable-downgrade --aur --devel\<\/b\>, failed.\<br /\>\<br \/\>\<i\>Human intervention required.\<\/b\>\<\/i\>\<br\/\>\<\/b\>Not continuing.\<\/b\>"
             printf "[%s]: AUR package using pamac upgrade --enable-downgrade --aur --devel failed.\n" "$(date +%Y.%m.%d@%H:%M:%S)" >> "${SYSDUPLOGFILE}"
             printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}AUR package using pamac upgrade --enable-downgrade --aur --devel failed.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
             exit 5
         fi
     # Show notification that official packackages' updates was unsuccessful.
     else
-        notify-send --urgency=critical --icon=error --app-name="MUMUH" "AUR package upgrade" "\n\nUsing, pamac upgrade --enable-downgrade --aur --devel\<b\>\<\/b\>, failed.\<br /\>\<br \/\>\<i\>Human intervention required.\<\/b\>\<\/i\>\<br\/\>\<\/b\>Not continuing.\<\/b\>"
+        notify-send --urgency=critical --icon=error --app-name="MUMUH" "AUR package upgrade" "\<br \/\>Using, pamac upgrade --enable-downgrade --aur --devel\<b\>\<\/b\>, failed.\<br /\>\<br \/\>\<i\>Human intervention required.\<\/b\>\<\/i\>\<br\/\>\<\/b\>Not continuing.\<\/b\>"
         UPGRADEERRORS=$(echo "${UPGRADEERRORS} + 1" | bc)
         exit 4
     fi
@@ -335,7 +335,7 @@ else # If timeshift wasn't successful, notify, log and exit.
     echo
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}!!! An error occurred while making the pre-update backup snapshot. Not continuing. !!!${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
     echo
-    notify-send --urgency=critical --icon=error --app-name="MUMUH" "Backup creation" "\n\nUsing, ${BACKUPCMD}\<b\>\<\/b\>, failed.\<br /\>\<br \/\>\<i\>Human intervention required.\<\/b\>\<\/i\>\<br\/\>\<\/b\>Not continuing.\<\/b\>"
+    notify-send --urgency=critical --icon=error --app-name="MUMUH" "Backup creation" "\<br \/\>Using, ${BACKUPCMD}\<b\>\<\/b\>, failed.\<br /\>\<br \/\>\<i\>Human intervention required.\<\/b\>\<\/i\>\<br\/\>\<\/b\>Not continuing.\<\/b\>"
     exit 3
 fi
 ###
