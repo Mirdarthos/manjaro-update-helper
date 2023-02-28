@@ -342,7 +342,6 @@ then
                 printf "%s%sSuccessfully merged .pacnew files.${TEXTFORMATTING[NORMAL]}\n" "${TEXTFORMATTING[BRIGHT]}" "${TEXTFORMATTING[GREEN]}"
             fi
             printf "[%s]: Successfully merged .pacnew files.\n" "$(date +%Y.%m.%d@%H:%M:%S)" >> "${SYSDUPLOGFILE}"
-            fi
             printf "[%s]: AUR package using pamac upgrade --enable-downgrade --aur --devel failed.\n" "$(date +%Y.%m.%d@%H:%M:%S)" >> "${SYSDUPLOGFILE}"
             printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}AUR package using pamac upgrade --enable-downgrade --aur --devel failed.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
             exit 5
