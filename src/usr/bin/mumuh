@@ -247,13 +247,13 @@ then
         fi
     fi
 else # backup creation skipped
-    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Skipping backup creation.${TEXTFORMATTING[NORMAL]}"
+    printf "%sSkipping backup creation.%s\n" "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}" "${TEXTFORMATTING[NORMAL]}"
     printf "[%s]: Skipping backup creation.\n" "$(date +%Y.%m.%d@%H:%M:S)" >> "${SYSDUPLOGFILE}"
 fi
 
 if [[ -n ${BACKUPCMD+x} ]];
 then
-    printf '%s\n' "Using ${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}${CUSTOMBUCMD}${TEXTFORMATTING[NORMAL]} to create the backup snapshot."
+    printf "%sUsing %s%s to create the backup snapshot." "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}" "${CUSTOMBUCMD}" "${TEXTFORMATTING[NORMAL]}"
     printf "[%s]: Using %s to create the backup snapshot.\n" "$(date +%Y.%m.%d@%H:%M:S)" "${CUSTOMBUCMD}" >> "${SYSDUPLOGFILE}"
     eval "${BACKUPCMD}"
     BACKUP_COMMAND_RESULT=$?
@@ -262,7 +262,7 @@ if [[ -n ${SKIPBACKUP} ]]; # don't create backup
 then
     # However, if it was given, set the output as a success, so the rest of the script can carry on.
     BACKUP_COMMAND_RESULT=0
-    printf '%s\n' "${TEXTFORMATTING[YELLOW]}${TEXTFORMATTING[BRIGHT]}Skipping backup creation.${TEXTFORMATTING[NORMAL]}"
+    printf "%sSkipping backup creation.%s\n" "${TEXTFORMATTING[YELLOW]}${TEXTFORMATTING[BRIGHT]}" "${TEXTFORMATTING[NORMAL]}"
     printf "[%s]: Skipping backup creation.\n" "$(date +%Y.%m.%d@%H:%M:S)" >> "${SYSDUPLOGFILE}"
 fi
 ###
@@ -278,7 +278,7 @@ then
     if [[ -z ${SKIPBACKUP+x} ]];
     then
         printf "[%s]: Pre-upgrade backup snapshot successfully created.\n" "$(date +%Y.%m.%d@%H:%M:%S)" >> "${SYSDUPLOGFILE}"
-        printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}Pre-upgrade backup snapshot successfully created. ${TEXTFORMATTING[NORMAL]}${TEXTFORMATTING[GREEN]}Continuing with upgrade...${TEXTFORMATTING[NORMAL]}"
+        printf "%sPre-upgrade backup snapshot successfully created. %sContinuing with upgrade...%s\n"  "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}" "${TEXTFORMATTING[NORMAL]}${TEXTFORMATTING[GREEN]}" "${TEXTFORMATTING[NORMAL]}"
     fi
     PAMAC_CLI_AUTH=1 pamac upgrade --force-refresh --enable-downgrade > >(tee --append "${SYSDUPLOGFILE}")
     UPGRADE_OFFICIAL_RESULT=$?
@@ -286,7 +286,12 @@ then
     if [ "${UPGRADE_OFFICIAL_RESULT}" -eq "0" ];
     then
         printf "[%s]: Packages upgraded successfully from the official repositories.\n" "$(date +%Y.%m.%d@%H:%M)" >> "${SYSDUPLOGFILE}"
-        notify-send --icon=checkmark --app-name="MUMUH" "Official package upgrade" "\<br \/\>Using, \<b\><code>pamac upgrade</code>\<\/b\>, successfully finished."
+        if command -v notify-send 1> /dev/null 2> /dev/null;
+        then
+            notify-send --icon=checkmark --app-name="MUMUH" "Official package upgrade" "\<br \/\>Using, \<b\><code>pamac upgrade</code>\<\/b\>, successfully finished."
+        else
+            printf "%sOfficial package upgrade \n\nUsing, %spamac upgrade%s%s, successfully finished.%s" "${TEXTFORMATTING[GREEN]}" "${TEXTFORMATTING[BRIGHT]}" "${TEXTFORMATTING[NORMAL]}" "${TEXTFORMATTING[GREEN]}" "${TEXTFORMATTING[NORMAL]}"
+        fi
         if [ -z ${LOGSDIR+x} ];
         then
             echo "\$LOGSDIR is unset. Cannot log process";
@@ -303,7 +308,12 @@ then
         if [ "${UPGRADE_AUR_RESULT}" -eq "0" ];
         then
             printf "[%s]: Packages upgraded successfully from the AUR.\n" "$(date +%Y.%m.%d@%H:%M:%S)" >> "${AURUPDLOGFILE}"
-            notify-send --icon=checkmark --app-name="MUMUH" --expire-time=5000 "AUR package upgrade" "\<br \/\>Using, \<b\>pamac upgrade --enable-downgrade --aur --devel\<\/b\>, successfully finished."
+            if command -v notify-send 1> /dev/null 2> /dev/null;
+            then
+                notify-send --icon=checkmark --app-name="MUMUH" --expire-time=5000 "AUR package upgrade" "\<br \/\>Using, \<b\>pamac upgrade --enable-downgrade --aur --devel\<\/b\>, successfully finished."
+            else
+                printf '%s\n' "${TEXTFORMATTING[GREEN]}AUR package upgrade \n\nUsing, ${TEXTFORMATTING[BRIGHT]}pamac upgrade --enable-downgrade --aur --devel${TEXTFORMATTING[NORMAL]}, successfully finished."
+            fi
             printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}AUR package upgrade, using pamac upgrade, successfully finished.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=info
             # An now, we have to merge any .pacnew files.
             sudo DIFFPROG=meld pacdiff
@@ -311,23 +321,40 @@ then
             # Check if merging .pacnew files were successful and if so, show success notification.
             if [[ $NEWMERGE_RESULT -eq 0 ]];
             then
-                notify-send --icon=checkmark --app-name="MUMUH" --expire-time=5000 "AUR package upgrade" "\<br \/\>\<b\>\<code\>.pacnew\<\/code\>\<\/b\> files successfully, merged."
+                if command -v notify-send 1> /dev/null 2> /dev/null;
+                then
+                    notify-send --icon=checkmark --app-name="MUMUH" --expire-time=5000 ".pacnew files successfully merged."
+                else
+                    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}.pacnew files successfully merged.${TEXTFORMATTING[NORMAL]}"
+                fi
+                printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}.pacnew files successfully merged.${TEXTFORMATTING[NORMAL]}" > systemd-cat --identifier=mumuh --priority=info
                 printf "[%s]: Successfully merged .pacnew files.\n" "$(date +%Y.%m.%d@%H:%M:%S)" >> "${SYSDUPLOGFILE}"
-                printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}.pacnew files successfully merged.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=info
             else
                 printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occurred during merging of the .pacnew files.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
                 exit 6
             fi
         # Show notification that the AUR packages' update was unsuccessful.
         else
-            notify-send --urgency=critical --icon=error --app-name="MUMUH" "AUR package upgrade" "\<br \/\>Using, \<b\>pamac upgrade --enable-downgrade --aur --devel\<\/b\>, failed.\<br /\>\<br \/\>\<i\>Human intervention required.\<\/b\>\<\/i\>\<br\/\>\<\/b\>Not continuing.\<\/b\>"
+            if command -v notify-send 1> /dev/null 2> /dev/null;
+            then
+                notify-send --urgency=critical --icon=error --app-name="MUMUH" "AUR package upgrade" "\<br \/\>Using, \<b\>pamac upgrade --enable-downgrade --aur --devel\<\/b\>, failed.\<br /\>\<br \/\>\<i\>Human intervention required.\<\/b\>\<\/i\>\<br\/\>\<\/b\>Not continuing.\<\/b\>"
+            else
+                printf "%s%sSuccessfully merged .pacnew files.${TEXTFORMATTING[NORMAL]}\n" "${TEXTFORMATTING[BRIGHT]}" "${TEXTFORMATTING[GREEN]}"
+            fi
+            printf "[%s]: Successfully merged .pacnew files.\n" "$(date +%Y.%m.%d@%H:%M:%S)" >> "${SYSDUPLOGFILE}"
+            fi
             printf "[%s]: AUR package using pamac upgrade --enable-downgrade --aur --devel failed.\n" "$(date +%Y.%m.%d@%H:%M:%S)" >> "${SYSDUPLOGFILE}"
             printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}AUR package using pamac upgrade --enable-downgrade --aur --devel failed.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
             exit 5
         fi
     # Show notification that official packackages' updates was unsuccessful.
     else
-        notify-send --urgency=critical --icon=error --app-name="MUMUH" "AUR package upgrade" "\<br \/\>Using, pamac upgrade --enable-downgrade --aur --devel\<b\>\<\/b\>, failed.\<br /\>\<br \/\>\<i\>Human intervention required.\<\/b\>\<\/i\>\<br\/\>\<\/b\>Not continuing.\<\/b\>"
+        if command -v notify-send 1> /dev/null 2> /dev/null;
+        then
+            notify-send --urgency=critical --icon=error --app-name="MUMUH" "AUR package upgrade" "\<br \/\>Using, pamac upgrade --enable-downgrade --aur --devel\<b\>\<\/b\>, failed.\<br /\>\<br \/\>\<i\>Human intervention required.\<\/b\>\<\/i\>\<br\/\>\<\/b\>Not continuing.\<\/b\>"
+        else
+            printf "%sAUR package upgrade using, %bpamac upgrade --enable-downgrade --aur --devel%c, %sfailed.\nHuman intervention required.\nNot continuing.\n" "${TEXTFORMATTING[RED]}" "${TEXTFORMATTING[BRIGHT]}" "${TEXTFORMATTING[NORMAL]}${TEXTFORMATTING[RED]}" "${TEXTFORMATTING[NORMAL]}"
+        fi
         UPGRADEERRORS=$(echo "${UPGRADEERRORS} + 1" | bc)
         exit 4
     fi
