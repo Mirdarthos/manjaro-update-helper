@@ -23,7 +23,7 @@ then
         printf '%s\n' "# It also allows you to set the required suddoers permissions in     #"
         printf '%s\n' "# '/etc/sudoers.d'                                                   #"
         printf '%s\n' "#                                                                    #"
-        printf '%s\n' "# Options:                                                           #"
+        printf '%s\n' "# Usage:                                                             #"
         printf '%s\n' "#     * ${TEXTFORMATTING[BRIGHT]}--addsudoers${TEXTFORMATTING[NORMAL]}, or ${TEXTFORMATTING[BRIGHT]}-a${TEXTFORMATTING[NORMAL]}                                          #"
         printf '%s\n' "#       Will add a file called ${TEXTFORMATTING[BRIGHT]}/etc/sudoers.d/manjaro-update-helper${TEXTFORMATTING[NORMAL]}  #"
         printf '%s\n' "#       with entries to enable running this script as the current    #"
@@ -44,11 +44,9 @@ then
         printf '%s\n' "#       will have no effect.                                         #"
         printf '%s\n' "#     * ${TEXTFORMATTING[BRIGHT]}--help${TEXTFORMATTING[NORMAL]}, or ${TEXTFORMATTING[BRIGHT]}-h${TEXTFORMATTING[NORMAL]}                                                #"
         printf '%s\n' "#       Show this help and exit.                                     #"
-        printf '%s\n' "#     * ${TEXTFORMATTING[BRIGHT]}--skipOrphanRemoval${TEXTFORMATTING[NORMAL]}                                          #"
-        printf '%s\n' "#       Do not remove orphan packages after upgrade.                 #"
         printf '%s\n' "#     If no arguments are passed, the script performs its main       #"
         printf '%s\n' "#     functionality.                                                 #"
-        printf '%s\n' "# Usage examples:                                                    #"
+        printf '%s\n' "# Examples:                                                          #"
         printf '%s\n' "#     * To add the current user to the sudoers list:                 #"
         printf '%s\n' "#        mumu --addsudoers                                           #"
         printf '%s\n' "#          OR                                                        #"
@@ -368,6 +366,35 @@ else # If timeshift wasn't successful, notify, log and exit.
 fi
 ###
 # END upgrade section
+###
+
+###
+# START orphan cleaning section
+###
+if [[ "${UPGRADE_OFFICIAL_RESULT}" -eq "0" ]] && [[ "${UPGRADE_AUR_RESULT}" -eq "0" ]] && [[ "${NEWMERGE_RESULT}" -eq "0" ]];
+then
+    if PAMAC_CLI_AUTH=1 pamac remove --orphans;
+    then
+        if command -v notify-send 1> /dev/null 2> /dev/null;
+        then
+            notify-send --icon=checkmark --app-name="MUMUH" --expire-time=5000 "Successfully removed orphan packages."
+        else
+            printf "%sFailed to remove orphan packages.\n%sHuman intervention required.\nNot continuing.\n" "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}" "${TEXTFORMATTING[NORMAL}"
+        fi
+    else
+        if command -v notify-send 1> /dev/null 2> /dev/null;
+        then
+            notify-send --urgency=critical --icon=error --app-name="MUMUH" "Removing orphan packages" "\<br \/\>Using, pamac remove --orphans\<b\>\<\/b\>, failed."
+        else
+            printf "%sOrphan package removal, using %spamac remove --orphans%s failed.\n" "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}" "${TEXTFORMATTING[BOLD]}" "${TEXTFORMATTING[NORMAL}"
+        fi
+    fi
+else
+    printf "%sOrphan packages could not be removed.\n%sHuman intervention required.\nNot continuing." "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}" "${TEXTFORMATTING[NORMAL}"
+    exit 13
+fi
+###
+# END orphan cleaning section
 ###
 
 # Get the information required for the logs as well as a generated forum post
