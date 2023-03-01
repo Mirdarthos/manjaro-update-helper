@@ -368,6 +368,35 @@ fi
 # END upgrade section
 ###
 
+###
+# START orphan cleaning section
+###
+if [[ "${UPGRADE_OFFICIAL_RESULT}" -eq "0" ]] && [[ "${UPGRADE_AUR_RESULT}" -eq "0" ]] && [[ "${NEWMERGE_RESULT}" -eq "0" ]];
+then
+    if PAMAC_CLI_AUTH=1 pamac remove --orphans;
+    then
+        if command -v notify-send 1> /dev/null 2> /dev/null;
+        then
+            notify-send --icon=checkmark --app-name="MUMUH" --expire-time=5000 "Successfully removed orphan packages."
+        else
+            printf "%sFailed to remove orphan packages.\n%sHuman intervention required.\nNot continuing.\n" "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}" "${TEXTFORMATTING[NORMAL}"
+        fi
+    else
+        if command -v notify-send 1> /dev/null 2> /dev/null;
+        then
+            notify-send --urgency=critical --icon=error --app-name="MUMUH" "Removing orphan packages" "\<br \/\>Using, pamac remove --orphans\<b\>\<\/b\>, failed."
+        else
+            printf "%sOrphan package removal, using %spamac remove --orphans%s failed.\n" "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}" "${TEXTFORMATTING[BOLD]}" "${TEXTFORMATTING[NORMAL}"
+        fi
+    fi
+else
+    printf "%sOrphan packages could not be removed.\n%sHuman intervention required.\nNot continuing." "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}" "${TEXTFORMATTING[NORMAL}"
+    exit 13
+fi
+###
+# END orphan cleaning section
+###
+
 # Get the information required for the logs as well as a generated forum post
 SYSTEMINFO=$(inxi --admin --verbosity=7 --filter --no-host --width)
 
