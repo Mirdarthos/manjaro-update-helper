@@ -42,6 +42,10 @@ then
         printf '%s\n' "#       ${TEXTFORMATTING[BRIGHT]}NOTE:${TEXTFORMATTING[NORMAL]}                                                        #"
         printf '%s\n' "#       If ${TEXTFORMATTING[BRIGHT]}--skipbackup${TEXTFORMATTING[NORMAL]}, or ${TEXTFORMATTING[BRIGHT]}-s${TEXTFORMATTING[NORMAL]} is specified, then specifying this    #"
         printf '%s\n' "#       will have no effect.                                         #"
+        printf '%s\n' "#     * ${TEXTFORMATTING[BRIGHT]}--skipOrphansRemove${TEXTFORMATTING[NORMAL]}                                          #"
+        printf '%s\n' "#       If this argument is specified, muumuh will skip the removal  #"
+        printf '%s\n' "#       of orphan packages after a successful upgrade.               #"
+
         printf '%s\n' "#     * ${TEXTFORMATTING[BRIGHT]}--help${TEXTFORMATTING[NORMAL]}, or ${TEXTFORMATTING[BRIGHT]}-h${TEXTFORMATTING[NORMAL]}                                                #"
         printf '%s\n' "#       Show this help and exit.                                     #"
         printf '%s\n' "#     If no arguments are passed, the script performs its main       #"
@@ -55,6 +59,8 @@ then
         printf '%s\n' "#        mumu --skipbackup                                           #"
         printf '%s\n' "#          OR                                                        #"
         printf '%s\n' "#        mumu -s                                                     #"
+        printf '%s\n' "#     * If you want to skip removing orphan pakackages:              #"
+        printf '%s\n' "#        mumu --skipOrphansRemove                                    #"
         printf '%s\n' "#     * If you want to use a custom command:                         #"
         printf '%s\n' "#        mumu --custombackupcommand=<custom command>                 #"
         printf '%s\n' "#          OR                                                        #"
@@ -112,6 +118,10 @@ then
                 else
                     CUSTOMBUCMD=$(echo "${CUSTOMBUARG}" | cut -f2 -d=)
                 fi
+                shift
+            ;;
+            --skipOrphansRemove)
+                SKIPORPHANRM=1
                 shift
             ;;
         esac
@@ -392,6 +402,37 @@ then
 else
     printf "%sOrphan packages could not be removed.\n%sHuman intervention required.\nNot continuing." "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}" "${TEXTFORMATTING[NORMAL}"
     exit 13
+fi
+###
+# END orphan cleaning section
+###
+
+###
+# START orphan cleaning section
+###
+if [ ${SKIPORPHANRM+x} ] && [[ "${SKIPORPHANRM}" -eq "1" ]]; then # $SKIPORPANRM variable not set and not equal to 1 (or true)
+    if [[ "${UPGRADE_OFFICIAL_RESULT}" -eq "0" ]] && [[ "${UPGRADE_AUR_RESULT}" -eq "0" ]] && [[ "${NEWMERGE_RESULT}" -eq "0" ]];
+    then
+        if PAMAC_CLI_AUTH=1 pamac remove --orphans;
+        then
+            if command -v notify-send 1> /dev/null 2> /dev/null;
+            then
+                notify-send --icon=checkmark --app-name="MUMUH" --expire-time=5000 "Successfully removed orphan packages."
+            else
+                printf "%sFailed to remove orphan packages.\n%sHuman intervention required.\nNot continuing.\n" "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}" "${TEXTFORMATTING[NORMAL}"
+            fi
+        else
+            if command -v notify-send 1> /dev/null 2> /dev/null;
+            then
+                notify-send --urgency=critical --icon=error --app-name="MUMUH" "Removing orphan packages" "\<br \/\>Using, pamac remove --orphans\<b\>\<\/b\>, failed."
+            else
+                printf "%sOrphan package removal, using %spamac remove --orphans%s failed.\n" "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}" "${TEXTFORMATTING[BOLD]}" "${TEXTFORMATTING[NORMAL}"
+            fi
+        fi
+    else
+        printf "%sOrphan packages could not be removed.\n%sHuman intervention required.\nNot continuing." "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}" "${TEXTFORMATTING[NORMAL}"
+        exit 13
+    fi
 fi
 ###
 # END orphan cleaning section
