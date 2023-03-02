@@ -211,15 +211,15 @@ done <<< "${MIRRORSTATUS}"
 if [[ "${UNSYNCDMIRRORS}" -gt "0" ]];
 then
     read -r -p "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}${UNSYNCDMIRRORS} mirrors remain unsynchronized and could cause problems.${TEXTFORMATTING[NORMAL]} [y/N]: " CONTTINUECHOICE
-    if [[ $CONTTINUECHOICE =~ [Nn] ]];
+    if [[ ${CONTTINUECHOICE} =~ [Nn] ]];
     then
         printf "There were %s unsynchronised mirrors. Not continuing." "${UNSYNCDMIRRORS}" >> "${SYSDUPLOGFILE}"
-    elif [[ $COPYOFFICIALCHOICE =~ [Yy] ]];
+    elif [[ ${COPYOFFICIALCHOICE} =~ [Yy] ]];
     then
         printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}You are conrinuing even though you are using unsynchronised mirrors.${TEXTFORMATTING[RED]}"
         printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}This is dangerous and known to cause problems and thus not recommended.${TEXTFORMATTING[RED]}"
         read -r -p "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Please confirm if you wish to continue by pressing C.${TEXTFORMATTING[RED]} [C/N]: " CONFIRMCONTINUECHOICE
-        if [[ $CONFIRMCONTINUECHOICE != "C" ]];
+        if [[ ${CONFIRMCONTINUECHOICE} != "C" ]];
         then
             printf '%s\n' "Did not confirm. Exiting."
             exit 12
@@ -561,4 +561,4 @@ fi
 printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Cleaning older log files...${TEXTFORMATTING[NORMAL]}"
 (cd /var/log/manjaro-update-helper && ls -tr | head -n -5 | xargs -I{} rm --force)
 # Unset any and all variables, functions and whatever else was used.
-unset TEXTFORMATTING UPDATES_AVAILABLE CONTINUEUPDATE RUNTIMESTAMP RUNDATE BACKUP_COMMAND_RESULT LOGSDIR SYSUPDLOGFILE UPGRADE_AUR_RESULT NEWMERGE_RESULT COPYOFFICIALCHOICE COPYAURCHOICE SYSTEMINFO MESSAGE
+unset TEXTFORMATTING UPDATES_AVAILABLE CONTINUEUPDATE RUNTIMESTAMP RUNDATE BACKUP_COMMAND_RESULT LOGSDIR SYSUPDLOGFILE UPGRADE_AUR_RESULT NEWMERGE_RESULT COPYOFFICIALCHOICE COPYAURCHOICE SYSTEMINFO MESSAGE  CONFIRMCONTINUECHOICE CONFIRMCONTINUECHOICE MIRRORSTATUS
