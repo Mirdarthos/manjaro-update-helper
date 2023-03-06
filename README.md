@@ -71,12 +71,12 @@ $ mumuh --help
 #        mumu --skipbackup                                           #
 #          OR                                                        #
 #        mumu -s                                                     #
-#     * If you want to skip removing orphan pakackages:              #
-#        mumu --skipOrphansRemove                                    #
 #     * If you want to use a custom command:                         #
 #        mumu --custombackupcommand=<custom command>                 #
 #          OR                                                        #
 #        mumu -c <custom command>                                    #
+#     * If you want to skip removing orphan pakackages:              #
+#        mumu --skipOrphansRemove                                    #
 ######################################################################
 ```
 

@@ -59,12 +59,12 @@ then
         printf '%s\n' "#        mumu --skipbackup                                           #"
         printf '%s\n' "#          OR                                                        #"
         printf '%s\n' "#        mumu -s                                                     #"
-        printf '%s\n' "#     * If you want to skip removing orphan pakackages:              #"
-        printf '%s\n' "#        mumu --skipOrphansRemove                                    #"
         printf '%s\n' "#     * If you want to use a custom command:                         #"
         printf '%s\n' "#        mumu --custombackupcommand=<custom command>                 #"
         printf '%s\n' "#          OR                                                        #"
         printf '%s\n' "#        mumu -c <custom command>                                    #"
+        printf '%s\n' "#     * If you want to skip removing orphan pakackages:              #"
+        printf '%s\n' "#        mumu --skipOrphansRemove                                    #"
         printf '%s\n' "######################################################################"
         exit 0
     }
