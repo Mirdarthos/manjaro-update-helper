@@ -1,4 +1,5 @@
 # Maintainer: Mirdarthos mirdarthos[at]duck[dot]com
+# shellcheck disable=all
 
 pkgname=my-universal-manjaro-update-helper
 pkgver=3
