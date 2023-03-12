@@ -2,7 +2,7 @@
 # shellcheck disable=all
 
 pkgname=my-universal-manjaro-update-helper
-pkgver=3
+pkgver=3.1
 pkgrel=1
 pkgdesc="A helper for updating Manjaro Linux."
 arch=('any')
