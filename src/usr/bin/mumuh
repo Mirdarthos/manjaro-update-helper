@@ -559,6 +559,9 @@ fi
 # fi
 # Some of the logs are only stored in RAM, so will be cleared on shutdown or restart, but let's take care of older log files.
 printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Cleaning older log files...${TEXTFORMATTING[NORMAL]}"
-(cd /var/log/manjaro-update-helper && ls -tr | head -n -5 | xargs -I{} rm --force)
+if [ "$(ls -A /var/log/manjaro-update-helper)" ];
+then
+    (cd /var/log/manjaro-update-helper && ls -tr | head -n -5 | xargs -I{} rm --force)
+fi
 # Unset any and all variables, functions and whatever else was used.
 unset TEXTFORMATTING UPDATES_AVAILABLE CONTINUEUPDATE RUNTIMESTAMP RUNDATE BACKUP_COMMAND_RESULT LOGSDIR SYSUPDLOGFILE UPGRADE_AUR_RESULT NEWMERGE_RESULT COPYOFFICIALCHOICE COPYAURCHOICE SYSTEMINFO MESSAGE  CONFIRMCONTINUECHOICE CONFIRMCONTINUECHOICE MIRRORSTATUS
