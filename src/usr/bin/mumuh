@@ -298,7 +298,7 @@ then
         printf "[%s]: Packages upgraded successfully from the official repositories.\n" "$(date +%Y.%m.%d@%H:%M)" >> "${SYSDUPLOGFILE}"
         if command -v notify-send 1> /dev/null 2> /dev/null;
         then
-            notify-send --icon=checkmark --app-name="MUMUH" "Official package upgrade" "\<br \/\>Using, \<b\><code>pamac upgrade</code>\<\/b\>, successfully finished."
+            notify-send --icon=checkmark --app-name="MUMUH" "Official package upgrade" "Using, \<b\><code>pamac upgrade</code>\<\/b\>, successfully finished."
         else
             printf "%sOfficial package upgrade \n\nUsing, %spamac upgrade%s%s, successfully finished.%s" "${TEXTFORMATTING[GREEN]}" "${TEXTFORMATTING[BRIGHT]}" "${TEXTFORMATTING[NORMAL]}" "${TEXTFORMATTING[GREEN]}" "${TEXTFORMATTING[NORMAL]}"
         fi
@@ -320,7 +320,7 @@ then
             printf "[%s]: Packages upgraded successfully from the AUR.\n" "$(date +%Y.%m.%d@%H:%M:%S)" >> "${AURUPDLOGFILE}"
             if command -v notify-send 1> /dev/null 2> /dev/null;
             then
-                notify-send --icon=checkmark --app-name="MUMUH" --expire-time=5000 "AUR package upgrade" "\<br \/\>Using, \<b\>pamac upgrade --enable-downgrade --aur --devel\<\/b\>, successfully finished."
+                notify-send --icon=checkmark --app-name="MUMUH" --expire-time=5000 "AUR package upgrade" "Using, \<b\>pamac upgrade --enable-downgrade --aur --devel\<\/b\>, successfully finished."
             else
                 printf '%s\n' "${TEXTFORMATTING[GREEN]}AUR package upgrade \n\nUsing, ${TEXTFORMATTING[BRIGHT]}pamac upgrade --enable-downgrade --aur --devel${TEXTFORMATTING[NORMAL]}, successfully finished."
             fi
@@ -347,7 +347,7 @@ then
         else
             if command -v notify-send 1> /dev/null 2> /dev/null;
             then
-                notify-send --urgency=critical --icon=error --app-name="MUMUH" "AUR package upgrade" "\<br \/\>Using, \<b\>pamac upgrade --enable-downgrade --aur --devel\<\/b\>, failed.\<br /\>\<br \/\>\<i\>Human intervention required.\<\/b\>\<\/i\>\<br\/\>\<\/b\>Not continuing.\<\/b\>"
+                notify-send --urgency=critical --icon=error --app-name="MUMUH" "AUR package upgrade" "Using, \<b\>pamac upgrade --enable-downgrade --aur --devel\<\/b\>, failed.\<br /\>\<i\>Human intervention required.\<\/b\>\<\/i\>\<br\/\>\<\/b\>Not continuing.\<\/b\>"
             else
                 printf "%s%sSuccessfully merged .pacnew files.${TEXTFORMATTING[NORMAL]}\n" "${TEXTFORMATTING[BRIGHT]}" "${TEXTFORMATTING[GREEN]}"
             fi
@@ -360,7 +360,7 @@ then
     else
         if command -v notify-send 1> /dev/null 2> /dev/null;
         then
-            notify-send --urgency=critical --icon=error --app-name="MUMUH" "AUR package upgrade" "\<br \/\>Using, pamac upgrade --enable-downgrade --aur --devel\<b\>\<\/b\>, failed.\<br /\>\<br \/\>\<i\>Human intervention required.\<\/b\>\<\/i\>\<br\/\>\<\/b\>Not continuing.\<\/b\>"
+            notify-send --urgency=critical --icon=error --app-name="MUMUH" "AUR package upgrade" "Using, pamac upgrade --enable-downgrade --aur --devel\<b\>\<\/b\>, failed.\<br /\>\<i\>Human intervention required.\<\/b\>\<\/i\>\<br\/\>\<\/b\>Not continuing.\<\/b\>"
         else
             printf "%sAUR package upgrade using, %bpamac upgrade --enable-downgrade --aur --devel%c, %sfailed.\nHuman intervention required.\nNot continuing.\n" "${TEXTFORMATTING[RED]}" "${TEXTFORMATTING[BRIGHT]}" "${TEXTFORMATTING[NORMAL]}${TEXTFORMATTING[RED]}" "${TEXTFORMATTING[NORMAL]}"
         fi
@@ -371,7 +371,7 @@ else # If timeshift wasn't successful, notify, log and exit.
     echo
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}!!! An error occurred while making the pre-update backup snapshot. Not continuing. !!!${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
     echo
-    notify-send --urgency=critical --icon=error --app-name="MUMUH" "Backup creation" "\<br \/\>Using, ${BACKUPCMD}\<b\>\<\/b\>, failed.\<br /\>\<br \/\>\<i\>Human intervention required.\<\/b\>\<\/i\>\<br\/\>\<\/b\>Not continuing.\<\/b\>"
+    notify-send --urgency=critical --icon=error --app-name="MUMUH" "Backup creation" "Using, ${BACKUPCMD}\<b\>\<\/b\>, failed.\<br /\>\<i\>Human intervention required.\<\/b\>\<\/i\>\<br\/\>\<\/b\>Not continuing.\<\/b\>"
     exit 3
 fi
 ###
@@ -394,7 +394,7 @@ then
     else
         if command -v notify-send 1> /dev/null 2> /dev/null;
         then
-            notify-send --urgency=critical --icon=error --app-name="MUMUH" "Removing orphan packages" "\<br \/\>Using, pamac remove --orphans\<b\>\<\/b\>, failed."
+            notify-send --urgency=critical --icon=error --app-name="MUMUH" "Removing orphan packages" "Using, pamac remove --orphans\<b\>\<\/b\>, failed."
         else
             printf "%sOrphan package removal, using %spamac remove --orphans%s failed.\n" "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}" "${TEXTFORMATTING[BOLD]}" "${TEXTFORMATTING[NORMAL}"
         fi
@@ -424,7 +424,7 @@ if [ ${SKIPORPHANRM+x} ] && [[ "${SKIPORPHANRM}" -eq "1" ]]; then # $SKIPORPANRM
         else
             if command -v notify-send 1> /dev/null 2> /dev/null;
             then
-                notify-send --urgency=critical --icon=error --app-name="MUMUH" "Removing orphan packages" "\<br \/\>Using, pamac remove --orphans\<b\>\<\/b\>, failed."
+                notify-send --urgency=critical --icon=error --app-name="MUMUH" "Removing orphan packages" "Using, pamac remove --orphans\<b\>\<\/b\>, failed."
             else
                 printf "%sOrphan package removal, using %spamac remove --orphans%s failed.\n" "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}" "${TEXTFORMATTING[BOLD]}" "${TEXTFORMATTING[NORMAL}"
             fi
