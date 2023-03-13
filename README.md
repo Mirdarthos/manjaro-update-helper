@@ -55,7 +55,7 @@ $ mumuh --help
 #       NOTE:                                                        #
 #       If --skipbackup, or -s is specified, then specifying this    #
 #       will have no effect.                                         #
-#     * --skiprphansremove                                          #
+#     * --skiprphansremove                                           #
 #       If this argument is specified, muumuh will skip the removal  #
 #       of orphan packages after a successful upgrade.               #
 #     * --help, or -h                                                #
@@ -76,7 +76,7 @@ $ mumuh --help
 #          OR                                                        #
 #        mumu -c <custom command>                                    #
 #     * If you want to skip removing orphan pakackages:              #
-#        mumu --skiprphansremove                                    #
+#        mumu --skiprphansremove                                     #
 ######################################################################
 ```
 
