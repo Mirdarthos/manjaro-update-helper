@@ -45,7 +45,6 @@ then
         printf '%s\n' "#     * ${TEXTFORMATTING[BRIGHT]}--skiprphansremove${TEXTFORMATTING[NORMAL]}                                           #"
         printf '%s\n' "#       If this argument is specified, muumuh will skip the removal  #"
         printf '%s\n' "#       of orphan packages after a successful upgrade.               #"
-
         printf '%s\n' "#     * ${TEXTFORMATTING[BRIGHT]}--help${TEXTFORMATTING[NORMAL]}, or ${TEXTFORMATTING[BRIGHT]}-h${TEXTFORMATTING[NORMAL]}                                                #"
         printf '%s\n' "#       Show this help and exit.                                     #"
         printf '%s\n' "#     If no arguments are passed, the script performs its main       #"
