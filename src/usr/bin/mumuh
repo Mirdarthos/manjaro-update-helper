@@ -279,6 +279,46 @@ fi
 ###
 
 ###
+# START disable sleep.target, suspend.target, hibernate.target, hybrid-sleep.target for the update section
+###
+printf '%s\n' "${TEXTFORMATTING[BRIGHT]}Disabling sleep, hybernate and suspend for duration of the update.${TEXTFORMATTING[NORMAL]}"
+# Disabling slep
+if [[ $(sudo systemctl mask sleep.target) -eq 0 ]];
+then
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}Successfully disabled sleep functionality for the update process.${TEXTFORMATTING[NORMAL]}"
+else
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occured while disabling sleep functionality for the update process.${TEXTFORMATTING[NORMAL]}"
+fi
+
+# Disabling suspend
+if [[ $(sudo systemctl mask suspend.target) -eq 0 ]];
+then
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}Successfully disabled suspend functionality for the update process.${TEXTFORMATTING[NORMAL]}"
+else
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occured while disabling suspend functionality for the update process.${TEXTFORMATTING[NORMAL]}"
+fi
+
+# Disabling hibernate
+if [[ $(sudo systemctl mask hibernate.target) -eq 0 ]];
+then
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}Successfully disabled hibernate functionality for the update process.${TEXTFORMATTING[NORMAL]}"
+else
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occured while disabling hibernate functionality for the update process.${TEXTFORMATTING[NORMAL]}"
+fi
+# Disabling hybrid-sleep
+if [[ $(sudo systemctl mask hybrid-sleep.target) -eq 0 ]];
+then
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}Successfully disabled hybrid-sleep functionality for the update process.${TEXTFORMATTING[NORMAL]}"
+else
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occured while disabling hybrid-sleep functionality for the update process.${TEXTFORMATTING[NORMAL]}"
+fi
+
+###
+# END disable sleep.target, suspend.target, hibernate.target, hybrid-sleep.target for the update section
+###
+
+
+###
 # START upgrade section
 ###
 # If the backup was successful, continue with the upgrade
@@ -373,6 +413,46 @@ else # If timeshift wasn't successful, notify, log and exit.
     notify-send --urgency=critical --icon=error --app-name="MUMUH" "Backup creation" "Using, ${BACKUPCMD}\<b\>\<\/b\>, failed.\<br /\>\<i\>Human intervention required.\<\/b\>\<\/i\>\<br\/\>\<\/b\>Not continuing.\<\/b\>"
     exit 3
 fi
+
+###
+# START enable sleep.target, suspend.target, hibernate.target, hybrid-sleep.target for the update section
+###
+printf '%s\n' "${TEXTFORMATTING[BRIGHT]}Enabling sleep, hybernate and suspend.${TEXTFORMATTING[NORMAL]}"
+# Disabling slep
+if [[ $(sudo systemctl unmask sleep.target) -eq 0 ]];
+then
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}Successfully enabled sleep functionality.${TEXTFORMATTING[NORMAL]}"
+else
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occured while enabling sleep functionality.${TEXTFORMATTING[NORMAL]}"
+fi
+
+# Enabling suspend
+if [[ $(sudo systemctl unmask suspend.target) -eq 0 ]];
+then
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}Successfully enabled suspend functionality.${TEXTFORMATTING[NORMAL]}"
+else
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occured while enabling suspend functionality.${TEXTFORMATTING[NORMAL]}"
+fi
+
+# Enabling hibernate
+if [[ $(sudo systemctl unmask hibernate.target) -eq 0 ]];
+then
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}Successfully enabled hibernate functionality.${TEXTFORMATTING[NORMAL]}"
+else
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occured while enabling hibernate functionality.${TEXTFORMATTING[NORMAL]}"
+fi
+
+# Enabling hybrid-sleep
+if [[ $(sudo systemctl unmask hybrid-sleep.target) -eq 0 ]];
+then
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}Successfully enabled hybrid-sleep functionality.${TEXTFORMATTING[NORMAL]}"
+else
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occured while enabling hybrid-sleep functionality.${TEXTFORMATTING[NORMAL]}"
+fi
+###
+# END disable sleep.target, suspend.target, hibernate.target, hybrid-sleep.target for the update section
+###
+
 ###
 # END upgrade section
 ###
