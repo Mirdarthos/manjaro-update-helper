@@ -262,12 +262,12 @@ fi
 
 if [[ -n ${BACKUPCMD+x} ]];
 then
-    printf "%sUsing %s%s to create the backup snapshot." "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}" "${CUSTOMBUCMD}" "${TEXTFORMATTING[NORMAL]}"
+    printf "Using %s to create the backup snapshot.\n" "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]} ${BACKUPCMD} ${TEXTFORMATTING[NORMAL]}"
     printf "[%s]: Using %s to create the backup snapshot.\n" "$(date +%Y.%m.%d@%H:%M:S)" "${CUSTOMBUCMD}" >> "${SYSDUPLOGFILE}"
     eval "${BACKUPCMD}"
     BACKUP_COMMAND_RESULT=$?
 fi
-if [[ -n ${SKIPBACKUP} ]]; # don't create backup
+if [[ -n ${SKIPBACKUP} ]]; # Don't create backup
 then
     # However, if it was given, set the output as a success, so the rest of the script can carry on.
     BACKUP_COMMAND_RESULT=0
