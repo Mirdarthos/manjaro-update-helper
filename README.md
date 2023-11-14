@@ -31,7 +31,7 @@ $ mumuh --help
 ######################################################################
 # This script is just a wrapper for pamac, with the exception that   #
 # if there were any errors, it allows you to copy them, neatly       #
-# formatted for use as. or with a forum post, along with all the     #
+# formatted for use as, or with a forum post, along with all the     #
 # details required for requesting assistance.                        #
 # It also allows you to set the required suddoers permissions in     #
 # '/etc/sudoers.d'                                                   #
