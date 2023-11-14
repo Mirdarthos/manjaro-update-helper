@@ -18,7 +18,7 @@ then
         printf '%s\n' "######################################################################"
         printf '%s\n' "# This script is just a wrapper for pamac, with the exception that   #"
         printf '%s\n' "# if there were any errors, it allows you to copy them, neatly       #"
-        printf '%s\n' "# formatted for use as. or with a forum post, along with all the     #"
+        printf '%s\n' "# formatted for use as, or with a forum post, along with all the     #"
         printf '%s\n' "# details required for requesting assistance.                        #"
         printf '%s\n' "# It also allows you to set the required suddoers permissions in     #"
         printf '%s\n' "# '/etc/sudoers.d'                                                   #"
