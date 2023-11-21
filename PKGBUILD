@@ -2,7 +2,7 @@
 # shellcheck disable=all
 
 pkgname=my-universal-manjaro-update-helper
-pkgver=3.3
+pkgver=3.4
 pkgrel=1
 pkgdesc="A helper for updating Manjaro Linux."
 arch=('any')
@@ -11,7 +11,7 @@ license=('Apache')
 depends=('sudo' 'xclip' 'ncurses' 'pamac-cli' 'pacman' 'inxi' 'meld' 'pacman-mirrors' 'libnotify')
 optdepends=('timeshift: For creating backups with prior to updating if custom command not specified.')
 source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/V$pkgver.tar.gz")
-sha256sums=('4f4bda271d6f4894f86f8faa1b00c714c7f4e185686a5a5e4028dbc025464322')
+sha256sums=('82bab3f047d2634eb42372a774573071704bbfcf57567246ecb25b612fa71133')
 
 package() {
     cd manjaro-update-helper-$pkgver
