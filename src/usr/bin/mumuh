@@ -9,6 +9,25 @@ declare -A TEXTFORMATTING=(
     [NORMAL]=$(tput sgr0)
 )
 
+# Capture CTRL+C for handling on your own
+
+# trap ctrl-c and call ctrl_c()
+trap ctrl_c INT
+
+function ctrl_c() {
+    # Check if array exists for masked services
+    if [ ${#MASKEDTARGETS[@]} -gt 0 ]; then
+        for i in "${!MASKEDTARGETS[@]}"; do
+            # echo "element $i is "
+            if [[ $(sudo systemctl unmask "${MASKEDTARGETS[$i]}") -eq 0 ]];
+            then
+                printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}Successfully unmasked ${MASKEDTARGETS[$i]}.${TEXTFORMATTING[NORMAL]}"
+            fi
+        done
+    fi
+    exit
+}
+
 # If arguments are given, prepare some of the functionality
 if [[ $# -gt 0 ]];
 then
@@ -278,6 +297,7 @@ fi
 # END backup section
 ###
 
+MASKEDTARGETS=()
 ###
 # START disable sleep.target, suspend.target, hibernate.target, hybrid-sleep.target for the update section
 ###
@@ -286,6 +306,7 @@ printf '%s\n' "${TEXTFORMATTING[BRIGHT]}Disabling sleep, hybernate and suspend f
 if [[ $(sudo systemctl mask sleep.target) -eq 0 ]];
 then
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}Successfully disabled sleep functionality for the update process.${TEXTFORMATTING[NORMAL]}"
+    MASKEDTARGETS+=("sleep.target")
 else
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occured while disabling sleep functionality for the update process.${TEXTFORMATTING[NORMAL]}"
 fi
@@ -294,6 +315,7 @@ fi
 if [[ $(sudo systemctl mask suspend.target) -eq 0 ]];
 then
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}Successfully disabled suspend functionality for the update process.${TEXTFORMATTING[NORMAL]}"
+    MASKEDTARGETS+=("suspend.target")
 else
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occured while disabling suspend functionality for the update process.${TEXTFORMATTING[NORMAL]}"
 fi
@@ -302,6 +324,7 @@ fi
 if [[ $(sudo systemctl mask hibernate.target) -eq 0 ]];
 then
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}Successfully disabled hibernate functionality for the update process.${TEXTFORMATTING[NORMAL]}"
+    MASKEDTARGETS+=("hibernate.target")
 else
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occured while disabling hibernate functionality for the update process.${TEXTFORMATTING[NORMAL]}"
 fi
@@ -309,6 +332,7 @@ fi
 if [[ $(sudo systemctl mask hybrid-sleep.target) -eq 0 ]];
 then
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}Successfully disabled hybrid-sleep functionality for the update process.${TEXTFORMATTING[NORMAL]}"
+    MASKEDTARGETS+=("hybrid-sleep.target")
 else
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occured while disabling hybrid-sleep functionality for the update process.${TEXTFORMATTING[NORMAL]}"
 fi
