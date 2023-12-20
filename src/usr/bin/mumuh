@@ -9,25 +9,6 @@ declare -A TEXTFORMATTING=(
     [NORMAL]=$(tput sgr0)
 )
 
-# Capture CTRL+C for handling on your own
-
-# trap ctrl-c and call ctrl_c()
-trap ctrl_c INT
-
-function ctrl_c() {
-    # Check if array exists for masked services
-    if [ ${#MASKEDTARGETS[@]} -gt 0 ]; then
-        for i in "${!MASKEDTARGETS[@]}"; do
-            # echo "element $i is "
-            if [[ $(sudo systemctl unmask "${MASKEDTARGETS[$i]}") -eq 0 ]];
-            then
-                printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}Successfully unmasked ${MASKEDTARGETS[$i]}.${TEXTFORMATTING[NORMAL]}"
-            fi
-        done
-    fi
-    exit
-}
-
 # If arguments are given, prepare some of the functionality
 if [[ $# -gt 0 ]];
 then
@@ -336,7 +317,6 @@ then
 else
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occured while disabling hybrid-sleep functionality for the update process.${TEXTFORMATTING[NORMAL]}"
 fi
-
 ###
 # END disable sleep.target, suspend.target, hibernate.target, hybrid-sleep.target for the update section
 ###
@@ -667,3 +647,20 @@ if ls -A /var/log/manjaro-update-helper 1> /dev/null 2> /dev/null; then
 fi
 # Unset any and all variables, functions and whatever else was used.
 unset TEXTFORMATTING UPDATES_AVAILABLE CONTINUEUPDATE RUNTIMESTAMP RUNDATE BACKUP_COMMAND_RESULT LOGSDIR SYSUPDLOGFILE UPGRADE_AUR_RESULT NEWMERGE_RESULT COPYOFFICIALCHOICE COPYAURCHOICE SYSTEMINFO MESSAGE  CONFIRMCONTINUECHOICE CONFIRMCONTINUECHOICE MIRRORSTATUS
+
+# Trap ctrl-c and call ctrl_c()
+trap ctrl_c INT
+
+function ctrl_c() {
+    # Check if array exists for masked services
+    if [ ${#MASKEDTARGETS[@]} -gt 0 ]; then
+        for i in "${!MASKEDTARGETS[@]}"; do
+            # echo "element $i is "
+            if [[ $(sudo systemctl unmask "${MASKEDTARGETS[$i]}") -eq 0 ]];
+            then
+                printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}Successfully unmasked ${MASKEDTARGETS[$i]}.${TEXTFORMATTING[NORMAL]}"
+            fi
+        done
+    fi
+    exit
+}
