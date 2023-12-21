@@ -1,4 +1,45 @@
 #!/bin/env bash
+# Trap ctrl-c and call ctrl_c()
+trap ctrl_c INT
+# The custom handler for CTRL-C Presses
+MASKEDTARGETS=()
+function ctrl_c() {
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}Enabling sleep, hybernate and suspend.${TEXTFORMATTING[NORMAL]}"
+    # Disabling sleep
+    if [[ $(sudo systemctl unmask sleep.target) -eq 0 ]];
+    then
+        printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Successfully enabled sleep functionality.${TEXTFORMATTING[NORMAL]}"
+    else
+        printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occured while enabling sleep functionality.${TEXTFORMATTING[NORMAL]}"
+    fi
+
+    # Enabling suspend
+    if [[ $(sudo systemctl unmask suspend.target) -eq 0 ]];
+    then
+        printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Successfully enabled suspend functionality.${TEXTFORMATTING[NORMAL]}"
+    else
+        printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occured while enabling suspend functionality.${TEXTFORMATTING[NORMAL]}"
+    fi
+
+    # Enabling hibernate
+    if [[ $(sudo systemctl unmask hibernate.target) -eq 0 ]];
+    then
+        printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Successfully enabled hibernate functionality.${TEXTFORMATTING[NORMAL]}"
+    else
+        printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occured while enabling hibernate functionality.${TEXTFORMATTING[NORMAL]}"
+    fi
+
+    # Enabling hybrid-sleep
+    if [[ $(sudo systemctl unmask hybrid-sleep.target) -eq 0 ]];
+    then
+        printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Successfully enabled hybrid-sleep functionality.${TEXTFORMATTING[NORMAL]}"
+    else
+        printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occured while enabling hybrid-sleep functionality.${TEXTFORMATTING[NORMAL]}"
+    fi
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}Update process was forcibly cancelled. Re-enabled sleep, suspend, hibernate and hybrid-sleep functionality${TEXTFORMATTING[NORMAL]}"
+
+    exit 18
+}
 
 # Define an array with text formatting options, to get rid of the single value per format thing.
 declare -A TEXTFORMATTING=(
@@ -255,9 +296,6 @@ then
             BACKUPCMD="sudo timeshift --create --comments \"$(date +%Y.%m.%d@%H:%M)\"' - Pre-update'"
         fi
     fi
-else # backup creation skipped
-    printf "%sSkipping backup creation.%s\n" "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}" "${TEXTFORMATTING[NORMAL]}"
-    printf "[%s]: Skipping backup creation.\n" "$(date +%Y.%m.%d@%H:%M:S)" >> "${SYSDUPLOGFILE}"
 fi
 
 if [[ -n ${BACKUPCMD+x} ]];
@@ -278,7 +316,6 @@ fi
 # END backup section
 ###
 
-MASKEDTARGETS=()
 ###
 # START disable sleep.target, suspend.target, hibernate.target, hybrid-sleep.target for the update section
 ###
@@ -287,7 +324,6 @@ printf '%s\n' "${TEXTFORMATTING[BRIGHT]}Disabling sleep, hybernate and suspend f
 if [[ $(sudo systemctl mask sleep.target) -eq 0 ]];
 then
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}Successfully disabled sleep functionality for the update process.${TEXTFORMATTING[NORMAL]}"
-    MASKEDTARGETS+=("sleep.target")
 else
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occured while disabling sleep functionality for the update process.${TEXTFORMATTING[NORMAL]}"
 fi
@@ -296,7 +332,6 @@ fi
 if [[ $(sudo systemctl mask suspend.target) -eq 0 ]];
 then
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}Successfully disabled suspend functionality for the update process.${TEXTFORMATTING[NORMAL]}"
-    MASKEDTARGETS+=("suspend.target")
 else
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occured while disabling suspend functionality for the update process.${TEXTFORMATTING[NORMAL]}"
 fi
@@ -305,7 +340,6 @@ fi
 if [[ $(sudo systemctl mask hibernate.target) -eq 0 ]];
 then
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}Successfully disabled hibernate functionality for the update process.${TEXTFORMATTING[NORMAL]}"
-    MASKEDTARGETS+=("hibernate.target")
 else
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occured while disabling hibernate functionality for the update process.${TEXTFORMATTING[NORMAL]}"
 fi
@@ -313,7 +347,6 @@ fi
 if [[ $(sudo systemctl mask hybrid-sleep.target) -eq 0 ]];
 then
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}Successfully disabled hybrid-sleep functionality for the update process.${TEXTFORMATTING[NORMAL]}"
-    MASKEDTARGETS+=("hybrid-sleep.target")
 else
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occured while disabling hybrid-sleep functionality for the update process.${TEXTFORMATTING[NORMAL]}"
 fi
@@ -326,7 +359,7 @@ fi
 # START upgrade section
 ###
 # If the backup was successful, continue with the upgrade
-if [[ $BACKUP_COMMAND_RESULT -eq 0 ]];
+if [[ "${BACKUP_COMMAND_RESULT}" -eq "0" ]];
 then
     if [[ -z ${SKIPBACKUP+x} ]];
     then
@@ -335,7 +368,7 @@ then
     fi
     PAMAC_CLI_AUTH=1 pamac upgrade --force-refresh --enable-downgrade > >(tee --append "${SYSDUPLOGFILE}")
     UPGRADE_OFFICIAL_RESULT=$?
-    # Check if the official update from the repositories is successful, and if so continue with the AUR upgrade.
+    # Check if the official update from the repositories was successful and if so, continue with the AUR upgrade.
     if [ "${UPGRADE_OFFICIAL_RESULT}" -eq "0" ];
     then
         printf "[%s]: Packages upgraded successfully from the official repositories.\n" "$(date +%Y.%m.%d@%H:%M)" >> "${SYSDUPLOGFILE}"
@@ -647,20 +680,3 @@ if ls -A /var/log/manjaro-update-helper 1> /dev/null 2> /dev/null; then
 fi
 # Unset any and all variables, functions and whatever else was used.
 unset TEXTFORMATTING UPDATES_AVAILABLE CONTINUEUPDATE RUNTIMESTAMP RUNDATE BACKUP_COMMAND_RESULT LOGSDIR SYSUPDLOGFILE UPGRADE_AUR_RESULT NEWMERGE_RESULT COPYOFFICIALCHOICE COPYAURCHOICE SYSTEMINFO MESSAGE  CONFIRMCONTINUECHOICE CONFIRMCONTINUECHOICE MIRRORSTATUS
-
-# Trap ctrl-c and call ctrl_c()
-trap ctrl_c INT
-
-function ctrl_c() {
-    # Check if array exists for masked services
-    if [ ${#MASKEDTARGETS[@]} -gt 0 ]; then
-        for i in "${!MASKEDTARGETS[@]}"; do
-            # echo "element $i is "
-            if [[ $(sudo systemctl unmask "${MASKEDTARGETS[$i]}") -eq 0 ]];
-            then
-                printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}Successfully unmasked ${MASKEDTARGETS[$i]}.${TEXTFORMATTING[NORMAL]}"
-            fi
-        done
-    fi
-    exit
-}
