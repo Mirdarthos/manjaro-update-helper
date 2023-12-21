@@ -1,7 +1,7 @@
 # My Universal Manjaro Update Helper
 
 > ## Please note:
-> There is currrently some kind of problem enabling the hybrid-sleep functionali8ty on <kbd>Ctrl</kbd>+<kbd>C</kbd> killing of the processs. If you know wyhy this happens, feel free to contact me. If you use hybrid-sleep, remember to ensure it's re-enabled after the update:
+> There is currently some kind of problem enabling the hybrid-sleep functionali8ty on <kbd>Ctrl</kbd>+<kbd>C</kbd> killing of the processs. If you know wyhy this happens, feel free to contact me. If you use hybrid-sleep, remember to ensure it's re-enabled after the update:
 > ```
 > sudo systemctl unmask hybrid-sleep.target
 > ```
