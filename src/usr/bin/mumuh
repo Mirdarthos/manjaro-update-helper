@@ -3,7 +3,7 @@
 trap ctrl_c INT
 # The custom handler for CTRL-C Presses
 function ctrl_c() {
-    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}Enabling sleep, hybernate and suspend.${TEXTFORMATTING[NORMAL]}"
+    printf '\n%s\n' "${TEXTFORMATTING[BRIGHT]}Enabling sleep, hibernate and suspend.${TEXTFORMATTING[NORMAL]}"
     # Disabling sleep
     if [[ $(sudo systemctl unmask sleep.target) -eq 0 ]];
     then
@@ -29,12 +29,12 @@ function ctrl_c() {
     fi
 
     # Enabling hybrid-sleep
-    if [[ $(sudo systemctl unmask hybrid-sleep.target) -eq 0 ]];
-    then
-        printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Successfully enabled hybrid-sleep functionality.${TEXTFORMATTING[NORMAL]}"
-    else
-        printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occured while enabling hybrid-sleep functionality.${TEXTFORMATTING[NORMAL]}"
-    fi
+    #M if [[ $(sudo systemctl unmask hybrid-sleep.target) -eq 0 ]];
+    #M then
+    #M     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Successfully enabled hybrid-sleep functionality.${TEXTFORMATTING[NORMAL]}"
+    #M else
+    #M     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occured while enabling hybrid-sleep functionality.${TEXTFORMATTING[NORMAL]}"
+    #M fi
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}Update process was forcibly cancelled. Re-enabled sleep, suspend, hibernate and hybrid-sleep functionality${TEXTFORMATTING[NORMAL]}"
 
     exit 18
@@ -318,7 +318,7 @@ fi
 ###
 # START disable sleep.target, suspend.target, hibernate.target, hybrid-sleep.target for the update section
 ###
-printf '%s\n' "${TEXTFORMATTING[BRIGHT]}Disabling sleep, hybernate and suspend for duration of the update.${TEXTFORMATTING[NORMAL]}"
+printf '%s\n' "${TEXTFORMATTING[BRIGHT]}Disabling sleep, hibernate and suspend for duration of the update.${TEXTFORMATTING[NORMAL]}"
 # Disabling slep
 if [[ $(sudo systemctl mask sleep.target) -eq 0 ]];
 then
@@ -453,7 +453,7 @@ fi
 ###
 # START enable sleep.target, suspend.target, hibernate.target, hybrid-sleep.target for the update section
 ###
-printf '%s\n' "${TEXTFORMATTING[BRIGHT]}Enabling sleep, hybernate and suspend.${TEXTFORMATTING[NORMAL]}"
+printf '%s\n' "${TEXTFORMATTING[BRIGHT]}Enabling sleep, hibernate and suspend.${TEXTFORMATTING[NORMAL]}"
 # Disabling slep
 if [[ $(sudo systemctl unmask sleep.target) -eq 0 ]];
 then
