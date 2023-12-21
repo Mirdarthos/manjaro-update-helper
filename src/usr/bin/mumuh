@@ -2,7 +2,6 @@
 # Trap ctrl-c and call ctrl_c()
 trap ctrl_c INT
 # The custom handler for CTRL-C Presses
-MASKEDTARGETS=()
 function ctrl_c() {
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}Enabling sleep, hybernate and suspend.${TEXTFORMATTING[NORMAL]}"
     # Disabling sleep
