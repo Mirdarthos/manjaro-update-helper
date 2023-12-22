@@ -1,15 +1,5 @@
 # My Universal Manjaro Update Helper
 
-> ## Please note:
-> There is currently some kind of problem enabling the hybrid-sleep functionality on <kbd>Ctrl</kbd>+<kbd>C</kbd> killing of the processs. If you know wyhy this happens, feel free to contact me. If you use hybrid-sleep, remember to mask it before the update:
-> ```
-> sudo systemctl mask hybrid-sleep.target
-> ```
-> And unmask it aftterwards:
-> ```
-> sudo systemctl unmask hybrid-sleep.target
-> ```
-
 ###### _Named after my adopted rescue dog because, why not?_
 ###### _Her name is actually Lulu (pronounced Looloo) but before we adopted her, she had puppies. So with the little hanging tummy that reminds me of a cow's udder, from behind she looks like a miniature cow. So she became known to me as Mumu (pronounced Moomoo.)_
 
