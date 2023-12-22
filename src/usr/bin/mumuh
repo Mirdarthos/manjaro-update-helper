@@ -29,12 +29,12 @@ function ctrl_c() {
     fi
 
     # Enabling hybrid-sleep
-    #M if [[ $(sudo systemctl unmask hybrid-sleep.target) -eq 0 ]];
-    #M then
-    #M     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Successfully enabled hybrid-sleep functionality.${TEXTFORMATTING[NORMAL]}"
-    #M else
-    #M     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occured while enabling hybrid-sleep functionality.${TEXTFORMATTING[NORMAL]}"
-    #M fi
+    if [[ $(sudo systemctl unmask hybrid-sleep.target) -eq 0 ]];
+    then
+        printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Successfully enabled hybrid-sleep functionality.${TEXTFORMATTING[NORMAL]}"
+    else
+        printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occured while enabling hybrid-sleep functionality.${TEXTFORMATTING[NORMAL]}"
+    fi
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}Update process was forcibly cancelled. Re-enabled sleep, suspend, hibernate and hybrid-sleep functionality${TEXTFORMATTING[NORMAL]}"
 
     exit 18
