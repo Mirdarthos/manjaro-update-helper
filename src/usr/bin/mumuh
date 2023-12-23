@@ -405,7 +405,7 @@ then
                 else
                     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}.pacnew files successfully merged.${TEXTFORMATTING[NORMAL]}"
                 fi
-                printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}.pacnew files successfully merged.${TEXTFORMATTING[NORMAL]}" > systemd-cat --identifier=mumuh --priority=info
+                printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}.pacnew files successfully merged.${TEXTFORMATTING[NORMAL]}" | systemd-cat --identifier=mumuh --priority=info
                 printf "[%s]: Successfully merged .pacnew files.\n" "$(date +%Y.%m.%d@%H:%M:%S)" >> "${SYSDUPLOGFILE}"
             else
                 printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occurred during merging of the .pacnew files.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
