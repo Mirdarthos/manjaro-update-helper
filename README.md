@@ -55,7 +55,7 @@ $ mumuh --help
 #       NOTE:                                                        #
 #       If --skipbackup, or -s is specified, then specifying this    #
 #       will have no effect.                                         #
-#     * --skiprphansremove                                           #
+#     * --skiporphansremove                                           #
 #       If this argument is specified, muumuh will skip the removal  #
 #       of orphan packages after a successful upgrade.               #
 #     * --help, or -h                                                #
@@ -76,7 +76,7 @@ $ mumuh --help
 #          OR                                                        #
 #        mumu -c <custom command>                                    #
 #     * If you want to skip removing orphan pakackages:              #
-#        mumu --skiprphansremove                                     #
+#        mumu --skiporphansremove                                     #
 ######################################################################
 ```
 
@@ -91,7 +91,7 @@ The script is **_not_** meant to be run as `root` or with `sudo`. It'll ask for 
 | `--addsudoers`, `-a` | Add the specified user as able to run all the required `sudo` commands without a password, without human intervention. |
 | `--skipbackup`, `-s` | If no backup is required, skip creating one. |
 | `--custombackupcommand`, `-c` | If you use some other command for performing backups, specify it here. Will skip for anything that contains an `rm` command, as that has the potential be dangerous and cause havoc. |
-| `--skiprphansremove` | Skip removal of orphan packages on successful upgrade process. | |
+| `--skiporphansremove` | Skip removal of orphan packages on successful upgrade process. | |
 
 There is the possibility of there being added to these, but if so this list will be updated.
 
