@@ -9,7 +9,7 @@ arch=('any')
 url="https://github.com/Mirdarthos/manjaro-update-helper"
 license=('Apache')
 depends=('sudo' 'xclip' 'ncurses' 'pamac-cli' 'pacman' 'inxi' 'meld' 'pacman-mirrors' 'libnotify')
-optdepends=('timeshift: For creating backups with prior to updating if custom command not specified.')
+optdepends=('timeshift: For creating backups with prior to updating if custom command not specified or making a backup snapshot skipped.')
 source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/V$pkgver.tar.gz")
 
 package() {
