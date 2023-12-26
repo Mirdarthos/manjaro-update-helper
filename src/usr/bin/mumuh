@@ -189,7 +189,8 @@ fi
 # Create the log files
 if [ -z ${LOGSDIR+x} ];
 then
-    printf '%s\n' "${TEXTFORMATTING[RED]}${TEXTFORMATTING[BRIGHT]}\$LOGSDIR${TEXTFORMATTING[NORMAL]}${TEXTFORMATTING[RED]} is unset. Cannot log process.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=warn
+    printf '%s\n' "${TEXTFORMATTING[RED]}${TEXTFORMATTING[BRIGHT]}\$LOGSDIR${TEXTFORMATTING[NORMAL]}${TEXTFORMATTING[RED]} is unset. Cannot log process.${TEXTFORMATTING[NORMAL]}"
+    printf '%s\n' "\$LOGSDIR$ is unset. Cannot log process." | systemd-cat --identifier=mumuh --priority=warn
     LOGSDIR=""
 else
     touch "${LOGSDIR}/system-upgrade.output" && SYSDUPLOGFILE="${LOGSDIR}/system-upgrade.output"
@@ -222,7 +223,7 @@ CONTINUEUPDATE=${CONTINUEUPDATE:-Y}
 if [[ ${CONTINUEUPDATE} =~ [nN] ]];
 then
     printf "[%s]: Upgrade cancelled.\n" "$(date +%Y.%m.%d@%H:%M:S)" >> "${SYSDUPLOGFILE}"
-    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}Upgrade cancelled.${TEXTFORMATTING[NORMAL]}" |  systemd-cat --identifier=mumuh && exit 7
+    printf '%s\n' "Upgrade cancelled." |  systemd-cat --identifier=mumuh && exit 7
 fi
 
 # Functionality to accomplish this has been added with the --addsudoers or -a argument
@@ -276,19 +277,23 @@ fi
 ###
 if [[ -z ${SKIPBACKUP+x} ]]; # Check if backup creating specified.
 then
-    printf '%s\n' "* ${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Not skipping backup creation.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh
+    printf '%s\n' "* ${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Not skipping backup creation.${TEXTFORMATTING[NORMAL]}"
+    printf '%s\n' "Not skipping backup creation." | systemd-cat --identifier=mumuh
     printf "[%s]: Not skipping backup creation.\n" "$(date +%Y.%m.%d@%H:%M:S)" >> "${SYSDUPLOGFILE}"
     if [[ -v CUSTOMBUCMD ]]; # Check if custom backup command specified.
     then
         BACKUPCMD=$CUSTOMBUCMD
     else
-        printf '%s\n' "> ${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}No custom backup command specified.${TEXTFORMATTING[NORMAL]} <" | tee /dev/tty | systemd-cat --identifier=mumuh
+        printf '%s\n' "> ${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}No custom backup command specified.${TEXTFORMATTING[NORMAL]} <"
+        printf '%s\n' "No custom backup command specified." | systemd-cat --identifier=mumuh
         if ! command -v sudo timeshift 1> /dev/null 2> /dev/null
         then
-            printf '%s\n' "> ${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Timeshift ${TEXTFORMATTING[RED]}not${TEXTFORMATTING[YELLOW]} found.${TEXTFORMATTING[NORMAL]} <" | tee /dev/tty | systemd-cat --identifier=mumuh
-            printf "[%s]: Timeshift not founnd.\n" "$(date +%Y.%m.%d@%H:%M:S)" >> "${SYSDUPLOGFILE}"
+            printf '%s\n' "> ${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Timeshift ${TEXTFORMATTING[RED]}not${TEXTFORMATTING[YELLOW]} found.${TEXTFORMATTING[NORMAL]} <"
+            printf '%s\n' "Timeshift not found." | systemd-cat --identifier=mumuh
+            printf "[%s]: Timeshift not found.\n" "$(date +%Y.%m.%d@%H:%M:S)" >> "${SYSDUPLOGFILE}"
             echo
-            printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}Exiting.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh
+            printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}Exiting.${TEXTFORMATTING[NORMAL]}"
+            printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}Exiting.${TEXTFORMATTING[NORMAL]}" | systemd-cat --identifier=mumuh
             printf "[%s]: Exiting.\n" "$(date +%Y.%m.%d@%H:%M:S)" >> "${SYSDUPLOGFILE}"
             exit 2
         else
@@ -392,7 +397,8 @@ then
             else
                 printf '%s\n' "${TEXTFORMATTING[GREEN]}AUR package upgrade \n\nUsing, ${TEXTFORMATTING[BRIGHT]}pamac upgrade --enable-downgrade --aur --devel${TEXTFORMATTING[NORMAL]}, successfully finished."
             fi
-            printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}AUR package upgrade, using pamac upgrade, successfully finished.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=info
+            printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}AUR package upgrade, using pamac upgrade, successfully finished.${TEXTFORMATTING[NORMAL]}"
+            printf '%s\n' "AUR package upgrade, using pamac upgrade, successfully finished." | systemd-cat --identifier=mumuh --priority=info
             # An now, we have to merge any .pacnew files.
             sudo DIFFPROG=meld pacdiff
             NEWMERGE_RESULT=$?
@@ -405,10 +411,11 @@ then
                 else
                     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}.pacnew files successfully merged.${TEXTFORMATTING[NORMAL]}"
                 fi
-                printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}.pacnew files successfully merged.${TEXTFORMATTING[NORMAL]}" | systemd-cat --identifier=mumuh --priority=info
+                printf '%s\n' ".pacnew files successfully merged." | systemd-cat --identifier=mumuh --priority=info
                 printf "[%s]: Successfully merged .pacnew files.\n" "$(date +%Y.%m.%d@%H:%M:%S)" >> "${SYSDUPLOGFILE}"
             else
-                printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occurred during merging of the .pacnew files.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
+                printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occurred during merging of the .pacnew files.${TEXTFORMATTING[NORMAL]}"
+                printf '%s\n' "An error occurred during merging of the .pacnew files." | systemd-cat --identifier=mumuh --priority=err
                 exit 6
             fi
         # Show notification that the AUR packages' update was unsuccessful.
@@ -421,7 +428,8 @@ then
             fi
             printf "[%s]: Successfully merged .pacnew files.\n" "$(date +%Y.%m.%d@%H:%M:%S)" >> "${SYSDUPLOGFILE}"
             printf "[%s]: AUR package using pamac upgrade --enable-downgrade --aur --devel failed.\n" "$(date +%Y.%m.%d@%H:%M:%S)" >> "${SYSDUPLOGFILE}"
-            printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}AUR package using pamac upgrade --enable-downgrade --aur --devel failed.${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
+            printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}AUR package using pamac upgrade --enable-downgrade --aur --devel failed.${TEXTFORMATTING[NORMAL]}"
+            printf '%s\n' "AUR package using pamac upgrade --enable-downgrade --aur --devel failed." | systemd-cat --identifier=mumuh --priority=err
             exit 5
         fi
     # Show notification that official packackages' updates was unsuccessful.
@@ -437,7 +445,8 @@ then
     fi
 else # If timeshift wasn't successful, notify, log and exit.
     echo
-    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}!!! An error occurred while making the pre-update backup snapshot. Not continuing. !!!${TEXTFORMATTING[NORMAL]}" | tee /dev/tty | systemd-cat --identifier=mumuh --priority=err
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}!!! An error occurred while making the pre-update backup snapshot. Not continuing. !!!${TEXTFORMATTING[NORMAL]}"
+    printf '%s\n' "!!! An error occurred while making the pre-update backup snapshot. Not continuing. !!!" | systemd-cat --identifier=mumuh --priority=err
     echo
     notify-send --urgency=critical --icon=error --app-name="MUMUH" "Backup creation" "Using, ${BACKUPCMD}\<b\>\<\/b\>, failed.\<br /\>\<i\>Human intervention required.\<\/b\>\<\/i\>\<br\/\>\<\/b\>Not continuing.\<\/b\>"
     exit 3
