@@ -154,11 +154,11 @@ then
                 shift
             ;;
             --version)
-                printf '%s\n' "${TEXTFORMATTING[BRIGHT]}Current version:${TEXTFORMATTING[NORMAL]} 4.5.1"
+                printf '%s\n' "${TEXTFORMATTING[BRIGHT]}Current version:${TEXTFORMATTING[NORMAL]} 4.5.2"
                 exit
             ;;
             -v)
-                printf '%s\n' "4.5.1"
+                printf '%s\n' "4.5.2"
                 exit
             ;;
             --custombackupcommand=*|-c)
@@ -500,7 +500,7 @@ fi
 ###
 # START orphan cleaning section
 ###
-if [[ "${UPGRADE_OFFICIAL_RESULT}" -eq "0" ]] && [[ "${UPGRADE_AUR_RESULT}" -eq "0" ]] && [[ "${NEWMERGE_RESULT}" -eq "0" ]];
+if [[ "${UPGRADE_OFFICIAL_RESULT}" -eq "0" ]] && [[ "${UPGRADE_AUR_RESULT}" -eq "0" ]] && [[ "${NEWMERGE_RESULT}" -eq "0" ]] && [[ "${SKIPORPHANRM}" -ne "1" ]];
 then
     if PAMAC_CLI_AUTH=1 pamac remove --orphans;
     then
