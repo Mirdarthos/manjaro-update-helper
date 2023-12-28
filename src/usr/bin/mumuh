@@ -149,6 +149,14 @@ then
                 SKIPBACKUP=true
                 shift
             ;;
+            --version)
+                printf '%s\n' "${TEXTFORMATTING[BRIGHT]}Current version:${TEXTFORMATTING[NORMAL]} 4.5"
+                exit
+            ;;
+            -v)
+                printf '%s\n' "4.5"
+                exit
+            ;;
             --custombackupcommand=*|-c)
                 CUSTOMBUARG=$1
                 if [[ "$CUSTOMBUARG" == *"rm"* ]]; then

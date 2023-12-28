@@ -91,7 +91,8 @@ The script is **_not_** meant to be run as `root` or with `sudo`. It'll ask for 
 | `--addsudoers`, `-a` | Add the specified user as able to run all the required `sudo` commands without a password, without human intervention. |
 | `--skipbackup`, `-s` | If no backup is required, skip creating one. |
 | `--custombackupcommand`, `-c` | If you use some other command for performing backups, specify it here. Will skip for anything that contains an `rm` command, as that has the potential be dangerous and cause havoc. |
-| `--skiporphansremove` | Skip removal of orphan packages on successful upgrade process. | |
+| `--skiporphansremove` | Skip removal of orphan packages on successful upgrade process. |
+| `--version`, `-v` | Show version number and exit. |
 
 There is the possibility of there being added to these, but if so this list will be updated.
 
