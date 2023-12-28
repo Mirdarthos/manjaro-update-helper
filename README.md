@@ -77,6 +77,10 @@ $ mumuh --help
 #        mumu -c <custom command>                                    #
 #     * If you want to skip removing orphan pakackages:              #
 #        mumu --skiporphansremove                                    #
+#     * If you want to get the package version:                      #
+#        mumu --version                                              #
+#          OR                                                        #
+#        mumu -v                                                     #
 ######################################################################
 ```
 
