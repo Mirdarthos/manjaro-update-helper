@@ -82,7 +82,7 @@ then
         printf '%s\n' "#       ${TEXTFORMATTING[BRIGHT]}NOTE:${TEXTFORMATTING[NORMAL]}                                                        #"
         printf '%s\n' "#       If ${TEXTFORMATTING[BRIGHT]}--skipbackup${TEXTFORMATTING[NORMAL]}, or ${TEXTFORMATTING[BRIGHT]}-s${TEXTFORMATTING[NORMAL]} is specified, then specifying this    #"
         printf '%s\n' "#       will have no effect.                                         #"
-        printf '%s\n' "#     * ${TEXTFORMATTING[BRIGHT]}--skiporphansremove${TEXTFORMATTING[NORMAL]}                                           #"
+        printf '%s\n' "#     * ${TEXTFORMATTING[BRIGHT]}--skiporphansremove${TEXTFORMATTING[NORMAL]}                                          #"
         printf '%s\n' "#       If this argument is specified, muumuh will skip the removal  #"
         printf '%s\n' "#       of orphan packages after a successful upgrade.               #"
         printf '%s\n' "#     * ${TEXTFORMATTING[BRIGHT]}--help${TEXTFORMATTING[NORMAL]}, or ${TEXTFORMATTING[BRIGHT]}-h${TEXTFORMATTING[NORMAL]}                                                #"
@@ -103,7 +103,7 @@ then
         printf '%s\n' "#          OR                                                        #"
         printf '%s\n' "#        mumu -c <custom command>                                    #"
         printf '%s\n' "#     * If you want to skip removing orphan pakackages:              #"
-        printf '%s\n' "#        mumu --skiporphansremove                                     #"
+        printf '%s\n' "#        mumu --skiporphansremove                                    #"
         printf '%s\n' "######################################################################"
         exit 0
     }
