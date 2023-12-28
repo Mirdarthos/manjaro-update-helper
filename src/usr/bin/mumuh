@@ -104,6 +104,10 @@ then
         printf '%s\n' "#        mumu -c <custom command>                                    #"
         printf '%s\n' "#     * If you want to skip removing orphan pakackages:              #"
         printf '%s\n' "#        mumu --skiporphansremove                                    #"
+        printf '%s\n' "#     * If you want to get the package version:                      #"
+        printf '%s\n' "#        mumu --version                                              #"
+        printf '%s\n' "#          OR                                                        #"
+        printf '%s\n' "#        mumu -v                                                     #"
         printf '%s\n' "######################################################################"
         exit 0
     }
