@@ -493,9 +493,7 @@ else
 fi
 ###
 # END disable sleep.target, suspend.target, hibernate.target, hybrid-sleep.target for the update section
-###
 
-###
 # END upgrade section
 ###
 
@@ -523,37 +521,6 @@ then
 else
     printf "%sOrphan packages could not be removed.\n%sHuman intervention required.\nNot continuing." "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}" "${TEXTFORMATTING[NORMAL}"
     exit 13
-fi
-###
-# END orphan cleaning section
-###
-
-###
-# START orphan cleaning section
-###
-if [ ${SKIPORPHANRM+x} ] && [[ "${SKIPORPHANRM}" -eq "1" ]]; then # $SKIPORPANRM variable not set and not equal to 1 (or true)
-    if [[ "${UPGRADE_OFFICIAL_RESULT}" -eq "0" ]] && [[ "${UPGRADE_AUR_RESULT}" -eq "0" ]] && [[ "${NEWMERGE_RESULT}" -eq "0" ]];
-    then
-        if PAMAC_CLI_AUTH=1 pamac remove --orphans;
-        then
-            if command -v notify-send 1> /dev/null 2> /dev/null;
-            then
-                notify-send --icon=checkmark --app-name="MUMUH" --expire-time=5000 "Successfully removed orphan packages."
-            else
-                printf "%sFailed to remove orphan packages.\n%sHuman intervention required.\nNot continuing.\n" "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}" "${TEXTFORMATTING[NORMAL}"
-            fi
-        else
-            if command -v notify-send 1> /dev/null 2> /dev/null;
-            then
-                notify-send --urgency=critical --icon=error --app-name="MUMUH" "Removing orphan packages" "Using, pamac remove --orphans\<b\>\<\/b\>, failed."
-            else
-                printf "%sOrphan package removal, using %spamac remove --orphans%s failed.\n" "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}" "${TEXTFORMATTING[BOLD]}" "${TEXTFORMATTING[NORMAL}"
-            fi
-        fi
-    else
-        printf "%sOrphan packages could not be removed.\n%sHuman intervention required.\nNot continuing." "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}" "${TEXTFORMATTING[NORMAL}"
-        exit 13
-    fi
 fi
 ###
 # END orphan cleaning section
