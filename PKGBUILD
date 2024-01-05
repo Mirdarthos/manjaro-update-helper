@@ -2,7 +2,7 @@
 # shellcheck disable=all
 
 pkgname=my-universal-manjaro-update-helper
-pkgver=5
+pkgver=5.1
 pkgrel=1
 pkgdesc="A helper for updating Manjaro Linux."
 arch=('any')
@@ -16,4 +16,4 @@ package() {
     cd manjaro-update-helper-$pkgver
     install -Dm755 src/usr/bin/mumuh -t "$pkgdir/usr/bin/"
 }
-sha256sums=('1a630fc1e0a414bbb3ed83b4bd9be1e58d71e4d25d6b474dea6fbd612b1f029d')
+sha256sums=('ee1a45d24cffd48aa35edf5c325b02ff8ea64d88a7ca50cb25f72b5adbfc3782')
