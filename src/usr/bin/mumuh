@@ -375,7 +375,9 @@ then
         printf "[%s]: Pre-upgrade backup snapshot successfully created.\n" "$(date +%Y.%m.%d@%H:%M:%S)" >> "${SYSDUPLOGFILE}"
         printf "%sPre-upgrade backup snapshot successfully created. %sContinuing with upgrade...%s\n"  "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}" "${TEXTFORMATTING[NORMAL]}${TEXTFORMATTING[GREEN]}" "${TEXTFORMATTING[NORMAL]}"
     fi
-    PAMAC_CLI_AUTH=1 pamac upgrade --force-refresh --enable-downgrade > >(tee --append "${SYSDUPLOGFILE}")
+    {
+        PAMAC_CLI_AUTH=1 pamac upgrade --force-refresh --enable-downgrade
+    } | tee --append "${SYSDUPLOGFILE}"
     UPGRADE_OFFICIAL_RESULT=$?
     # Check if the official update from the repositories was successful and if so, continue with the AUR upgrade.
     if [ "${UPGRADE_OFFICIAL_RESULT}" -eq "0" ];
