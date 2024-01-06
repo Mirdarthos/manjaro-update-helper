@@ -154,11 +154,11 @@ then
                 shift
             ;;
             --version)
-                printf '%s\n' "${TEXTFORMATTING[BRIGHT]}Current version:${TEXTFORMATTING[NORMAL]} 5.1"
+                printf '%s\n' "${TEXTFORMATTING[BRIGHT]}Current version:${TEXTFORMATTING[NORMAL]} 5.2"
                 exit
             ;;
             -v)
-                printf '%s\n' "5.1"
+                printf '%s\n' "5.2"
                 exit
             ;;
             --custombackupcommand=*|-c)
@@ -377,7 +377,7 @@ then
     fi
     {
         PAMAC_CLI_AUTH=1 pamac upgrade --force-refresh --enable-downgrade
-    } | tee --append "${SYSDUPLOGFILE}"
+    } &1 | (tee --append "${SYSDUPLOGFILE}") 
     UPGRADE_OFFICIAL_RESULT=$?
     # Check if the official update from the repositories was successful and if so, continue with the AUR upgrade.
     if [ "${UPGRADE_OFFICIAL_RESULT}" -eq "0" ];
