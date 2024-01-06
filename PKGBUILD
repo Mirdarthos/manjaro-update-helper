@@ -16,3 +16,4 @@ package() {
     cd manjaro-update-helper-$pkgver
     install -Dm755 src/usr/bin/mumuh -t "$pkgdir/usr/bin/"
 }
+sha256sums=('b0ab2f79dc48408502dc3ff7d50224142d79f975dbe666c102f28331eaa4ebfe')
