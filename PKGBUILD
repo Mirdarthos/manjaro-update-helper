@@ -4,7 +4,7 @@
 pkgname=mirdarthos-universal-manjaro-update-helper
 replaces=('my-universal-manjaro-update-helper')
 conflicts=('my-universal-manjaro-update-helper')
-pkgver=6.0.1
+pkgver=6
 pkgrel=1
 pkgdesc="A helper for updating Manjaro Linux."
 arch=('any')
