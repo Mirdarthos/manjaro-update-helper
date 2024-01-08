@@ -1,3 +1,5 @@
 .untracked
+pkg
+src/manjaro-*
 *manjaro*.tar.gz
 *manjaro*.tar.zst
