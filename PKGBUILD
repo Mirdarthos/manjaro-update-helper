@@ -1,7 +1,8 @@
 # Maintainer: Mirdarthos mirdarthos[at]duck[dot]com
 # shellcheck disable=all
 
-pkgname=my-universal-manjaro-update-helper
+pkgname=mirdarthos-universal-manjaro-update-helper
+replaces=my-universal-manjaro-update-helper
 pkgver=5.2
 pkgrel=1
 pkgdesc="A helper for updating Manjaro Linux."

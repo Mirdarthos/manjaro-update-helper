@@ -1,4 +1,4 @@
-# My Universal Manjaro Update Helper
+# Mirdarthos' Universal Manjaro Update Helper
 
 ###### _Named after my adopted rescue dog because, why not?_
 ###### _Her name is actually Lulu (pronounced Looloo) but before we adopted her, she had puppies. So with the little hanging tummy that reminds me of a cow's udder, from behind she looks like a miniature cow. So she became known to me as Mumu (pronounced Moomoo.)_
@@ -11,7 +11,7 @@ After spending quite some time on the [Manjaro forum](https://forum.manjaro.org/
 
 Couple that with a desire to learn bash, and viola! I saw an opportunity to contribute, both to my favorite Linux distribution as well as myself.
 
-So, I present **My Universal Manjaro Update Helper.**
+So, I present **Mirdarthos' Universal Manjaro Update Helper.**
 _(Or, **`mumuh`** if you will.)_
 
 ## Usage:
