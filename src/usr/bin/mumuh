@@ -269,7 +269,7 @@ then
     elif [[ ${COPYOFFICIALCHOICE} =~ [Yy] ]];
     then
         printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}You are conrinuing even though you are using unsynchronised mirrors.${TEXTFORMATTING[RED]}"
-        printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}This is dangerous and known to cause problems and thus not recommended.${TEXTFORMATTING[RED]}"
+        printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}This is dangerous and known to cause problems and thus ${TEXTFORMATTING[BRIGHT]}NOT RECOMMENDED${TEXTFORMATTING[NORMAL]}.${TEXTFORMATTING[RED]}"
         read -r -p "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Please confirm if you wish to continue by pressing C.${TEXTFORMATTING[RED]} [C/N]: " CONFIRMCONTINUECHOICE
         if [[ ${CONFIRMCONTINUECHOICE} != "C" ]];
         then
@@ -336,7 +336,7 @@ fi
 # START disable sleep.target, suspend.target, hibernate.target, hybrid-sleep.target for the update section
 ###
 printf '%s\n' "${TEXTFORMATTING[BRIGHT]}Disabling sleep, hibernate and suspend for duration of the update.${TEXTFORMATTING[NORMAL]}"
-# Disabling slep
+# Disabling sleep
 if [[ $(sudo systemctl mask sleep.target) -eq 0 ]];
 then
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}Successfully disabled sleep functionality for the update process.${TEXTFORMATTING[NORMAL]}"
