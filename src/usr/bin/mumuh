@@ -287,7 +287,7 @@ fi
 ###
 # START backup section
 ###
-if [[ -z ${SKIPBACKUP+x} ]]; # Check if backup creating specified.
+if [[ -z ${SKIPBACKUP+x} ]]; # Check if skipping backup creating specified.
 then
     printf '%s\n' "* ${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Not skipping backup creation.${TEXTFORMATTING[NORMAL]}"
     printf '%s\n' "Not skipping backup creation." | systemd-cat --identifier=mumuh
@@ -309,7 +309,7 @@ then
             printf "[%s]: Exiting.\n" "$(date +%Y.%m.%d@%H:%M:S)" >> "${SYSDUPLOGFILE}"
             exit 2
         else
-            BACKUPCMD="sudo timeshift --create --comments \"$(date +%Y.%m.%d@%H:%M)\"' - Pre-update'"
+            BACKUPCMD="sudo timeshift --create --comments \"$(date +%Y.%m.%d@%H:%M) - Pre-update\""
         fi
     fi
 fi
