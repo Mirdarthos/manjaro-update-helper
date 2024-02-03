@@ -154,11 +154,11 @@ then
                 shift
             ;;
             --version)
-                printf '%s\n' "${TEXTFORMATTING[BRIGHT]}Current version:${TEXTFORMATTING[NORMAL]} 6.0.1"
+                printf '%s\n' "${TEXTFORMATTING[BRIGHT]}Current version:${TEXTFORMATTING[NORMAL]} 7.0"
                 exit
             ;;
             -v)
-                printf '%s\n' "6.0.1"
+                printf '%s\n' "7.0"
                 exit
             ;;
             --custombackupcommand=*|-c)
@@ -633,15 +633,17 @@ fi
 # END forum post generation section
 ###
 
-# if [[ $? = 0 ]];
-# then
-#     echo
-#     echo "Message to start forum topic successfully copied to clipboard.
-# Please visit https://forum.manjaro.org/ and start a new support topic and paste the copied messaage ass the main post, but only after checking if the issue hasn't been asked and resolved already.
-# Remember that a forum account is required for creating a new support request and that the forum is manned by volunteers, so no demand can be madee on their time.
-# Please see https://forum.manjaro.org/t/howto-request-support/91463 for more information and guides to request support.
-# "
-# fi
+# Copy the message to the primary clipboard
+xclip -selection clipboard <<< "${MESSAGE}"
+if [[ $? = 0 ]];
+then
+    echo
+    echo "Message to start forum topic successfully copied to clipboard.
+Please visit https://forum.manjaro.org/ and start a new support topic and paste the copied message as the main post, but only after checking if the issue hasn't been asked and resolved already.
+Remember that a forum account is required for creating a new support request and that the forum is manned by volunteers, so no demand can be made on their time.
+Please see https://forum.manjaro.org/t/howto-request-support/91463 for more information and guides to request support.
+"
+fi
 # Some of the logs are only stored in RAM, so will be cleared on shutdown or restart, but let's take care of older log files.
 printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Cleaning older log files...${TEXTFORMATTING[NORMAL]}"
 if ls -A /var/log/manjaro-update-helper 1> /dev/null 2> /dev/null; then
