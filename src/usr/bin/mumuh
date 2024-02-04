@@ -628,11 +628,6 @@ $MIRRORSTATUS
 # PLEASE REMOVE THIS TEXT AND ADD YOUR OWN DESCRIPTION HERE, BELOW THE LINE!
 
 "
-fi
-###
-# END forum post generation section
-###
-
 # Copy the message to the primary clipboard
 xclip -selection clipboard <<< "${MESSAGE}"
 if [[ $? = 0 ]];
@@ -644,6 +639,10 @@ Remember that a forum account is required for creating a new support request and
 Please see https://forum.manjaro.org/t/howto-request-support/91463 for more information and guides to request support.
 "
 fi
+fi
+###
+# END forum post generation section
+###
 # Some of the logs are only stored in RAM, so will be cleared on shutdown or restart, but let's take care of older log files.
 printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Cleaning older log files...${TEXTFORMATTING[NORMAL]}"
 if ls -A /var/log/manjaro-update-helper 1> /dev/null 2> /dev/null; then
