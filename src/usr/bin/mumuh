@@ -154,11 +154,11 @@ then
                 shift
             ;;
             --version)
-                printf '%s\n' "${TEXTFORMATTING[BRIGHT]}Current version:${TEXTFORMATTING[NORMAL]} 7.2.1"
+                printf '%s\n' "${TEXTFORMATTING[BRIGHT]}Current version:${TEXTFORMATTING[NORMAL]} 7.3"
                 exit
             ;;
             -v)
-                printf '%s\n' "7.2.1"
+                printf '%s\n' "7.3"
                 exit
             ;;
             --custombackupcommand=*|-c)
@@ -183,19 +183,19 @@ RUNTIMESTAMP=$(date +%Y.%m.%d@%Hh%Mm)
 RUNDATE=$(echo "$RUNTIMESTAMP" | awk -F'@' '{print $1}')
 
 # Create the logs directory
-if [[ ! -d "/var/log/manjaro-update" ]];
+if [[ ! -d "/var/log/mumuh" ]];
 then
-    sudo mkdir --mode=770 "/var/log/manjaro-update"
-    sudo chgrp wheel "/var/log/manjaro-update"
+    sudo mkdir --mode=770 "/var/log/mumuh"
+    sudo chgrp wheel "/var/log/mumuh"
 fi
 if [[ -d "/var/log/manjaro-update/" ]];
 then
-    mkdir --mode=755 "/var/log/manjaro-update/logs.${RUNTIMESTAMP}"
-    sudo chgrp wheel "/var/log/manjaro-update/logs.${RUNTIMESTAMP}"
+    mkdir --mode=755 "/var/log/mumuh/logs.${RUNTIMESTAMP}"
+    sudo chgrp wheel "/var/log/mumuh/logs.${RUNTIMESTAMP}"
 fi
-if [[ -d "/var/log/manjaro-update/logs.${RUNTIMESTAMP}" ]];
+if [[ -d "/var/log/mumuh/logs.${RUNTIMESTAMP}" ]];
 then
-    LOGSDIR="/var/log/manjaro-update/logs.${RUNTIMESTAMP}"
+    LOGSDIR="/var/log/mumuh/logs.${RUNTIMESTAMP}"
 fi
 
 # Create the log files
@@ -645,8 +645,8 @@ fi
 ###
 # Some of the logs are only stored in RAM, so will be cleared on shutdown or restart, but let's take care of older log files.
 printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Cleaning older log files...${TEXTFORMATTING[NORMAL]}"
-if ls -A /var/log/manjaro-update-helper 1> /dev/null 2> /dev/null; then
-    (cd /var/log/manjaro-update-helper && ls -t --reverse | head -n -5 | xargs -I{} rm --force)
+if ls -A /var/log/mumuh 1> /dev/null 2> /dev/null; then
+    (cd /var/log/mumuh && ls -t --reverse | head -n -5 | xargs -I{} rm --force)
 fi
 # Unset any and all variables, functions and whatever else was used.
 unset TEXTFORMATTING UPDATES_AVAILABLE CONTINUEUPDATE RUNTIMESTAMP RUNDATE BACKUP_COMMAND_RESULT LOGSDIR SYSUPDLOGFILE UPGRADE_AUR_RESULT NEWMERGE_RESULT COPYOFFICIALCHOICE COPYAURCHOICE SYSTEMINFO MESSAGE  CONFIRMCONTINUECHOICE CONFIRMCONTINUECHOICE MIRRORSTATUS
