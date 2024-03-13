@@ -493,9 +493,7 @@ if [[ "${UPGRADE_OFFICIAL_RESULT}" -eq "0" ]] && [[ "${UPGRADE_AUR_RESULT}" -eq 
 then
     printf "[%s]: Starting orphan removal:\n" "$(date +%Y.%m.%d@%H:%M:%S)" >> "${AURUPDLOGFILE}"
     if
-    {
-        PAMAC_CLI_AUTH=1 pamac remove --orphans
-    } &1 | (tee --append "${AURUPDLOGFILE}")
+        PAMAC_CLI_AUTH=1 pamac remove --orphans &1 | tee --append "${AURUPDLOGFILE}"
     then
         if command -v notify-send 1> /dev/null 2> /dev/null;
         then
