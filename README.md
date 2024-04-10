@@ -56,7 +56,7 @@ $ mumuh --help
 #       If --skipbackup, or -s is specified, then specifying this    #
 #       will have no effect.                                         #
 #     * --skiporphansremove                                          #
-#       If this argument is specified, muumuh will skip the removal  #
+#       If this argument is specified, mumuh will skip the removal   #
 #       of orphan packages after a successful upgrade.               #
 #     * --help, or -h                                                #
 #       Show this help and exit.                                     #
