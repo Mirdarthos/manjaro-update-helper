@@ -154,11 +154,11 @@ then
                 shift
             ;;
             --version)
-                printf '%s\n' "${TEXTFORMATTING[BRIGHT]}Current version:${TEXTFORMATTING[NORMAL]} 7.6"
+                printf '%s\n' "${TEXTFORMATTING[BRIGHT]}Current version:${TEXTFORMATTING[NORMAL]} 7.7"
                 exit
             ;;
             -v)
-                printf '%s\n' "7.6"
+                printf '%s\n' "7.7"
                 exit
             ;;
             --custombackupcommand=*|-c)
@@ -364,7 +364,7 @@ then
         printf "[%s]: Pre-upgrade backup snapshot successfully created.\n" "$(date +%Y.%m.%d@%H:%M:%S)" >> "${SYSDUPLOGFILE}"
         printf "%sPre-upgrade backup snapshot successfully created. %sContinuing with upgrade...%s\n"  "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}" "${TEXTFORMATTING[NORMAL]}${TEXTFORMATTING[GREEN]}" "${TEXTFORMATTING[NORMAL]}"
     fi
-    PAMAC_CLI_AUTH=1 pamac upgrade --force-refresh --enable-downgrade --no-aur >&1 | tee "${SYSDUPLOGFILE}"
+    script --append="${SYSDUPLOGFILE}" --log-io --command="PAMAC_CLI_AUTH=1 pamac upgrade --force-refresh --enable-downgrade --no-aur"
     UPGRADE_OFFICIAL_RESULT=$?
     # Check if the official update from the repositories was successful and if so, continue with the AUR upgrade.
     if [ "${UPGRADE_OFFICIAL_RESULT}" -eq "0" ];
@@ -386,7 +386,7 @@ then
         fi
         # Let's update AUR packages now.
         printf "[%s]: AUR packages to upgrade:\n" "$(date +%Y.%m.%d@%H:%M:%S)" >> "${AURUPDLOGFILE}"
-        PAMAC_CLI_AUTH=1 pamac upgrade --enable-downgrade --aur --devel >&1 | tee "${AURUPDLOGFILE}"
+        script --append="${AURUPDLOGFILE}" --log-io --command="PAMAC_CLI_AUTH=1 pamac upgrade --enable-downgrade --aur --devel"
         UPGRADE_AUR_RESULT=$?
         # Check if AUR packages' upgrade was successful, and if so, continue with merging .pacnew files.
         if [ "${UPGRADE_AUR_RESULT}" -eq "0" ];
