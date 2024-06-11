@@ -36,7 +36,19 @@ function ctrl_c() {
         printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occured while enabling hybrid-sleep functionality.${TEXTFORMATTING[NORMAL]}"
     fi
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}Update process was forcibly cancelled. Re-enabled sleep, suspend, hibernate and hybrid-sleep functionality${TEXTFORMATTING[NORMAL]}"
-
+    if [[ $(sed --in-place 's/Password:.*$/Password:$/g' "${SYSDUPLOGFILE}")  -eq 0 ]];
+    then
+        printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Successfully remove paswords from the systems upgrade log.${TEXTFORMATTING[NORMAL]}"
+    fi
+    if [[ $(sed --in-place 's/Password:.*$/Password:$/g' "${AURUPDLOGFILE}") -eq 0 ]];
+    then
+        printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Successfully remove paswords from the AUR upgrade log.${TEXTFORMATTING[NORMAL]}"
+    fi
+    if [[ -d "${TMPDIR}" ]];
+    then
+        rm --force --recursive "${TMPDIR}"
+        printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Tempor5ary files successfully removed.${TEXTFORMATTING[NORMAL]}"
+    fi
     exit 18
 }
 
@@ -91,23 +103,23 @@ then
         printf '%s\n' "#     functionality.                                                 #"
         printf '%s\n' "# Examples:                                                          #"
         printf '%s\n' "#     * To add the current user to the sudoers list:                 #"
-        printf '%s\n' "#        mumu --addsudoers                                           #"
+        printf '%s\n' "#        mumuh --addsudoers                                          #"
         printf '%s\n' "#          OR                                                        #"
-        printf '%s\n' "#        mumu -a                                                     #"
+        printf '%s\n' "#        mumuh -a                                                    #"
         printf '%s\n' "#     * If you wish to skip performing backups for this execution:   #"
-        printf '%s\n' "#        mumu --skipbackup                                           #"
+        printf '%s\n' "#        mumuh --skipbackup                                          #"
         printf '%s\n' "#          OR                                                        #"
-        printf '%s\n' "#        mumu -s                                                     #"
+        printf '%s\n' "#        mumuh -s                                                    #"
         printf '%s\n' "#     * If you want to use a custom command:                         #"
-        printf '%s\n' "#        mumu --custombackupcommand=<custom command>                 #"
+        printf '%s\n' "#        mumuh --custombackupcommand=<custom command>                #"
         printf '%s\n' "#          OR                                                        #"
-        printf '%s\n' "#        mumu -c <custom command>                                    #"
+        printf '%s\n' "#        mumuh -c <custom command>                                   #"
         printf '%s\n' "#     * If you want to skip removing orphan pakackages:              #"
-        printf '%s\n' "#        mumu --skiporphansremove                                    #"
+        printf '%s\n' "#        mumuh --skiporphansremove                                   #"
         printf '%s\n' "#     * If you want to get the package version:                      #"
-        printf '%s\n' "#        mumu --version                                              #"
+        printf '%s\n' "#        mumuh --version                                             #"
         printf '%s\n' "#          OR                                                        #"
-        printf '%s\n' "#        mumu -v                                                     #"
+        printf '%s\n' "#        mumuh -v                                                    #"
         printf '%s\n' "######################################################################"
         exit 0
     }
@@ -179,8 +191,44 @@ then
     done
 fi
 # Configure a few variables to be used throughout the script
-RUNTIMESTAMP=$(date +%Y.%m.%d@%Hh%Mm)
+RUNTIMESTAMP=$(date +%Y-%m-%d@%Hh%Mm)
 RUNDATE=$(echo "$RUNTIMESTAMP" | awk -F'@' '{print $1}')
+
+# Create the temporary directory
+if [[ ! -d "/tmp/mumuh" ]];
+then
+    mkdir "/tmp/mumuh"
+    chmod o+w "/tmp/mumuh"
+fi
+touch "/tmp/mumuh/sysuptmp"
+touch "/tmp/mumuh/auruptmp"
+chmod o+w "/tmp/mumuh/sysuptmp"
+chmod o+w "/tmp/mumuh/auruptmp"
+TMPDIR="/tmp/mumuh"
+if [[ ! -f "${TMPDIR}/sysuptmp" ]];
+then
+    mkdir --parents "${TMPDIR}/sysuptmp"
+fi
+if [[ ! -f "${TMPDIR}/auruptmp" ]];
+then
+    mkdir --parents "${TMPDIR}/auruptmp"
+fi
+if [[ -f "${TMPDIR}/sysuptmp" ]];
+then
+    if [[ $(stat -c '%a' "${TMPDIR}/sysuptmp") -ne "0640" ]];
+    then
+    chmod 'u+rw,g+r,o=' "${TMPDIR}/sysuptmp"
+    SYSUPTMPLOGFILE="${TMPDIR}/sysuptmp"
+    fi
+fi
+if [[ -f "${TMPDIR}/auruptmp" ]];
+then
+    if [[ $(stat -c '%a' "${TMPDIR}/auruptmp") -ne "0640" ]];
+    then
+        chmod 'u+rw,g+r,o=' "${TMPDIR}/auruptmp"
+        AURUPTMPLOGFILE="${TMPDIR}/auruptmp"
+    fi
+fi
 
 # Create the logs directory
 if [[ ! -d "/var/log/mumuh" ]];
@@ -188,7 +236,7 @@ then
     sudo mkdir --mode=770 "/var/log/mumuh"
     sudo chgrp wheel "/var/log/mumuh"
 fi
-if [[ -d "/var/log/manjaro-update/" ]];
+if [[ -d "/var/log/mumuh" ]];
 then
     mkdir --mode=755 "/var/log/mumuh/logs.${RUNTIMESTAMP}"
     sudo chgrp wheel "/var/log/mumuh/logs.${RUNTIMESTAMP}"
@@ -228,14 +276,24 @@ function token_quote {
 }
 
 # Check that there are updates, and confirm with the use whether to apply them or not.
-UPDATES_AVAILABLE=$(pamac checkupdates | head -n 1  | awk '{print $1}')
-printf "[%s]: %s Official packages to upgrade:\n" "$(date +%Y.%m.%d@%H:%M:S)" "${UPDATES_AVAILABLE}" >> "${SYSDUPLOGFILE}"
-[[ $UPDATES_AVAILABLE -gt 0 ]] && read -r -p "There are ${TEXTFORMATTING[BRIGHT]}${UPDATES_AVAILABLE}${TEXTFORMATTING[NORMAL]} updates available, continue? [Y/n]: " CONTINUEUPDATE
-CONTINUEUPDATE=${CONTINUEUPDATE:-Y}
-if [[ ${CONTINUEUPDATE} =~ [nN] ]];
+ALLUPDATES_AVAILABLE=$(pamac checkupdates)
+UPDATES_AVAILABLE=$?
+if [ "${UPDATES_AVAILABLE}" -eq "100" ];
 then
-    printf "[%s]: Upgrade cancelled.\n" "$(date +%Y.%m.%d@%H:%M:S)" >> "${SYSDUPLOGFILE}"
-    printf '%s\n' "Upgrade cancelled." |  systemd-cat --identifier=mumuh && exit 7
+    NRUPDATES_AVAILABLE=$(head -n 1 <<< "${ALLUPDATES_AVAILABLE}" | awk '{print $1}')
+    ALLUPDATES_AVAILABLE_NOHEAD=$(echo "${ALLUPDATES_AVAILABLE}" | sed '1d')
+    if [ "${NRUPDATES_AVAILABLE}" -gt "0" ];
+    then
+        read -r -p "There are ${TEXTFORMATTING[BRIGHT]}${NRUPDATES_AVAILABLE}${TEXTFORMATTING[NORMAL]} updates available, continue? [Y/n]: " CONTINUEUPDATE
+        CONTINUEUPDATE=${CONTINUEUPDATE:-Y}
+        if [[ ! ${CONTINUEUPDATE} =~ [yY] ]];
+        then
+            printf "[%s]: Upgrade cancelled.\n" "$(date +%Y.%m.%d@%H:%M)" >> "${SYSDUPLOGFILE}"
+            printf '%s\n' "Upgrade cancelled." "$(date +%Y.%m.%d@%H:%M)" |  systemd-cat --identifier=mumuh && exit 7
+        else
+            printf "[%s]: %s Official packages to upgrade:\n%s\n\n" "$(date +%Y.%m.%d@%H:%M)" "${NRUPDATES_AVAILABLE}" "${ALLUPDATES_AVAILABLE_NOHEAD}" >> "${SYSDUPLOGFILE}"
+        fi
+    fi
 fi
 
 ###
@@ -251,13 +309,13 @@ while IFS= read -r line; do
 done <<< "${MIRRORSTATUS}"
 if [[ "${UNSYNCDMIRRORS}" -gt "0" ]];
 then
-    read -r -p "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}${UNSYNCDMIRRORS} mirrors remain unsynchronized and could cause problems.${TEXTFORMATTING[NORMAL]} Continue? [y/N]: " CONTTINUECHOICE
-    if [[ ${CONTTINUECHOICE} =~ [Nn] ]];
+    read -r -p "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}${UNSYNCDMIRRORS} mirrors remain unsynchronized and could cause problems.${TEXTFORMATTING[NORMAL]} Continue? [y/N]: " CONTINUECHOICE
+    if [[ ${CONTINUECHOICE} =~ [Yy] ]];
     then
         printf "There were %s unsynchronised mirrors. Not continuing." "${UNSYNCDMIRRORS}" >> "${SYSDUPLOGFILE}"
     elif [[ ${COPYOFFICIALCHOICE} =~ [Yy] ]];
     then
-        printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}You are conrinuing even though you are using unsynchronised mirrors.${TEXTFORMATTING[RED]}"
+        printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}You are continuing even though you are using unsynchronised mirrors.${TEXTFORMATTING[RED]}"
         printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}This is dangerous and known to cause problems and thus ${TEXTFORMATTING[BRIGHT]}NOT RECOMMENDED${TEXTFORMATTING[NORMAL]}.${TEXTFORMATTING[RED]}"
         read -r -p "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Please confirm if you wish to continue by pressing C.${TEXTFORMATTING[RED]} [C/N]: " CONFIRMCONTINUECHOICE
         if [[ ${CONFIRMCONTINUECHOICE} != "C" ]];
@@ -280,7 +338,7 @@ if [[ -z ${SKIPBACKUP+x} ]]; # Check if skipping backup creating specified.
 then
     printf '%s\n' "* ${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Not skipping backup creation.${TEXTFORMATTING[NORMAL]}"
     printf '%s\n' "Not skipping backup creation." | systemd-cat --identifier=mumuh
-    printf "[%s]: Not skipping backup creation.\n" "$(date +%Y.%m.%d@%H:%M:S)" >> "${SYSDUPLOGFILE}"
+    printf "[%s]: Not skipping backup creation.\n" "$(date +%Y.%m.%d@%H:%M)" >> "${SYSDUPLOGFILE}"
     if [[ -v CUSTOMBUCMD ]]; # Check if custom backup command specified.
     then
         BACKUPCMD=$CUSTOMBUCMD
@@ -291,11 +349,11 @@ then
         then
             printf '%s\n' "> ${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Timeshift ${TEXTFORMATTING[RED]}not${TEXTFORMATTING[YELLOW]} found.${TEXTFORMATTING[NORMAL]} <"
             printf '%s\n' "Timeshift not found." | systemd-cat --identifier=mumuh
-            printf "[%s]: Timeshift not found.\n" "$(date +%Y.%m.%d@%H:%M:S)" >> "${SYSDUPLOGFILE}"
+            printf "[%s]: Timeshift not found.\n" "$(date +%Y.%m.%d@%H:%M)" >> "${SYSDUPLOGFILE}"
             echo
             printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}Exiting.${TEXTFORMATTING[NORMAL]}"
             printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}Exiting.${TEXTFORMATTING[NORMAL]}" | systemd-cat --identifier=mumuh
-            printf "[%s]: Exiting.\n" "$(date +%Y.%m.%d@%H:%M:S)" >> "${SYSDUPLOGFILE}"
+            printf "[%s]: Exiting.\n" "$(date +%Y.%m.%d@%H:%M)" >> "${SYSDUPLOGFILE}"
             exit 2
         else
             BACKUPCMD="sudo timeshift --create --comments \"$(date +%Y.%m.%d@%H:%M) - Pre-update\""
@@ -306,7 +364,7 @@ fi
 if [[ -n ${BACKUPCMD+x} ]];
 then
     printf "Using %s to create the backup snapshot.\n" "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]} ${BACKUPCMD} ${TEXTFORMATTING[NORMAL]}"
-    printf "[%s]: Using %s to create the backup snapshot.\n" "$(date +%Y.%m.%d@%H:%M:S)" "${CUSTOMBUCMD}" >> "${SYSDUPLOGFILE}"
+    printf "[%s]: Using %s to create the backup snapshot.\n" "$(date +%Y.%m.%d@%H:%M)" "${CUSTOMBUCMD}" >> "${SYSDUPLOGFILE}"
     eval "${BACKUPCMD}"
     BACKUP_COMMAND_RESULT=$?
 fi
@@ -315,7 +373,7 @@ then
     # However, if it was given, set the output as a success, so the rest of the script can carry on.
     BACKUP_COMMAND_RESULT=0
     printf "%sSkipping backup creation.%s\n" "${TEXTFORMATTING[YELLOW]}${TEXTFORMATTING[BRIGHT]}" "${TEXTFORMATTING[NORMAL]}"
-    printf "[%s]: Skipping backup creation.\n" "$(date +%Y.%m.%d@%H:%M:S)" >> "${SYSDUPLOGFILE}"
+    printf "[%s]: Skipping backup creation.\n" "$(date +%Y.%m.%d@%H:%M)" >> "${SYSDUPLOGFILE}"
 fi
 ###
 # END backup section
@@ -356,41 +414,79 @@ fi
 ###
 # START upgrade section
 ###
-# If the backup was successful, continue with the upgrade
+# If the backup was successful, continue with the upgrade. (This will also be the case if the backups are skipped.)
 if [[ "${BACKUP_COMMAND_RESULT}" -eq "0" ]];
 then
+# Make sure "${SYSDUPLOGFILE}" exists
+    if [[ ! $(touch "${SYSDUPLOGFILE}") -eq 0 ]];
+    then
+        echo "Unable to create the log file for the system upgrades."
+        exit 19
+    fi
     if [[ -z ${SKIPBACKUP+x} ]];
     then
         printf "[%s]: Pre-upgrade backup snapshot successfully created.\n" "$(date +%Y.%m.%d@%H:%M:%S)" >> "${SYSDUPLOGFILE}"
         printf "%sPre-upgrade backup snapshot successfully created. %sContinuing with upgrade...%s\n"  "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}" "${TEXTFORMATTING[NORMAL]}${TEXTFORMATTING[GREEN]}" "${TEXTFORMATTING[NORMAL]}"
     fi
-    script --append --log-io "${SYSDUPLOGFILE}"  --command "PAMAC_CLI_AUTH=1 pamac upgrade --force-refresh --enable-downgrade --no-aur"
+    script --quiet --log-out "${SYSUPTMPLOGFILE}" --command "PAMAC_CLI_AUTH=1 pamac upgrade --force-refresh --enable-downgrade --no-aur"
     UPGRADE_OFFICIAL_RESULT=$?
     # Check if the official update from the repositories was successful and if so, continue with the AUR upgrade.
     if [ "${UPGRADE_OFFICIAL_RESULT}" -eq "0" ];
     then
-        printf "[%s]: Packages upgraded successfully from the official repositories.\n" "$(date +%Y.%m.%d@%H:%M)" >> "${SYSDUPLOGFILE}"
+        if [ -f "${SYSUPTMPLOGFILE}" ]; then
+            if sed --in-place --regexp-extended 's|^Script.*COMMAND="(.*aur)".*"\]|$ \1|1' "${SYSUPTMPLOGFILE}" && sed --in-place --regexp-extended '/^Script done.*COMMAND_EXIT_CODE.*]/d' "${SYSUPTMPLOGFILE}"; then
+                printf "[%s]: Successfully scrubbed the unnecessary lines from ${SYSUPTMPLOGFILE}.\n" "$(date +%Y.%m.%d@%H:%M)" | systemd-cat --identifier=mumuh --priority=notice
+            else
+                printf "[%s]: Unable to remove the unnecessary lines from ${SYSUPTMPLOGFILE}.\n" "$(date +%Y.%m.%d@%H:%M)" >> "${SYSDUPLOGFILE}"
+                printf '%s\n' "Unable to remove the unnecessary lines from ${SYSUPTMPLOGFILE}." | systemd-cat --identifier=mumuh --priority=warning
+            fi
+            if ! col --no-backspaces < "${SYSUPTMPLOGFILE}" >> "${SYSDUPLOGFILE}"; then
+                printf '%s\n' "Unable to write the log file for the update to %s%s%s%s." "${TEXTFORMATTING[YELLOW]}" "${TEXTFORMATTING[BRIGHT]}" "${SYSUPTMPLOGFILE}" "${TEXTFORMATTING[NORMAL]}" | systemd-cat --identifier=mumuh --priority=err
+            else
+                rm "${SYSUPTMPLOGFILE}"
+            fi
+        fi
+        printf "[%s]: Packages upgraded successfully from the repositories.\n" "$(date +%Y.%m.%d@%H:%M)" >> "${SYSDUPLOGFILE}"
         if command -v notify-send 1> /dev/null 2> /dev/null;
         then
-            notify-send --icon=checkmark --app-name="MUMUH" "Official package upgrade" "Using, \<b\><code>pamac upgrade</code>\<\/b\>, successfully finished."
+            notify-send --icon=checkmark --app-name="MUMUH" "Repositories' packages upgrade" "using, \<b\><code>pamac upgrade</code>\<\/b\>, successfully finished."
         else
-            printf "%sOfficial package upgrade \n\nUsing, %spamac upgrade%s%s, successfully finished.%s" "${TEXTFORMATTING[GREEN]}" "${TEXTFORMATTING[BRIGHT]}" "${TEXTFORMATTING[NORMAL]}" "${TEXTFORMATTING[GREEN]}" "${TEXTFORMATTING[NORMAL]}"
+            printf "%sRepositories' packages upgrade \n\nUsing, %spamac upgrade%s%s, successfully finished.%s" "${TEXTFORMATTING[GREEN]}" "${TEXTFORMATTING[BRIGHT]}" "${TEXTFORMATTING[NORMAL]}" "${TEXTFORMATTING[GREEN]}" "${TEXTFORMATTING[NORMAL]}"
         fi
         if [ -z ${LOGSDIR+x} ];
         then
             echo "\$LOGSDIR is unset. Cannot log process";
             LOGSDIR=""
         else
-            touch "$LOGSDIR""/aur-upgrade.output";
-            AURUPDLOGFILE=$LOGSDIR"/aur-upgrade.output";
+            if ! touch "${AURUPDLOGFILE}";
+            then
+                echo "Unable to create the log file for the AUR upgrades."
+                exit 20
+            else
+                touch "${LOGSDIR}/aur-upgrade.output";
+                AURUPDLOGFILE="${LOGSDIR}/aur-upgrade.output";
+            fi
         fi
         # Let's update AUR packages now.
         printf "[%s]: AUR packages to upgrade:\n" "$(date +%Y.%m.%d@%H:%M:%S)" >> "${AURUPDLOGFILE}"
-        script --append --log-io "${AURUPDLOGFILE}" --command  "PAMAC_CLI_AUTH=1 pamac upgrade --enable-downgrade --aur --devel"
+        script --quiet --log-out "${AURUPTMPLOGFILE}" --command "PAMAC_CLI_AUTH=1 pamac upgrade --enable-downgrade --aur --devel"
         UPGRADE_AUR_RESULT=$?
-        # Check if AUR packages' upgrade was successful, and if so, continue with merging .pacnew files.
+        # Check if AUR packages' upgrade was successful, and if so, scrub unnecessary lines of text from the log.
         if [ "${UPGRADE_AUR_RESULT}" -eq "0" ];
         then
+            if [ -f "${AURUPTMPLOGFILE}" ]; then
+                if sed --in-place --regexp-extended 's|^Script.*COMMAND="(.*devel)".*"\]|$ \1|1' "${AURUPTMPLOGFILE}" && sed --in-place --regexp-extended '/^Script.*COMMAND_EXIT_CODE.*]/d' "${AURUPTMPLOGFILE}"; then
+                    printf "[%s]: Successfully scrubbed the unnecessary lines from ${AURUPDLOGFILE}.\n" "$(date +%Y.%m.%d@%H:%M)" | systemd-cat --identifier=mumuh --priority=notice
+                else
+                    printf "[%s]: Unable to remove unneccesary lines from ${AURUPTMPLOGFILE}.\n" "$(date +%Y.%m.%d@%H:%M)" >> "${AURUPDLOGFILE}"
+                    printf '%s\n' "Unable to remove unneccesary lines from ${AURUPTMPLOGFILE}." | systemd-cat --identifier=mumuh --priority=warning
+                fi
+                if ! col --no-backspaces < "${AURUPTMPLOGFILE}" >> "${AURUPDLOGFILE}"; then
+                    printf '%s\n' "Unable to write the log file for the update to %s%s%s%s." "${TEXTFORMATTING[YELLOW]}" "${TEXTFORMATTING[BRIGHT]}" "${SYSUPTMPLOGFILE}" "${TEXTFORMATTING[NORMAL]}" | systemd-cat --identifier=mumuh --priority=err
+                else
+                    rm "${AURUPTMPLOGFILE}"
+                fi
+            fi
             printf "[%s]: Packages upgraded successfully from the AUR.\n" "$(date +%Y.%m.%d@%H:%M:%S)" >> "${AURUPDLOGFILE}"
             if command -v notify-send 1> /dev/null 2> /dev/null;
             then
@@ -413,7 +509,7 @@ then
                     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}.pacnew files successfully merged.${TEXTFORMATTING[NORMAL]}"
                 fi
                 printf '%s\n' ".pacnew files successfully merged." | systemd-cat --identifier=mumuh --priority=info
-                printf "[%s]: Successfully merged .pacnew files.\n" "$(date +%Y.%m.%d@%H:%M:%S)" >> "${SYSDUPLOGFILE}"
+                printf "[%s]: Successfully merged .pacnew files.\n" "$(date +%Y.%m.%d@%H:%M)" >> "${SYSDUPLOGFILE}"
             else
                 printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occurred during merging of the .pacnew files.${TEXTFORMATTING[NORMAL]}"
                 printf '%s\n' "An error occurred during merging of the .pacnew files." | systemd-cat --identifier=mumuh --priority=err
@@ -516,6 +612,8 @@ fi
 ###
 # END orphan cleaning section
 ###
+
+
 
 # Get the information required for the logs as well as a generated forum post
 SYSTEMINFO=$(inxi --admin --verbosity=7 --filter --no-host --width)
@@ -642,5 +740,13 @@ printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Cleaning older 
 if ls -A /var/log/mumuh 1> /dev/null 2> /dev/null; then
     (cd /var/log/mumuh && ls -t --reverse | head -n -5 | xargs -I{} rm --force)
 fi
+##########################
+### SOME HOUSECLEANING ###
+##########################
+# Remove the temporary directory. Otherwise it's not really temporary. ;)
+#M if [[ "${UPGRADEERRORS}" -eq "0" ]];
+#M then
+#M     rm --force --recursive "${TMPDIR}"
+#M fi
 # Unset any and all variables, functions and whatever else was used.
-unset TEXTFORMATTING UPDATES_AVAILABLE CONTINUEUPDATE RUNTIMESTAMP RUNDATE BACKUP_COMMAND_RESULT LOGSDIR SYSUPDLOGFILE UPGRADE_AUR_RESULT NEWMERGE_RESULT COPYOFFICIALCHOICE COPYAURCHOICE SYSTEMINFO MESSAGE  CONFIRMCONTINUECHOICE CONFIRMCONTINUECHOICE MIRRORSTATUS
+unset TEXTFORMATTING UPDATES_AVAILABLE CONTINUEUPDATE RUNTIMESTAMP RUNDATE BACKUP_COMMAND_RESULT LOGSDIR SYSUPDLOGFILE AURUPDLOGFILE UPGRADE_AUR_RESULT NEWMERGE_RESULT COPYOFFICIALCHOICE COPYAURCHOICE SYSTEMINFO MESSAGE  CONFIRMCONTINUECHOICE CONFIRMCONTINUECHOICE MIRRORSTATUS TMPDIR
