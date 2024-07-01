@@ -259,7 +259,7 @@ else
 fi
 
 # Make sure the script isnt's being run as root
-if [[ "$(id -u)" -eq "0" ]];
+if [[ "${EUID}" -eq "0" ]];
 then
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}You are attempting to run the script as root which isn't allowed. Exiting.${TEXTFORMATTING[NORMAL]}"
     printf "[%s]: Attempting to run the script as root. Exiting.\n" "$(date +%Y.%m.%d@%H:%M)" >> "${SYSDUPLOGFILE}"
