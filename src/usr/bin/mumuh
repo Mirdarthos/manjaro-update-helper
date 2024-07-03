@@ -166,11 +166,11 @@ then
                 shift
             ;;
             --version)
-                printf '%s\n' "${TEXTFORMATTING[BRIGHT]}Current version:${TEXTFORMATTING[NORMAL]} 8.0"
+                printf '%s\n' "${TEXTFORMATTING[BRIGHT]}Current version:${TEXTFORMATTING[NORMAL]} 8.1"
                 exit
             ;;
             -v)
-                printf '%s\n' "8"
+                printf '%s\n' "8.1"
                 exit
             ;;
             --custombackupcommand=*|-c)
