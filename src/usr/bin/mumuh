@@ -363,8 +363,8 @@ fi
 
 if [[ -n ${BACKUPCMD+x} ]];
 then
-    printf "Using %s to create the backup snapshot.\n" "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]} ${BACKUPCMD} ${TEXTFORMATTING[NORMAL]}"
-    printf "[%s]: Using %s to create the backup snapshot.\n" "$(date +%Y.%m.%d@%H:%M)" "${CUSTOMBUCMD}" >> "${SYSDUPLOGFILE}"
+    printf "Using %s to create the backup snapshot.\n" "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}${BACKUPCMD}${TEXTFORMATTING[NORMAL]}"
+    printf "[%s]: Using %s to create the backup snapshot.\n" "$(date +%Y.%m.%d@%H:%M)" "${BACKUPCMD}" >> "${SYSDUPLOGFILE}"
     eval "${BACKUPCMD}"
     BACKUP_COMMAND_RESULT=$?
 fi
@@ -425,7 +425,7 @@ then
     fi
     if [[ -z ${SKIPBACKUP+x} ]];
     then
-        printf "[%s]: Pre-upgrade backup snapshot successfully created.\n" "$(date +%Y.%m.%d@%H:%M:%S)" >> "${SYSDUPLOGFILE}"
+        printf "[%s]: Pre-upgrade backup snapshot successfully created.\n" "$(date +%Y.%m.%d@%H:%M)" >> "${SYSDUPLOGFILE}"
         printf "%sPre-upgrade backup snapshot successfully created. %sContinuing with upgrade...%s\n"  "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[GREEN]}" "${TEXTFORMATTING[NORMAL]}${TEXTFORMATTING[GREEN]}" "${TEXTFORMATTING[NORMAL]}"
     fi
     script --quiet --log-out "${SYSUPTMPLOGFILE}" --command "PAMAC_CLI_AUTH=1 pamac upgrade --force-refresh --enable-downgrade --no-aur"
