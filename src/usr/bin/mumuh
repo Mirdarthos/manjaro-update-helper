@@ -4,7 +4,7 @@ trap ctrl_c INT
 # The custom handler for CTRL-C Presses
 function ctrl_c() {
     printf '\n%s\n' "${TEXTFORMATTING[BRIGHT]}Enabling sleep, hibernate and suspend.${TEXTFORMATTING[NORMAL]}"
-    # Disabling sleep
+    # Enabling sleep
     if [[ $(sudo systemctl unmask sleep.target) -eq 0 ]];
     then
         printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Successfully enabled sleep functionality.${TEXTFORMATTING[NORMAL]}"
@@ -35,6 +35,7 @@ function ctrl_c() {
     else
         printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occured while enabling hybrid-sleep functionality.${TEXTFORMATTING[NORMAL]}"
     fi
+
     printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}Update process was forcibly cancelled. Re-enabled sleep, suspend, hibernate and hybrid-sleep functionality${TEXTFORMATTING[NORMAL]}"
     if [[ $(sed --in-place 's/Password:.*$/Password:$/g' "${SYSDUPLOGFILE}")  -eq 0 ]];
     then
@@ -166,11 +167,11 @@ then
                 shift
             ;;
             --version)
-                printf '%s\n' "${TEXTFORMATTING[BRIGHT]}Current version:${TEXTFORMATTING[NORMAL]} 8.1"
+                printf '%s\n' "${TEXTFORMATTING[BRIGHT]}Current version:${TEXTFORMATTING[NORMAL]} 8.2"
                 exit
             ;;
             -v)
-                printf '%s\n' "8.1"
+                printf '%s\n' "8.2"
                 exit
             ;;
             --custombackupcommand=*|-c)
@@ -743,10 +744,38 @@ fi
 ##########################
 ### SOME HOUSECLEANING ###
 ##########################
-# Remove the temporary directory. Otherwise it's not really temporary. ;)
-#M if [[ "${UPGRADEERRORS}" -eq "0" ]];
-#M then
-#M     rm --force --recursive "${TMPDIR}"
-#M fi
+## Enable all thew disabloed targets again.
+# Enabling sleep
+if [[ $(sudo systemctl unmask sleep.target) -eq 0 ]];
+then
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Successfully enabled sleep functionality.${TEXTFORMATTING[NORMAL]}"
+else
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occured while enabling sleep functionality.${TEXTFORMATTING[NORMAL]}"
+fi
+
+# Enabling suspend
+if [[ $(sudo systemctl unmask suspend.target) -eq 0 ]];
+then
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Successfully enabled suspend functionality.${TEXTFORMATTING[NORMAL]}"
+else
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occured while enabling suspend functionality.${TEXTFORMATTING[NORMAL]}"
+fi
+
+# Enabling hibernate
+if [[ $(sudo systemctl unmask hibernate.target) -eq 0 ]];
+then
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Successfully enabled hibernate functionality.${TEXTFORMATTING[NORMAL]}"
+else
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occured while enabling hibernate functionality.${TEXTFORMATTING[NORMAL]}"
+fi
+
+# Enabling hybrid-sleep
+if [[ $(sudo systemctl unmask hybrid-sleep.target) -eq 0 ]];
+then
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[YELLOW]}Successfully enabled hybrid-sleep functionality.${TEXTFORMATTING[NORMAL]}"
+else
+    printf '%s\n' "${TEXTFORMATTING[BRIGHT]}${TEXTFORMATTING[RED]}An error occured while enabling hybrid-sleep functionality.${TEXTFORMATTING[NORMAL]}"
+fi
+
 # Unset any and all variables, functions and whatever else was used.
 unset TEXTFORMATTING UPDATES_AVAILABLE CONTINUEUPDATE RUNTIMESTAMP RUNDATE BACKUP_COMMAND_RESULT LOGSDIR SYSUPDLOGFILE AURUPDLOGFILE UPGRADE_AUR_RESULT NEWMERGE_RESULT COPYOFFICIALCHOICE COPYAURCHOICE SYSTEMINFO MESSAGE  CONFIRMCONTINUECHOICE CONFIRMCONTINUECHOICE MIRRORSTATUS TMPDIR
