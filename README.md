@@ -84,7 +84,7 @@ $ mumuh --help
 ######################################################################
 ```
 
-The script is **_not_** meant to be run as `root` or with `sudo`. It'll ask for the `sudo` password if it requires it.
+The script is **_not_** meant to be run as `root` or with `sudo`. It'll ask for authentication if it requires it.
 
 ***
 
