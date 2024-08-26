@@ -442,7 +442,7 @@ then
                 printf '%s\n' "Unable to remove the unnecessary lines from ${SYSUPTMPLOGFILE}." | systemd-cat --identifier=mumuh --priority=warning
             fi
             if ! col --no-backspaces < "${SYSUPTMPLOGFILE}" >> "${SYSDUPLOGFILE}"; then
-                printf '%s\n' "Unable to write the log file for the update to %s%s%s%s." "${TEXTFORMATTING[YELLOW]}" "${TEXTFORMATTING[BRIGHT]}" "${SYSUPTMPLOGFILE}" "${TEXTFORMATTING[NORMAL]}" | systemd-cat --identifier=mumuh --priority=err
+                printf '%s\n' "Unable to write the log file for the update to %s%s%s%s." "${TEXTFORMATTING[YELLOW]}" "${TEXTFORMATTING[BRIGHT]}" "${SYSDUPLOGFILE}" "${TEXTFORMATTING[NORMAL]}" | systemd-cat --identifier=mumuh --priority=err
             else
                 rm "${SYSUPTMPLOGFILE}"
             fi
