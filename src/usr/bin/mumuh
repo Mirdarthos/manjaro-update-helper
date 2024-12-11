@@ -1,4 +1,10 @@
 #!/bin/env bash
+
+# Ensure the script is run in the CLI
+if [[ ! "${SHLVL}" -gt "1" ]];
+then
+    exit 19
+fi
 # Trap ctrl-c and call ctrl_c()
 trap ctrl_c INT
 # The custom handler for CTRL-C Presses
