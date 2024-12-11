@@ -4,7 +4,7 @@
 pkgname=mirdarthos-universal-manjaro-update-helper
 replaces=('my-universal-manjaro-update-helper')
 conflicts=('my-universal-manjaro-update-helper')
-pkgver=8.3.1
+pkgver=8.4
 pkgrel=1
 pkgdesc="A helper for updating Manjaro Linux."
 arch=('any')
@@ -17,4 +17,4 @@ package() {
     cd manjaro-update-helper-$pkgver
     install -Dm755 src/usr/bin/mumuh -t "$pkgdir/usr/bin/"
 }
-sha256sums=('083a11eb09cb4ac3ac0f5f615e36e390ed7b36f80add7a5e4212307dab032135')
+sha256sums=('78343f1efd8b65f41a5d8c61921ab206886704c2a398301be2133c935d287eec')
