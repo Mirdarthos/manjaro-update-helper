@@ -3,9 +3,12 @@
 # Ensure the script is run in the CLI
 if [[ ! "${SHLVL}" -gt "1" ]];
 then
-    if command -v notify-send 1> /dev/null 2> /dev/null;
+    if command -v kdialog 1> /dev/null 2> /dev/null;
     then
-        notify-send --icon=emblem-error --urgency=critical --wait --action="OK" --app-name="MUMUH" "Script has to be run from the command line. Cannot continue."
+        kdialog --title "MUMUH" --icon "error" --msgbox "Script has to be run from the command line. Cannot continue."
+    elif command -v notify-send 1> /dev/null 2> /dev/null;
+    then
+        notify-send --icon=error --urgency=critical --wait --action="OK" --app-name="MUMUH" "Script has to be run from the command line. Cannot continue."
     fi
     exit 19
 fi
@@ -177,11 +180,11 @@ then
                 shift
             ;;
             --version)
-                printf '%s\n' "${TEXTFORMATTING[BRIGHT]}Current version:${TEXTFORMATTING[NORMAL]} 8.4"
+                printf '%s\n' "${TEXTFORMATTING[BRIGHT]}Current version:${TEXTFORMATTING[NORMAL]} 9"
                 exit
             ;;
             -v)
-                printf '%s\n' "8.4"
+                printf '%s\n' "9"
                 exit
             ;;
             --custombackupcommand=*|-c)
