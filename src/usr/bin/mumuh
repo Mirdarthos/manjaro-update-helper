@@ -3,6 +3,10 @@
 # Ensure the script is run in the CLI
 if [[ ! "${SHLVL}" -gt "1" ]];
 then
+    if command -v notify-send 1> /dev/null 2> /dev/null;
+    then
+        notify-send --icon=emblem-error --urgency=critical --wait --action="OK" --app-name="MUMUH" "Script has to be run from the command line. Cannot continue."
+    fi
     exit 19
 fi
 # Trap ctrl-c and call ctrl_c()
